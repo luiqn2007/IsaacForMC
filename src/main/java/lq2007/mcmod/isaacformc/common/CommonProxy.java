@@ -1,6 +1,7 @@
 package lq2007.mcmod.isaacformc.common;
 
 import lq2007.mcmod.isaacformc.common.capability.IIsaacData;
+import lq2007.mcmod.isaacformc.common.capability.IsaacData;
 import lq2007.mcmod.isaacformc.common.capability.IsaacDataStorage;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -23,7 +24,7 @@ public class CommonProxy {
     }
 
     private void setup(FMLCommonSetupEvent event) {
-//        todo CapabilityManager.INSTANCE.register(IIsaacData.class, IsaacDataStorage.INSTANCE);
+        CapabilityManager.INSTANCE.register(IIsaacData.class, IsaacDataStorage.INSTANCE, IsaacData::new);
     }
 
     private void constructMod(FMLConstructModEvent event) {}
