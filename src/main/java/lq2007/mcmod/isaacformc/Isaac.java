@@ -1,11 +1,17 @@
 package lq2007.mcmod.isaacformc;
 
 import lq2007.mcmod.isaacformc.common.CommonProxy;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.event.EventNetworkChannel;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.forgespi.Environment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.function.Supplier;
 
 import static lq2007.mcmod.isaacformc.Isaac.ID;
 
@@ -21,6 +27,7 @@ public class Isaac {
     public static Isaac MOD;
 
     public CommonProxy proxy;
+    public SimpleChannel network = NetworkRegistry.newSimpleChannel(new ResourceLocation(ID, "network"), () -> "0", v -> true, v -> true);
 
     public Isaac() {
         MOD = this;
