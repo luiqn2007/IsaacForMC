@@ -46,15 +46,27 @@ public class TileFoundation extends TileEntity {
         if (prop.isEmpty()) {
             return new SUpdateTileEntityPacket(pos, 0, prop.serializeNBT());
         } else {
-            CompoundNBT nbt = new CompoundNBT();
-            nbt.putBoolean("empty", true);
-            return new SUpdateTileEntityPacket(pos, 0, nbt);
+            return new SUpdateTileEntityPacket(pos, 0, new CompoundNBT());
         }
     }
 
     @Override
+    public CompoundNBT getUpdateTag() {
+        return super.getUpdateTag();
+    }
+
+    @Override
+    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+
+    }
+
+    @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        prop = new PropItem(pkt.getNbtCompound());
+        if (pkt.getNbtCompound().isEmpty()) {
+            prop = PropItem.EMPTY;
+        } else {
+            prop = new PropItem(pkt.getNbtCompound());
+        }
     }
 
     @Override
