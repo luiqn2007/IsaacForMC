@@ -43,29 +43,30 @@ public class TileFoundation extends TileEntity {
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        if (prop.isEmpty()) {
-            return new SUpdateTileEntityPacket(pos, 0, prop.serializeNBT());
-        } else {
-            return new SUpdateTileEntityPacket(pos, 0, new CompoundNBT());
-        }
-    }
-
-    @Override
-    public CompoundNBT getUpdateTag() {
-        return super.getUpdateTag();
-    }
-
-    @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-
+        return new SUpdateTileEntityPacket(pos, 0, prop != PropItem.EMPTY ? prop.serializeNBT() : new CompoundNBT());
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        if (pkt.getNbtCompound().isEmpty()) {
-            prop = PropItem.EMPTY;
+        prop = PropItem.fromNbt(pkt.getNbtCompound());
+    }
+
+    @Override
+    public CompoundNBT getUpdateTag() {
+        CompoundNBT nbt = super.getUpdateTag();
+        if (prop != PropItem.EMPTY) {
+            nbt.put("_prop", prop.serializeNBT());
+        }
+        return nbt;
+    }
+
+    @Override
+    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+        super.handleUpdateTag(state, tag);
+        if (tag.contains("_prop", Constants.NBT.TAG_COMPOUND)) {
+            prop = PropItem.fromNbt(tag.getCompound("_prop"));
         } else {
-            prop = new PropItem(pkt.getNbtCompound());
+            prop = PropItem.EMPTY;
         }
     }
 
@@ -73,14 +74,14 @@ public class TileFoundation extends TileEntity {
     public void read(BlockState state, CompoundNBT nbt) {
         super.read(state, nbt);
         prop = nbt.contains("prop", Constants.NBT.TAG_COMPOUND)
-                ? new PropItem(nbt.getCompound("prop"))
+                ? PropItem.fromNbt(nbt.getCompound("prop"))
                 : PropItem.EMPTY;
     }
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         CompoundNBT nbt = super.write(compound);
-        if (!prop.isEmpty()) {
+        if (prop != PropItem.EMPTY) {
             nbt.put("prop", prop.serializeNBT());
         }
         return nbt;
