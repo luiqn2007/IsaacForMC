@@ -2,8 +2,11 @@ package lq2007.mcmod.isaacformc.common.isaac.prop;
 
 import lq2007.mcmod.isaacformc.common.isaac.IsaacItem;
 import lq2007.mcmod.isaacformc.common.util.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public abstract class PropType extends IsaacItem {
 
@@ -20,7 +23,7 @@ public abstract class PropType extends IsaacItem {
     }
 
     public IPropData createData() {
-        return NoData.INSTANCE;
+        return IPropData.NO_DATA;
     }
 
     @Override
@@ -41,15 +44,27 @@ public abstract class PropType extends IsaacItem {
         return descriptionKey;
     }
 
-    public boolean onActive(PlayerEntity player, PropItem prop) {
+    public boolean onActive(Entity entity, PropItem prop) {
         return false;
     }
 
-    public void onPickUp(PlayerEntity player, PropItem prop) {
+    public void onPickUp(Entity entity, PropItem prop) {
 
     }
 
     public boolean isActive() {
         return true;
+    }
+
+    public boolean allowMultiItem() {
+        return false;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public void renderOnFoundation(PropItem item, float partialTicks,
+                                   com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
+                                   net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
+                                   int combinedLightIn, int combinedOverlayIn) {
+
     }
 }

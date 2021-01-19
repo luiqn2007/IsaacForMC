@@ -25,7 +25,7 @@ public class PacketFoundation {
 
     public PacketFoundation(PacketBuffer buffer) {
         this.pos = buffer.readBlockPos();
-        this.prop = new PropItem(Objects.requireNonNull(buffer.readCompoundTag()));
+        this.prop = PropItem.fromNbt(buffer.readCompoundTag());
     }
 
     public static void encode(PacketFoundation packet, PacketBuffer buffer) {

@@ -17,6 +17,6 @@ public class TerFoundation extends TileEntityRenderer<TileFoundation> {
 
     @Override
     public void render(TileFoundation tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        tileEntityIn.getProp().renderOnFoundation(tileEntityIn, partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
+        tileEntityIn.getProp().renderOnFoundation(partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
     }
 }

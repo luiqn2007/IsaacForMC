@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacformc.common.util;
 
+
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public class I18n {

@@ -3,7 +3,6 @@ package lq2007.mcmod.isaacformc.common.block;
 import lq2007.mcmod.isaacformc.Isaac;
 import lq2007.mcmod.isaacformc.common.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.common.network.PacketFoundation;
-import lq2007.mcmod.isaacformc.register.Blocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -21,7 +20,7 @@ public class TileFoundation extends TileEntity {
     private PropItem prop = PropItem.EMPTY;
 
     public TileFoundation() {
-        super(Blocks.TYPE_FOUNDATION);
+        super(Blocks.TYPE_FOUNDATION.get());
     }
 
     public PropItem getProp() {

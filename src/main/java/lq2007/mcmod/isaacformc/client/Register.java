@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacformc.client;
 
 import lq2007.mcmod.isaacformc.client.ter.TerFoundation;
-import lq2007.mcmod.isaacformc.register.Blocks;
+import lq2007.mcmod.isaacformc.common.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelRegistryEvent;

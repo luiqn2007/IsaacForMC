@@ -1,6 +1,7 @@
 package lq2007.mcmod.isaacformc.common;
 
 import lq2007.mcmod.isaacformc.Isaac;
+import lq2007.mcmod.isaacformc.common.block.Blocks;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacData;
 import lq2007.mcmod.isaacformc.common.capability.IsaacData;
 import lq2007.mcmod.isaacformc.common.capability.IsaacDataStorage;
@@ -26,6 +27,8 @@ public class CommonProxy {
         eventBus.addListener(this::gatherData);
         eventBus.addListener(this::imcEnqueue);
         eventBus.addListener(this::imcProcess);
+
+        Blocks.register(eventBus);
     }
 
     private void setup(FMLCommonSetupEvent event) {

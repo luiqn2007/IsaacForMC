@@ -8,7 +8,7 @@ public final class EmptyProp extends PropType {
     private static final ResourceLocation KEY = new ResourceLocation("isaac", "empty");
 
     private EmptyProp() {
-        super(KEY);
+        super(KEY, false);
     }
 
     @Override
