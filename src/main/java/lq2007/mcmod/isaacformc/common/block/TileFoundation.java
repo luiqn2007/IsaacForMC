@@ -28,13 +28,15 @@ public class TileFoundation extends TileEntity {
     }
 
     public void setProp(PropItem prop) {
-        this.prop = prop;
-        markDirty();
-        if (world != null && !world.isRemote) {
-            PacketFoundation packet = new PacketFoundation(prop, pos);
-            for (PlayerEntity player : world.getPlayers()) {
-                ServerPlayerEntity sp = (ServerPlayerEntity) player;
-                Isaac.MOD.network.sendTo(packet, sp.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+        if (world != null && !world.isRemote && this.prop != prop) {
+            this.prop = prop;
+            markDirty();
+            if (world != null && !world.isRemote) {
+                PacketFoundation packet = new PacketFoundation(prop, pos);
+                for (PlayerEntity player : world.getPlayers()) {
+                    ServerPlayerEntity sp = (ServerPlayerEntity) player;
+                    Isaac.MOD.network.sendTo(packet, sp.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+                }
             }
         }
     }
@@ -52,37 +54,33 @@ public class TileFoundation extends TileEntity {
 
     @Override
     public CompoundNBT getUpdateTag() {
-        CompoundNBT nbt = super.getUpdateTag();
-        if (prop != PropItem.EMPTY) {
-            nbt.put("_prop", prop.serializeNBT());
-        }
-        return nbt;
-    }
-
-    @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        super.handleUpdateTag(state, tag);
-        if (tag.contains("_prop", Constants.NBT.TAG_COMPOUND)) {
-            prop = PropItem.fromNbt(tag.getCompound("_prop"));
-        } else {
-            prop = PropItem.EMPTY;
-        }
+        return write(new CompoundNBT());
     }
 
     @Override
     public void read(BlockState state, CompoundNBT nbt) {
         super.read(state, nbt);
-        prop = nbt.contains("prop", Constants.NBT.TAG_COMPOUND)
-                ? PropItem.fromNbt(nbt.getCompound("prop"))
+        prop = nbt.contains("_item", Constants.NBT.TAG_COMPOUND)
+                ? PropItem.fromNbt(nbt.getCompound("_item"))
                 : PropItem.EMPTY;
+        markDirty();
     }
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         CompoundNBT nbt = super.write(compound);
         if (prop != PropItem.EMPTY) {
-            nbt.put("prop", prop.serializeNBT());
+            nbt.put("_item", prop.serializeNBT());
         }
         return nbt;
+    }
+
+    public void renderPropOnFoundation(float partialTicks,
+                                       com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
+                                       net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
+                                       int combinedLightIn, int combinedOverlayIn) {
+        if (prop != PropItem.EMPTY) {
+            prop.renderOnFoundation(partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
+        }
     }
 }

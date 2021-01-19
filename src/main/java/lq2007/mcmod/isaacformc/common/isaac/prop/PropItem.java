@@ -8,6 +8,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class PropItem implements INBTSerializable<CompoundNBT> {
 
@@ -59,5 +60,18 @@ public class PropItem implements INBTSerializable<CompoundNBT> {
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
         data.deserializeNBT(nbt.getCompound("_data"));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PropItem propItem = (PropItem) o;
+        return type.equals(propItem.type) && data.equals(propItem.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, data);
     }
 }

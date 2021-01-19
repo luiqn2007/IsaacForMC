@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacformc.common.capability;
 
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -13,11 +14,11 @@ public class IsaacDataStorage implements Capability.IStorage<IIsaacData> {
     @Nullable
     @Override
     public INBT writeNBT(Capability<IIsaacData> capability, IIsaacData instance, Direction side) {
-        return null;
+        return instance.serializeNBT();
     }
 
     @Override
     public void readNBT(Capability<IIsaacData> capability, IIsaacData instance, Direction side, INBT nbt) {
-
+        instance.deserializeNBT((CompoundNBT) nbt);
     }
 }

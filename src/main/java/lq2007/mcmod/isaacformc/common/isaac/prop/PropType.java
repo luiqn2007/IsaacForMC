@@ -53,7 +53,7 @@ public abstract class PropType extends IsaacItem {
     }
 
     public boolean isActive() {
-        return true;
+        return isActive;
     }
 
     public boolean allowMultiItem() {

@@ -16,7 +16,7 @@ public class Register {
 
     @SubscribeEvent
     public static void register(ModelRegistryEvent event) {
-        ClientRegistry.bindTileEntityRenderer(Blocks.TYPE_FOUNDATION, TerFoundation::new);
+        ClientRegistry.bindTileEntityRenderer(Blocks.TYPE_FOUNDATION.get(), TerFoundation::new);
     }
 }
 
