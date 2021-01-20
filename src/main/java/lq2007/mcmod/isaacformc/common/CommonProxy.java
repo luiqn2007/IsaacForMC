@@ -2,9 +2,9 @@ package lq2007.mcmod.isaacformc.common;
 
 import lq2007.mcmod.isaacformc.Isaac;
 import lq2007.mcmod.isaacformc.common.block.Blocks;
-import lq2007.mcmod.isaacformc.common.capability.IIsaacData;
-import lq2007.mcmod.isaacformc.common.capability.IsaacData;
-import lq2007.mcmod.isaacformc.common.capability.IsaacDataStorage;
+import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
+import lq2007.mcmod.isaacformc.common.capability.IsaacPropData;
+import lq2007.mcmod.isaacformc.common.capability.IsaacPropStorage;
 import lq2007.mcmod.isaacformc.common.network.PacketFoundation;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -32,7 +32,7 @@ public class CommonProxy {
     }
 
     private void setup(FMLCommonSetupEvent event) {
-        CapabilityManager.INSTANCE.register(IIsaacData.class, IsaacDataStorage.INSTANCE, IsaacData::new);
+        CapabilityManager.INSTANCE.register(IIsaacPropData.class, IsaacPropStorage.INSTANCE, IsaacPropData::new);
         Isaac.MOD.network.registerMessage(0, PacketFoundation.class, PacketFoundation::encode, PacketFoundation::new, PacketFoundation::apply, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 

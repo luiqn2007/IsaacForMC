@@ -1,5 +1,7 @@
 package lq2007.mcmod.isaacformc.common.isaac.prop;
 
+import lq2007.mcmod.isaacformc.common.isaac.prop.data.IPropData;
+import lq2007.mcmod.isaacformc.common.isaac.prop.type.PropType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;

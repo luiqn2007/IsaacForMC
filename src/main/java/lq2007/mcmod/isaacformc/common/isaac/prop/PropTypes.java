@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacformc.common.isaac.prop;
 
+import lq2007.mcmod.isaacformc.common.isaac.prop.type.PropType;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;

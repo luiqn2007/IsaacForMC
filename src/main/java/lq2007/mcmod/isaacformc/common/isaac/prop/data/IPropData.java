@@ -1,5 +1,6 @@
-package lq2007.mcmod.isaacformc.common.isaac.prop;
+package lq2007.mcmod.isaacformc.common.isaac.prop.data;
 
+import lq2007.mcmod.isaacformc.common.isaac.prop.PropItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 

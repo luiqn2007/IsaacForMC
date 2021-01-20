@@ -1,9 +1,12 @@
-package lq2007.mcmod.isaacformc.common.isaac.prop;
+package lq2007.mcmod.isaacformc.common.isaac.prop.type;
 
 import lq2007.mcmod.isaacformc.common.isaac.IsaacItem;
+import lq2007.mcmod.isaacformc.common.isaac.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.isaac.prop.PropTypes;
+import lq2007.mcmod.isaacformc.common.isaac.prop.data.IPropData;
 import lq2007.mcmod.isaacformc.common.util.I18n;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -44,11 +47,15 @@ public abstract class PropType extends IsaacItem {
         return descriptionKey;
     }
 
-    public boolean onActive(Entity entity, PropItem prop) {
+    public boolean onActive(LivingEntity entity, PropItem prop) {
         return false;
     }
 
-    public void onPickUp(Entity entity, PropItem prop) {
+    public void onPickUp(LivingEntity entity, PropItem prop) {
+
+    }
+
+    public void onRemove(LivingEntity entity, PropItem prop) {
 
     }
 
