@@ -2,42 +2,39 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import lq2007.mcmod.isaacformc.common.isaac.prop.PropItem;
-import lq2007.mcmod.isaacformc.common.isaac.prop.type.IUpdateType;
-import lq2007.mcmod.isaacformc.common.isaac.prop.type.PropType;
-import lq2007.mcmod.isaacformc.common.isaac.prop.PropTypes;
+import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
+import lq2007.mcmod.isaacformc.isaac.prop.PropTypes;
+import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.common.util.NBTUtils;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.loading.FMLCommonLaunchHandler;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.loading.FMLLoader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
 
 public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
 
-    private static final String KEY_OWNER = "_owner";
     private static final String KEY_ACT0 = "_act0";
     private static final String KEY_ACT1 = "_act1";
     private static final String KEY_HAS_ACT2 = "_has2";
     private static final String KEY_PASSIVE = "_passive";
     private static final String KEY_HELD = "_held";
+    private static final String KEY_VERSION = "_version";
 
     private PropItem active0 = PropItem.EMPTY;
     private PropItem active1 = PropItem.EMPTY;
@@ -45,22 +42,12 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
     private List<PropItem> passiveItems = new ArrayList<>();
     private Set<PropType> passiveTypes = new HashSet<>();
     private Set<PropType> heldTypes = new HashSet<>();
-    private LivingEntity entity;
-    private UUID ownerId;
+
+    private int signVersion = 0, currentVersion = 0;
 
     private final LazyOptional<IIsaacPropData> dataOptional = LazyOptional.of(() -> this);
-    private IsaacPropData capture = null;
 
     public IsaacPropData() { }
-
-    private IsaacPropData(PropItem active0, PropItem active1, boolean hasSecondActive, List<PropItem> passiveItems, Set<PropType> passiveTypes, Set<PropType> heldTypes) {
-        this.active0 = active0;
-        this.active1 = active1;
-        this.hasSecondActive = hasSecondActive;
-        this.passiveItems = passiveItems;
-        this.passiveTypes = passiveTypes;
-        this.heldTypes = heldTypes;
-    }
 
     @Override
     public PropItem getActiveProp() {
@@ -77,21 +64,7 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
     }
 
     @Override
-    public void bindEntity(LivingEntity entity) {
-
-    }
-
-    @Override
-    public LivingEntity getEntity() {
-        if (entity == null) {
-            // todo owner
-        }
-        return entity;
-    }
-
-    @Override
     public PropItem pickupProp(PropItem prop) {
-        apply(entity);
         PropItem replacedItem;
         if (prop.type.isActive()) {
             if (active0 == PropItem.EMPTY) {
@@ -112,24 +85,19 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
             passiveItems.add(prop);
             passiveTypes.add(prop.type);
             replacedItem = PropItem.EMPTY;
-        } else if (prop.type.allowMultiItem()) {
+        } else {
             passiveItems.add(prop);
             replacedItem = PropItem.EMPTY;
-        } else {
-            replacedItem = prop;
         }
 
         if (replacedItem != prop) {
             heldTypes.add(prop.type);
-            prop.type.onPickUp(entity, prop);
-            replacedItem.type.onRemove(entity, replacedItem);
         }
         return replacedItem;
     }
 
     @Override
     public boolean removeProp(PropItem prop) {
-        apply(entity);
         if (prop == PropItem.EMPTY) {
             return false;
         }
@@ -145,24 +113,17 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
                 isRemoved = true;
             }
         } else if (passiveItems.remove(prop)) {
-            if (type.allowMultiItem()) {
-                boolean remove = true;
-                for (PropItem passiveItem : passiveItems) {
-                    if (passiveItem.type == type) {
-                        remove = false;
-                        break;
-                    }
+            boolean remove = true;
+            for (PropItem passiveItem : passiveItems) {
+                if (passiveItem.type == type) {
+                    remove = false;
+                    break;
                 }
-                if (remove) {
-                    passiveTypes.remove(type);
-                }
-            } else {
+            }
+            if (remove) {
                 passiveTypes.remove(type);
             }
             isRemoved = true;
-        }
-        if (isRemoved) {
-            prop.type.onRemove(entity, prop);
         }
         return isRemoved;
     }
@@ -170,31 +131,18 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
     @Override
     public int removeAllProps(boolean removeActiveProp) {
         int count = 0;
-        if (isApplied) {
-            if (removeActiveProp) {
-                if (hasSecondActive() && removeProp(active1)) {
-                    count++;
-                }
-                if (removeProp(active0)) {
-                    count++;
-                }
-            }
-            for (PropItem prop : getAllPassiveProps()) {
-                if (removeProp(prop)) {
-                    count++;
-                }
-            }
-        } else {
-            if (active0 != PropItem.EMPTY) {
-                active0 = PropItem.EMPTY;
+        if (removeActiveProp) {
+            if (hasSecondActive() && removeProp(active1)) {
                 count++;
             }
-            if (active1 != PropItem.EMPTY) {
-                active1 = PropItem.EMPTY;
+            if (removeProp(active0)) {
                 count++;
             }
-            count += passiveItems.size();
-            passiveItems.clear();
+        }
+        for (PropItem prop : getAllPassiveProps()) {
+            if (removeProp(prop)) {
+                count++;
+            }
         }
         return count;
     }
@@ -206,7 +154,6 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
 
     @Override
     public void setHasSecondAction(boolean hasSecondActive) {
-        apply(entity);
         if (hasSecondActive) {
             this.hasSecondActive = true;
         } else {
@@ -240,57 +187,78 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
 
     @Override
     public void copyFrom(IIsaacPropData data) {
-        if (isApplied) {
-            removeAllProps(true);
-        }
-        heldTypes.addAll(data.getAllHeldProps());
-        PropItem firstActiveProp = PropItem.EMPTY;
-        for (PropItem prop : getAllProps()) {
-            if (prop.type.isActive() && firstActiveProp == PropItem.EMPTY) {
-                firstActiveProp = prop;
-            } else {
-                pickupProp(prop);
+        if (data instanceof DummyData) {
+            active0 = PropItem.EMPTY;
+            active1 = PropItem.EMPTY;
+            hasSecondActive = false;
+            passiveItems.clear();
+            passiveTypes.clear();
+            heldTypes.clear();
+        } else if (data instanceof IsaacPropData) {
+            IsaacPropData pData = (IsaacPropData) data;
+            active0 = pData.active0;
+            active1 = pData.active1;
+            hasSecondActive = pData.hasSecondActive;
+            passiveItems = new ArrayList<>(pData.passiveItems);
+            passiveTypes = new HashSet<>(pData.passiveTypes);
+            heldTypes  = new HashSet<>(pData.heldTypes);
+        } else {
+            active0 = PropItem.EMPTY;
+            active1 = PropItem.EMPTY;
+            hasSecondActive = false;
+            passiveItems = new ArrayList<>();
+            passiveTypes = new HashSet<>();
+            heldTypes = new HashSet<>(data.getAllHeldProps());
+            PropItem firstActiveProp = PropItem.EMPTY;
+            for (PropItem prop : getAllProps()) {
+                if (prop.type.isActive() && firstActiveProp == PropItem.EMPTY) {
+                    firstActiveProp = prop;
+                } else {
+                    pickupProp(prop);
+                }
             }
+            setHasSecondAction(data.hasSecondActive());
+            pickupProp(firstActiveProp);
         }
-        setHasSecondAction(data.hasSecondActive());
-        pickupProp(firstActiveProp);
     }
 
     @Override
-    public void update() {
-        apply(entity);
-        if (active0.type instanceof IUpdateType) {
-            ((IUpdateType) active0.type).onUpdate(active0, entity);
-        }
-        if (active1.type instanceof IUpdateType) {
-            ((IUpdateType) active1.type).onUpdate(active1, entity);
-        }
-        for (PropItem item : passiveItems) {
-            if (item.type instanceof IUpdateType) {
-                ((IUpdateType) item.type).onUpdate(item, entity);
-            }
+    public void markDirty() {
+        if (currentVersion == signVersion) {
+            currentVersion++;
+        } else if (currentVersion < signVersion) {
+            currentVersion = signVersion + 1;
         }
     }
 
-    private void apply(LivingEntity entity) {
-        if (!isApplied) {
-            if (capture != null) {
-                capture.removeAllProps(true);
-            }
-            active0.type.onPickUp(entity, active0);
-            active1.type.onPickUp(entity, active1);
-            for (PropItem item : passiveItems) {
-                item.type.onPickUp(entity, item);
-            }
-            isApplied = true;
+    @Override
+    public boolean isDirty() {
+        return currentVersion > signVersion;
+    }
+
+    @Override
+    public void clearDirty() {
+        signVersion = currentVersion;
+    }
+
+    @Override
+    public CompoundNBT createPacketData() {
+        CompoundNBT data = serializeNBT();
+        data.putInt(KEY_VERSION, currentVersion);
+        return data;
+    }
+
+    @Override
+    public void readPacketData(CompoundNBT data) {
+        int version = data.getInt(KEY_VERSION);
+        if (version >= signVersion) {
+            deserializeNBT(data);
+            signVersion = version;
         }
     }
 
     @Override
     public CompoundNBT serializeNBT() {
-        if (isApplied) {
-            capture = new IsaacPropData(active0, active1, hasSecondActive, passiveItems, passiveTypes, heldTypes);
-        }
         CompoundNBT data = new CompoundNBT();
         if (active0 != PropItem.EMPTY) data.put(KEY_ACT0, active0.serializeNBT());
         if (active1 != PropItem.EMPTY) data.put(KEY_ACT1, active1.serializeNBT());
@@ -303,7 +271,6 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
             }
         }
         data.put(KEY_HELD, held);
-        isApplied = false;
         return data;
     }
 

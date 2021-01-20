@@ -10,6 +10,6 @@ public class IsaacCapabilities {
     public static Capability<IIsaacPropData> CAPABILITY;
 
     public static IIsaacPropData fromEntity(LivingEntity entity) {
-        return entity.getCapability(CAPABILITY).orElseGet(() -> IIsaacPropData.dummy(entity));
+        return entity.getCapability(CAPABILITY).orElseGet(IIsaacPropData::dummy);
     }
 }

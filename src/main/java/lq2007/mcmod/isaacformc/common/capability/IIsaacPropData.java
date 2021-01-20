@@ -2,38 +2,26 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import lq2007.mcmod.isaacformc.common.isaac.prop.PropItem;
-import lq2007.mcmod.isaacformc.common.isaac.prop.type.PropType;
+import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
+import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
 
-    static IIsaacPropData dummy(LivingEntity entity) {
-        DummyData.INSTANCE.bindEntity(entity);
+    static IIsaacPropData dummy() {
         return DummyData.INSTANCE;
     }
-
-    /**
-     * Bind the data to an entity.
-     *
-     * @param entity entity
-     */
-    void bindEntity(LivingEntity entity);
-
-    /**
-     * Get the entity the data bind to.
-     *
-     * @return entity
-     */
-    LivingEntity getEntity();
 
     /**
      * Pickup a prop
      *
      * If an entity can't pickup the prop, returns itself.
      * If this is an active prop, returns replaced active prop while exist.
+     *
      *
      * @param prop prop
      * @return The prop that an entity pickup a prop and remove one.
@@ -43,6 +31,7 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
     /**
      * Remove a prop
      *
+     *
      * @param prop prop
      * @return True if the prop removed from the entity.
      */
@@ -50,6 +39,7 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
 
     /**
      * Remove all props
+     *
      *
      * @param removeActiveProp True if remove active props
      * @return The count of props removed.
@@ -80,7 +70,7 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
 
     /**
      * Set if allowed held the second active prop.
-     *  @param second True if the second active prop slot is enabled.
+     * @param second True if the second active prop slot is enabled.
      *
      */
     void setHasSecondAction(boolean second);
@@ -109,35 +99,55 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
 
     /**
      * Copy props from another data.
-     *  @param data another data
+     * @param data another data
      *
      */
     void copyFrom(IIsaacPropData data);
 
     /**
-     * Called in {@link net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent}
-     *
-     * 1 If the data is created but not applied to entity, apply it.
-     * 2 Update all prop implement {@link lq2007.mcmod.isaacformc.common.isaac.prop.type.IUpdateType}
-     *
+     * Copy props from another entity.
+     * @param entity another entity
      */
-    void update();
+    default void copyFrom(LivingEntity entity) {
+        copyFrom(IsaacCapabilities.fromEntity(entity));
+    }
+
+    /**
+     * Mark that the data is dirty and will send to client.
+     */
+    void markDirty();
+
+    /**
+     * Check if the data is dirty.
+     * @return is dirty
+     */
+    boolean isDirty();
+
+    /**
+     * Mark that the data is sent to client and clear the dirty sign.
+     */
+    void clearDirty();
+
+    /**
+     * Create the packet data to send to client.
+     * It will always be called at server by default.
+     *
+     * @return nbt data
+     */
+    CompoundNBT createPacketData();
+
+    /**
+     * Read the data from server and set to client.
+     * It will always be called at client by default.
+     *
+     * @param data data from server
+     */
+    @OnlyIn(Dist.CLIENT)
+    void readPacketData(CompoundNBT data);
 
     class DummyData implements IIsaacPropData {
 
         private static final DummyData INSTANCE = new DummyData();
-
-        private LivingEntity entity;
-
-        @Override
-        public void bindEntity(LivingEntity entity) {
-            this.entity = entity;
-        }
-
-        @Override
-        public LivingEntity getEntity() {
-            return entity;
-        }
 
         @Override
         public PropItem pickupProp(PropItem prop) {
@@ -189,7 +199,23 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
         public void copyFrom(IIsaacPropData data) { }
 
         @Override
-        public void update() { }
+        public void markDirty() { }
+
+        @Override
+        public boolean isDirty() {
+            return false;
+        }
+
+        @Override
+        public void clearDirty() { }
+
+        @Override
+        public CompoundNBT createPacketData() {
+            return new CompoundNBT();
+        }
+
+        @Override
+        public void readPacketData(CompoundNBT data) { }
 
         @Override
         public CompoundNBT serializeNBT() {

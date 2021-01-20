@@ -5,8 +5,6 @@ import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.common.capability.IsaacPropData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -27,10 +25,8 @@ public class CapabilityEventHandler {
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
-        PlayerEntity original = event.getOriginal();
-        PlayerEntity dist = event.getPlayer();
-
-        CompoundNBT nbt = IsaacCapabilities.fromEntity(original).serializeNBT();
-        IsaacCapabilities.fromEntity(dist).deserializeNBT(nbt);
+        if (!event.isWasDeath()) {
+            IsaacCapabilities.fromEntity(event.getPlayer()).copyFrom(event.getOriginal());
+        }
     }
 }
