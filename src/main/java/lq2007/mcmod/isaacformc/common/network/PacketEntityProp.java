@@ -14,7 +14,8 @@ public class PacketEntityProp {
     private final CompoundNBT data;
 
     public PacketEntityProp(IIsaacPropData data) {
-        this.data = data.createPacketData();
+        CompoundNBT nbt = data.serializeNBT();
+        nbt.putInt();
     }
 
     public PacketEntityProp(PacketBuffer buffer) {

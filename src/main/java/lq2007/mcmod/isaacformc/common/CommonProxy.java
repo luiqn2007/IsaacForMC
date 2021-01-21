@@ -1,25 +1,21 @@
 package lq2007.mcmod.isaacformc.common;
 
-import lq2007.mcmod.isaacformc.Isaac;
 import lq2007.mcmod.isaacformc.common.block.Blocks;
-import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
-import lq2007.mcmod.isaacformc.common.capability.IsaacPropData;
-import lq2007.mcmod.isaacformc.common.capability.IsaacPropStorage;
-import lq2007.mcmod.isaacformc.common.network.PacketEntityProp;
-import lq2007.mcmod.isaacformc.common.network.PacketFoundation;
+import lq2007.mcmod.isaacformc.common.capability.*;
+import lq2007.mcmod.isaacformc.common.network.IsaacNetworks;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.*;
-import net.minecraftforge.fml.network.NetworkDirection;
-
-import java.util.Optional;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class CommonProxy {
 
     protected IEventBus eventBus;
+    protected SimpleChannel channel;
 
-    public CommonProxy(IEventBus eventBus) {
+    public CommonProxy(IEventBus eventBus, SimpleChannel channel) {
         this.eventBus = eventBus;
+        this.channel = channel;
 
         eventBus.addListener(this::setup);
         eventBus.addListener(this::constructMod);
@@ -34,8 +30,8 @@ public class CommonProxy {
 
     private void setup(FMLCommonSetupEvent event) {
         CapabilityManager.INSTANCE.register(IIsaacPropData.class, IsaacPropStorage.INSTANCE, IsaacPropData::new);
-        Isaac.MOD.network.registerMessage(0, PacketFoundation.class, PacketFoundation::encode, PacketFoundation::new, PacketFoundation::apply, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        Isaac.MOD.network.registerMessage(1, PacketEntityProp.class, PacketEntityProp::encode, PacketEntityProp::new, PacketEntityProp::apply, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CapabilityManager.INSTANCE.register(IIsaacProperty.class, IsaacPropertyStorage.INSTANCE, IsaacProperty::new);
+        IsaacNetworks.registerAll(channel);
     }
 
     private void constructMod(FMLConstructModEvent event) {}

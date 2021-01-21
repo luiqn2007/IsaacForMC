@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class NBTUtils {
+public class NBTUtil {
 
     public static ListNBT convert(List<? extends INBTSerializable<?>> list) {
         ListNBT nbt = new ListNBT();

@@ -1,10 +1,9 @@
 package lq2007.mcmod.isaacformc.common.handler;
 
-import lq2007.mcmod.isaacformc.Isaac;
+import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.isaac.prop.*;
-import lq2007.mcmod.isaacformc.common.network.PacketEntityProp;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -20,7 +19,7 @@ public class IsaacPropHandler {
     @SubscribeEvent
     public static void onEntityUpdate(LivingEvent.LivingUpdateEvent event) {
         LivingEntity entity = event.getEntityLiving();
-        IIsaacPropData data = IsaacCapabilities.fromEntity(entity);
+        IIsaacPropData data = IsaacCapabilities.getPropData(entity);
         for (PropItem propItem : data.getAllProps()) {
             if (propItem.type instanceof IUpdateType) {
                 ((IUpdateType) propItem.type).onUpdate(propItem, entity);
@@ -35,7 +34,7 @@ public class IsaacPropHandler {
     @SubscribeEvent
     public static void onEntityAttack(LivingDamageEvent event) {
         LivingEntity entity = event.getEntityLiving();
-        IIsaacPropData data = IsaacCapabilities.fromEntity(entity);
+        IIsaacPropData data = IsaacCapabilities.getPropData(entity);
         for (PropItem propItem : data.getAllPassiveProps()) {
             PropType type = propItem.type;
             if (type instanceof IAttackType) {
@@ -58,7 +57,7 @@ public class IsaacPropHandler {
     @SubscribeEvent
     public static void onEntityHurt(LivingHurtEvent event) {
         LivingEntity entity = event.getEntityLiving();
-        IIsaacPropData data = IsaacCapabilities.fromEntity(entity);
+        IIsaacPropData data = IsaacCapabilities.getPropData(entity);
         for (PropItem propItem : data.getAllPassiveProps()) {
             PropType type = propItem.type;
             if (type instanceof IHurtType) {
@@ -81,7 +80,7 @@ public class IsaacPropHandler {
     @SubscribeEvent
     public static void onEntityDeath(LivingDeathEvent event) {
         LivingEntity entity = event.getEntityLiving();
-        IIsaacPropData data = IsaacCapabilities.fromEntity(entity);
+        IIsaacPropData data = IsaacCapabilities.getPropData(entity);
         for (PropItem propItem : data.getAllPassiveProps()) {
             PropType type = propItem.type;
             if (type instanceof IDeathType) {
@@ -98,7 +97,7 @@ public class IsaacPropHandler {
     public static void onEntityUseItem(LivingEntityUseItemEvent event) {
         IItemUseType.EnumItemUseStage stage = IItemUseType.EnumItemUseStage.fromEvent(event);
         LivingEntity entity = event.getEntityLiving();
-        IIsaacPropData data = IsaacCapabilities.fromEntity(entity);
+        IIsaacPropData data = IsaacCapabilities.getPropData(entity);
         for (PropItem propItem : data.getAllPassiveProps()) {
             PropType type = propItem.type;
             if (type instanceof IItemUseType) {

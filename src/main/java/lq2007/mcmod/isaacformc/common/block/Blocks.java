@@ -7,7 +7,7 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static lq2007.mcmod.isaacformc.Isaac.*;
+import static lq2007.mcmod.isaacformc.common.Isaac.*;
 
 public class Blocks {
 

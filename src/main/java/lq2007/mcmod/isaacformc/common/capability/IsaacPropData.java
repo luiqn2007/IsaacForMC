@@ -5,11 +5,12 @@ import com.google.common.collect.ImmutableSet;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropTypes;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
-import lq2007.mcmod.isaacformc.common.util.NBTUtils;
+import lq2007.mcmod.isaacformc.common.util.NBTUtil;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
@@ -34,7 +35,6 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
     private static final String KEY_HAS_ACT2 = "_has2";
     private static final String KEY_PASSIVE = "_passive";
     private static final String KEY_HELD = "_held";
-    private static final String KEY_VERSION = "_version";
 
     private PropItem active0 = PropItem.EMPTY;
     private PropItem active1 = PropItem.EMPTY;
@@ -43,7 +43,7 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
     private Set<PropType> passiveTypes = new HashSet<>();
     private Set<PropType> heldTypes = new HashSet<>();
 
-    private int signVersion = 0, currentVersion = 0;
+    private int clientVersion = 0, currentVersion = 0;
 
     private final LazyOptional<IIsaacPropData> dataOptional = LazyOptional.of(() -> this);
 
@@ -223,38 +223,16 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
     }
 
     @Override
-    public void markDirty() {
-        if (currentVersion == signVersion) {
-            currentVersion++;
-        } else if (currentVersion < signVersion) {
-            currentVersion = signVersion + 1;
-        }
+    public boolean serializePacket(PacketBuffer buffer) {
+        if (currentVersion <= clientVersion) return false;
+        buffer.writeBoolean(true);
+        buffer.writeVarInt(currentVersion);
+
     }
 
     @Override
-    public boolean isDirty() {
-        return currentVersion > signVersion;
-    }
+    public void deserializePacket(PacketBuffer buffer) {
 
-    @Override
-    public void clearDirty() {
-        signVersion = currentVersion;
-    }
-
-    @Override
-    public CompoundNBT createPacketData() {
-        CompoundNBT data = serializeNBT();
-        data.putInt(KEY_VERSION, currentVersion);
-        return data;
-    }
-
-    @Override
-    public void readPacketData(CompoundNBT data) {
-        int version = data.getInt(KEY_VERSION);
-        if (version >= signVersion) {
-            deserializeNBT(data);
-            signVersion = version;
-        }
     }
 
     @Override
@@ -263,7 +241,7 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
         if (active0 != PropItem.EMPTY) data.put(KEY_ACT0, active0.serializeNBT());
         if (active1 != PropItem.EMPTY) data.put(KEY_ACT1, active1.serializeNBT());
         data.putBoolean(KEY_HAS_ACT2, hasSecondActive());
-        data.put(KEY_PASSIVE, NBTUtils.convert(passiveItems));
+        data.put(KEY_PASSIVE, NBTUtil.convert(passiveItems));
         ListNBT held = new ListNBT();
         for (PropType type : heldTypes) {
             if (active0.type != type && active1.type != type && !passiveTypes.contains(type)) {
@@ -279,7 +257,7 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
         active0 = data.contains(KEY_ACT0, TAG_COMPOUND) ? PropItem.fromNbt(data.getCompound(KEY_ACT0)) : PropItem.EMPTY;
         active1 = data.contains(KEY_ACT1, TAG_COMPOUND) ? PropItem.fromNbt(data.getCompound(KEY_ACT1)) : PropItem.EMPTY;
         hasSecondActive = data.getBoolean(KEY_HAS_ACT2);
-        passiveItems = NBTUtils.convert(data.getList(KEY_PASSIVE, TAG_COMPOUND), PropItem::fromNbt);
+        passiveItems = NBTUtil.convert(data.getList(KEY_PASSIVE, TAG_COMPOUND), PropItem::fromNbt);
         passiveTypes = passiveItems.stream().map(item -> item.type).collect(Collectors.toSet());
         heldTypes = new HashSet<>();
         if (active0 != PropItem.EMPTY) heldTypes.add(active0.type);
@@ -300,6 +278,6 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
-        return IsaacCapabilities.CAPABILITY.orEmpty(cap, this.dataOptional);
+        return IsaacCapabilities.CAPABILITY_PROP.orEmpty(cap, this.dataOptional);
     }
 }

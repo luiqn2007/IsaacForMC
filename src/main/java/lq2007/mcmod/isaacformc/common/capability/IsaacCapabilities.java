@@ -7,9 +7,16 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 public class IsaacCapabilities {
 
     @CapabilityInject(IIsaacPropData.class)
-    public static Capability<IIsaacPropData> CAPABILITY;
+    public static Capability<IIsaacPropData> CAPABILITY_PROP;
 
-    public static IIsaacPropData fromEntity(LivingEntity entity) {
-        return entity.getCapability(CAPABILITY).orElseGet(IIsaacPropData::dummy);
+    @CapabilityInject(IIsaacProperty.class)
+    public static Capability<IIsaacProperty> CAPABILITY_PROPERTY;
+
+    public static IIsaacPropData getPropData(LivingEntity entity) {
+        return entity.getCapability(CAPABILITY_PROP).orElseGet(IIsaacPropData::dummy);
+    }
+
+    public static IIsaacProperty getProperty(LivingEntity entity) {
+        return entity.getCapability(CAPABILITY_PROPERTY).orElseGet(IIsaacProperty::dummy);
     }
 }

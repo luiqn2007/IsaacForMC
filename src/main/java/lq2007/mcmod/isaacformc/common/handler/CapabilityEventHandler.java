@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacformc.common.handler;
 
-import lq2007.mcmod.isaacformc.Isaac;
+import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.common.capability.IsaacPropData;
 import net.minecraft.entity.Entity;
@@ -26,7 +26,7 @@ public class CapabilityEventHandler {
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
         if (!event.isWasDeath()) {
-            IsaacCapabilities.fromEntity(event.getPlayer()).copyFrom(event.getOriginal());
+            IsaacCapabilities.getPropData(event.getPlayer()).copyFrom(event.getOriginal());
         }
     }
 }

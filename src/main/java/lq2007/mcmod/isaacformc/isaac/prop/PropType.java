@@ -60,9 +60,7 @@ public abstract class PropType extends IsaacItem {
         return false;
     }
 
-    public void setProperty(PropItem item, Property property) {}
-
-    public void setSpecialTear(List<EnumSpecialTearType> types) { }
+    public void onPickup(LivingEntity entity) {}
 
     public boolean isActive() {
         return isActive;

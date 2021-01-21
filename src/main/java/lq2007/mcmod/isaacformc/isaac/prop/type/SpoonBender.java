@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacformc.isaac.prop.type;
 
-import lq2007.mcmod.isaacformc.Isaac;
+import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumSpecialTearType;
 import net.minecraft.util.ResourceLocation;

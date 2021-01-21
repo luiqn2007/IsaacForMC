@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacformc.common.block;
 
-import lq2007.mcmod.isaacformc.Isaac;
+import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.common.network.PacketFoundation;
 import net.minecraft.block.BlockState;

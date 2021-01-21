@@ -6,8 +6,7 @@ import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
@@ -18,10 +17,8 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
 
     /**
      * Pickup a prop
-     *
-     * If an entity can't pickup the prop, returns itself.
-     * If this is an active prop, returns replaced active prop while exist.
-     *
+     * <li>If an entity can't pickup the prop, returns itself.
+     * <li>If this is an active prop, returns replaced active prop while exist.
      *
      * @param prop prop
      * @return The prop that an entity pickup a prop and remove one.
@@ -31,7 +28,6 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
     /**
      * Remove a prop
      *
-     *
      * @param prop prop
      * @return True if the prop removed from the entity.
      */
@@ -40,24 +36,22 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
     /**
      * Remove all props
      *
-     *
      * @param removeActiveProp True if remove active props
      * @return The count of props removed.
      */
     int removeAllProps(boolean removeActiveProp);
 
     /**
-     * Returns the first active prop.
-     * If not exist, return {@link PropItem#EMPTY}
+     * <p>Returns the first active prop.
+     * <p>If not exist, return {@link PropItem#EMPTY}
      *
      * @return An active prop
      */
     PropItem getActiveProp();
 
     /**
-     * Switch the first active prop.
-     *
-     * If entity has second active prop slot, it will swap slot0 and slot1.
+     * <p>Switch the first active prop.
+     * <p>If entity has second active prop slot, it will swap slot0 and slot1.
      */
     void switchActiveProp();
 
@@ -70,14 +64,15 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
 
     /**
      * Set if allowed held the second active prop.
+     *
      * @param second True if the second active prop slot is enabled.
      *
      */
     void setHasSecondAction(boolean second);
 
     /**
-     * Get all prop types the entity picked up.
-     * It contains props entity picked up but removed.
+     * <p>Get all prop types the entity picked up.
+     * <p>It contains props entity picked up but removed.
      *
      * @return All prop type
      */
@@ -99,51 +94,39 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
 
     /**
      * Copy props from another data.
-     * @param data another data
      *
+     * @param data another data
      */
     void copyFrom(IIsaacPropData data);
 
     /**
      * Copy props from another entity.
+     *
      * @param entity another entity
      */
     default void copyFrom(LivingEntity entity) {
-        copyFrom(IsaacCapabilities.fromEntity(entity));
+        copyFrom(IsaacCapabilities.getPropData(entity));
     }
 
     /**
-     * Mark that the data is dirty and will send to client.
-     */
-    void markDirty();
-
-    /**
-     * Check if the data is dirty.
-     * @return is dirty
-     */
-    boolean isDirty();
-
-    /**
-     * Mark that the data is sent to client and clear the dirty sign.
-     */
-    void clearDirty();
-
-    /**
-     * Create the packet data to send to client.
-     * It will always be called at server by default.
+     * <p>Write data to a buffer.
+     * <p>The method is called at server.
+     * <p>
+     * <p>This is a convention: the first value in the packet is a boolean. It means the capability type. True is
+     * default packet, and False is used for custom packet.
      *
-     * @return nbt data
+     * @param buffer buffer
+     * @return False if the packet is empty, or the data is not used to sent to client.
      */
-    CompoundNBT createPacketData();
+    boolean serializePacket(PacketBuffer buffer);
 
     /**
-     * Read the data from server and set to client.
-     * It will always be called at client by default.
+     * <p>Read data from a buffer.
+     * <p>The method is called at client.
      *
-     * @param data data from server
+     * @param buffer buffer
      */
-    @OnlyIn(Dist.CLIENT)
-    void readPacketData(CompoundNBT data);
+    void deserializePacket(PacketBuffer buffer);
 
     class DummyData implements IIsaacPropData {
 
@@ -199,23 +182,12 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
         public void copyFrom(IIsaacPropData data) { }
 
         @Override
-        public void markDirty() { }
-
-        @Override
-        public boolean isDirty() {
+        public boolean serializePacket(PacketBuffer buffer) {
             return false;
         }
 
         @Override
-        public void clearDirty() { }
-
-        @Override
-        public CompoundNBT createPacketData() {
-            return new CompoundNBT();
-        }
-
-        @Override
-        public void readPacketData(CompoundNBT data) { }
+        public void deserializePacket(PacketBuffer buffer) { }
 
         @Override
         public CompoundNBT serializeNBT() {

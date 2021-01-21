@@ -6,7 +6,7 @@ import lq2007.mcmod.isaacformc.isaac.property.Property;
 import lq2007.mcmod.isaacformc.isaac.property.EnumPropertyType;
 import net.minecraft.util.ResourceLocation;
 
-import static lq2007.mcmod.isaacformc.Isaac.ID;
+import static lq2007.mcmod.isaacformc.common.Isaac.ID;
 
 /*
 被动道具,射击延迟相关
