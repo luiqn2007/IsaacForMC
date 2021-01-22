@@ -73,24 +73,21 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
         }
 
         @Override
-        public void read(PacketBuffer buffer) {
-            if (buffer.readBoolean()) {
-                buffer.readVarInt();
-            }
-        }
-
-        @Override
-        public void write(PacketBuffer buffer) {
-            buffer.writeBoolean(true);
-            buffer.writeVarInt(-1);
-        }
-
-        @Override
         public void markDirty() { }
 
         @Override
         public boolean isDirty() {
             return false;
+        }
+
+        @Override
+        public void read(PacketBuffer buffer) {
+            buffer.readByte();
+        }
+
+        @Override
+        public void write(PacketBuffer buffer) {
+            buffer.writeByte(0);
         }
     }
 }

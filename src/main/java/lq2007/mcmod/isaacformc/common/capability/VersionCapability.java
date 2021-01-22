@@ -20,9 +20,20 @@ public abstract class VersionCapability implements IPacketReader, IPacketWriter,
         }
     }
 
+    /**
+     * <li>Value 0b means the packet is empty.</li>
+     * <li>Value 1b means the packet is a normal data packet.</li>
+     * <li>Value 2b means the packet is a update packet.</li>
+     * @return the head of packet
+     */
+    protected byte bufferHead() {
+        return 1;
+    }
+
     @Override
     public final void read(PacketBuffer buffer) {
-        if (buffer.readBoolean()) {
+        byte packetHead = buffer.readByte();
+        if (packetHead == 1) {
             int version = buffer.readVarInt();
             if (version >= 0 && currentVersion < version) {
                 lastVersion = currentVersion = version;
@@ -33,7 +44,7 @@ public abstract class VersionCapability implements IPacketReader, IPacketWriter,
 
     @Override
     public final void write(PacketBuffer buffer) {
-        buffer.writeBoolean(true);
+        buffer.writeByte(bufferHead());
         buffer.writeVarInt(currentVersion);
         write(buffer, currentVersion);
         lastVersion = currentVersion;

@@ -12,6 +12,7 @@ public interface IPropData extends INBTSerializable<CompoundNBT>, IPacketReader,
     void onBindTo(PropItem item);
 
     NoData NO_DATA = new NoData();
+
     static ChargeData createCharge(int charge) {
         return new ChargeData(charge);
     }

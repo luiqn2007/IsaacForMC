@@ -14,10 +14,12 @@ public abstract class IsaacItem {
      * If the item is extended, the value is meaninglessly.
      */
     public final int id;
+    public final EnumIsaacVersion version;
 
-    public IsaacItem(ResourceLocation key, int id) {
+    public IsaacItem(ResourceLocation key, int id, EnumIsaacVersion version) {
         this.key = key;
         this.id = id;
+        this.version = version;
     }
 
     /**

@@ -5,8 +5,7 @@ import net.minecraft.network.PacketBuffer;
 public interface IPacketWriter {
 
     /**
-     * <p>Read data from a buffer.
-     * <p>The method is called at client.
+     * Read data from a buffer.
      *
      * @param buffer buffer
      */

@@ -1,20 +1,14 @@
 package lq2007.mcmod.isaacformc.isaac.prop;
 
+import lq2007.mcmod.isaacformc.isaac.EnumIsaacVersion;
 import lq2007.mcmod.isaacformc.isaac.IsaacItem;
-import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
-import lq2007.mcmod.isaacformc.isaac.prop.PropTypes;
 import lq2007.mcmod.isaacformc.isaac.prop.data.IPropData;
-import lq2007.mcmod.isaacformc.common.util.I18n;
-import lq2007.mcmod.isaacformc.isaac.property.Property;
-import lq2007.mcmod.isaacformc.isaac.tear.EnumSpecialTearType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import java.util.List;
 
 public abstract class PropType extends IsaacItem {
 
@@ -27,7 +21,7 @@ public abstract class PropType extends IsaacItem {
     }
 
     public PropType(ResourceLocation key, boolean isActive, int id) {
-        super(key, id);
+        super(key, id, EnumIsaacVersion.ISAAC);
         PropTypes.register(this);
         this.isActive = isActive;
         this.nameKey = key.getNamespace() + "." + key.getPath() + ".name";

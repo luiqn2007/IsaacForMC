@@ -174,15 +174,12 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
 
         @Override
         public void read(PacketBuffer buffer) {
-            if (buffer.readBoolean()) {
-                buffer.readVarInt();
-            }
+            buffer.readByte();
         }
 
         @Override
         public void write(PacketBuffer buffer) {
-            buffer.writeBoolean(true);
-            buffer.writeVarInt(-1);
+            buffer.writeByte(0);
         }
     }
 }
