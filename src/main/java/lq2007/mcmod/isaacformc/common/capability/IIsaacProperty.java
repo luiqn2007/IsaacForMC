@@ -28,6 +28,14 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
 
     void tearCount(int count, int maxCount);
 
+    float tearSpeed();
+
+    void tearSpeed(float count);
+
+    float tearDelay();
+
+    void tearDelay(float delay);
+
     class DummyData implements IIsaacProperty {
 
         private static final DummyData INSTANCE = new DummyData();
@@ -58,6 +66,22 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
 
         @Override
         public void tearCount(int count, int maxCount) { }
+
+        @Override
+        public float tearSpeed() {
+            return 0;
+        }
+
+        @Override
+        public void tearSpeed(float count) { }
+
+        @Override
+        public float tearDelay() {
+            return 0;
+        }
+
+        @Override
+        public void tearDelay(float delay) { }
 
         @Override
         public CompoundNBT serializeNBT() {

@@ -18,6 +18,6 @@ DLC
 public class SpoonBender extends PropType {
 
     public SpoonBender() {
-        super(new ResourceLocation(Isaac.ID, "spoon_bender"), false, 3);
+        super(new ResourceLocation(Isaac.ID, "spoon_bender"), , false, 3);
     }
 }

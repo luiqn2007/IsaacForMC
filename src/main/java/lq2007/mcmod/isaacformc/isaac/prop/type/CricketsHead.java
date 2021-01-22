@@ -7,6 +7,6 @@ import net.minecraft.util.ResourceLocation;
 public class CricketsHead extends PropType {
 
     public CricketsHead() {
-        super(new ResourceLocation(Isaac.ID, "crickets_head"), false, 4);
+        super(new ResourceLocation(Isaac.ID, "crickets_head"), , false, 4);
     }
 }

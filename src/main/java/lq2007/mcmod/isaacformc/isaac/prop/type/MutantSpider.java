@@ -7,6 +7,6 @@ import net.minecraft.util.ResourceLocation;
 public class MutantSpider extends PropType {
 
     public MutantSpider() {
-        super(new ResourceLocation(Isaac.ID, "mutant_spider"), false, 153);
+        super(new ResourceLocation(Isaac.ID, "mutant_spider"), , false, 153);
     }
 }

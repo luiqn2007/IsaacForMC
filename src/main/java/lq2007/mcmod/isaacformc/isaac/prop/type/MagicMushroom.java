@@ -14,7 +14,7 @@ public class MagicMushroom extends PropType {
     private static final UUID MODIFIER_HEALTH = UUID.fromString("57761f44-1b40-e862-2e72-07a43db0049a");
 
     public MagicMushroom() {
-        super(new ResourceLocation(Isaac.ID, "magic_mushroom"), false, 12);
+        super(new ResourceLocation(Isaac.ID, "magic_mushroom"), , false, 12);
     }
 
     @Override

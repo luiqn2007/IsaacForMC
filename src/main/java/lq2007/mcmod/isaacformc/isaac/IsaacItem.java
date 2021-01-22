@@ -1,9 +1,10 @@
 package lq2007.mcmod.isaacformc.isaac;
 
+import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-import java.util.Objects;
+import java.util.*;
 
 public abstract class IsaacItem {
 
@@ -14,12 +15,19 @@ public abstract class IsaacItem {
      * If the item is extended, the value is meaninglessly.
      */
     public final int id;
+
+    /**
+     * The game version the item come from. If the item is create by other mod, the value is {@link EnumIsaacVersion#MOD}.
+     */
     public final EnumIsaacVersion version;
 
-    public IsaacItem(ResourceLocation key, int id, EnumIsaacVersion version) {
+    private List<EnumRoom> rooms;
+
+    public IsaacItem(ResourceLocation key, int id, EnumIsaacVersion version, EnumRoom... rooms) {
         this.key = key;
         this.id = id;
         this.version = version;
+        this.rooms = Arrays.asList(rooms);
     }
 
     /**
@@ -37,6 +45,19 @@ public abstract class IsaacItem {
      * @return description
      */
     abstract public ITextComponent getDescription();
+
+    /**
+     * Get the result of the item is enabled.
+     *
+     * @return True if the item is enabled.
+     */
+    public boolean isEnable() {
+        return true;
+    }
+
+    public List<EnumRoom> spawnRoom() {
+        return rooms;
+    }
 
     @Override
     public boolean equals(Object o) {

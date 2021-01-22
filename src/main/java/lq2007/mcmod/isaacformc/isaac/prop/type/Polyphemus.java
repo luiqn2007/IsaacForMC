@@ -7,6 +7,6 @@ import net.minecraft.util.ResourceLocation;
 public class Polyphemus extends PropType {
 
     public Polyphemus() {
-        super(new ResourceLocation(Isaac.ID, "polyphemus"), false, 169);
+        super(new ResourceLocation(Isaac.ID, "polyphemus"), , false, 169);
     }
 }

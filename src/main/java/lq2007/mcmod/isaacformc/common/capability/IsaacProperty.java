@@ -16,11 +16,15 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
 
     private final String KEY_BODY_SIZE = "_size";
     private final String KEY_BODY_LOCK = "_lock";
-    private final String KEY_TEAR_COUNT = "_count";
+    private final String KEY_TEAR_COUNT = "_tear_count";
+    private final String KEY_TEAR_SPEED = "_tear_speed";
+    private final String KEY_TEAR_DELAY = "_tear_delay";
 
     private int size = 0;
     private boolean sizeLocked = false;
     private int tearCount = 1;
+    private float tearSpeed = 1;
+    private float tearDelay = 1;
 
     private final LazyOptional<IIsaacProperty> get = LazyOptional.of(() -> this);
 
@@ -69,6 +73,26 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         tearCount = MathHelper.clamp(count, 0, maxCount);
     }
 
+    @Override
+    public float tearSpeed() {
+        return 0;
+    }
+
+    @Override
+    public void tearSpeed(float count) {
+
+    }
+
+    @Override
+    public float tearDelay() {
+        return 0;
+    }
+
+    @Override
+    public void tearDelay(float delay) {
+
+    }
+
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
@@ -81,7 +105,8 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         nbt.putInt(KEY_BODY_SIZE, size);
         nbt.putBoolean(KEY_BODY_LOCK, sizeLocked);
         nbt.putInt(KEY_TEAR_COUNT, tearCount);
-        markDirty();
+        nbt.putFloat(KEY_TEAR_SPEED, tearSpeed);
+        nbt.putFloat(KEY_TEAR_DELAY, tearDelay);
         return nbt;
     }
 
@@ -90,6 +115,9 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         size = nbt.getInt(KEY_BODY_SIZE);
         sizeLocked = nbt.getBoolean(KEY_BODY_LOCK);
         tearCount = nbt.getInt(KEY_TEAR_COUNT);
+        tearSpeed = nbt.getFloat(KEY_TEAR_SPEED);
+        tearDelay = nbt.getFloat(KEY_TEAR_DELAY);
+        markDirty();
     }
 
     @Override
@@ -98,6 +126,8 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         size = data.bodySize();
         tearCount = data.tearCount();
         sizeLocked = data.isBodySizeLocked();
+        tearSpeed = data.tearSpeed();
+        tearDelay = data.tearDelay();
         markDirty();
         return null;
     }
@@ -107,6 +137,8 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         size = buffer.readVarInt();
         sizeLocked = buffer.readBoolean();
         tearCount = buffer.readVarInt();
+        tearSpeed = buffer.readFloat();
+        tearDelay = buffer.readFloat();
     }
 
     @Override
@@ -114,5 +146,7 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         buffer.writeVarInt(size);
         buffer.writeBoolean(sizeLocked);
         buffer.writeVarInt(tearCount);
+        buffer.writeFloat(tearSpeed);
+        buffer.writeFloat(tearDelay);
     }
 }

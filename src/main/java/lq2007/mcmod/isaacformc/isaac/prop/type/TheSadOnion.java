@@ -1,30 +1,39 @@
 package lq2007.mcmod.isaacformc.isaac.prop.type;
 
+import lq2007.mcmod.isaacformc.common.capability.IIsaacProperty;
+import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
+import lq2007.mcmod.isaacformc.isaac.EnumIsaacVersion;
+import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
+import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 
 import static lq2007.mcmod.isaacformc.common.Isaac.ID;
 
-/*
-被动道具,射击延迟相关
-
-名称
-The Sad Onion
-伤心洋葱
-
-描述
-Tears up
-射速上升
-
-添加
-DLC
-
-生成
-宝箱房
- */
+// https://isaac.huijiwiki.com/wiki/%E4%BC%A4%E5%BF%83%E6%B4%8B%E8%91%B1
+// The Sad Onion
+// 伤心洋葱
+// Tears up
+// 射速上升
+// 被动道具,射击延迟相关
 public class TheSadOnion extends PropType {
 
     public TheSadOnion() {
-        super(new ResourceLocation(ID, "the_sad_onion"), false, 1);
+        super("the_sad_onion", EnumIsaacVersion.ISAAC_AB, false, 1, EnumRoom.NORMAL);
+    }
+
+    @Override
+    public void onPickup(LivingEntity entity, PropItem item) {
+        super.onPickup(entity, item);
+        IIsaacProperty property = IsaacCapabilities.getProperty(entity);
+        property.tearSpeed(property.tearSpeed() + 0.7F);
+    }
+
+    @Override
+    public void onRemove(LivingEntity entity, PropItem item) {
+        super.onRemove(entity, item);
+        IIsaacProperty property = IsaacCapabilities.getProperty(entity);
+        property.tearSpeed(property.tearSpeed() - 0.7F);
     }
 }

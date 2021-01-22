@@ -315,6 +315,7 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
         for (INBT nbt : held) {
             PropTypes.get(new ResourceLocation(nbt.getString())).ifPresent(heldTypes::add);
         }
+        markDirty();
     }
 
     @Nonnull
