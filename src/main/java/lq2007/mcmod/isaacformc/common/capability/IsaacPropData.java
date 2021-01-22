@@ -2,7 +2,6 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import lq2007.mcmod.isaacformc.common.util.NBTUtil;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.PropTypes;
@@ -10,7 +9,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -24,22 +22,19 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
-
 public class IsaacPropData extends VersionCapability implements IIsaacPropData, ICapabilityProvider {
 
     private static final String KEY_ACT0 = "_act0";
     private static final String KEY_ACT1 = "_act1";
     private static final String KEY_HAS_ACT2 = "_has2";
-    private static final String KEY_PASSIVE = "_passive";
-    private static final String KEY_HELD = "_held";
+    private static final String KEY_ITEMS = "_item";
 
     private PropItem active0 = PropItem.EMPTY;
     private PropItem active1 = PropItem.EMPTY;
     private boolean hasSecondActive = false;
-    private List<PropItem> passiveItems = new ArrayList<>();
-    private Set<PropType> passiveTypes = new HashSet<>();
-    private Set<PropType> heldTypes = new HashSet<>();
+
+    private final HashMap<PropType, List<PropItem>> itemMap = new HashMap<>();
+    private final ArrayList<PropItem> itemList = new ArrayList<>();
 
     private final LazyOptional<IIsaacPropData> dataOptional = LazyOptional.of(() -> this);
 
@@ -60,36 +55,54 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
 
     @Override
     public PropItem pickupProp(PropItem prop) {
-        PropItem replacedItem;
-        if (prop.type.isActive()) {
-            if (active0 == PropItem.EMPTY) {
-                active0 = prop;
-                replacedItem = PropItem.EMPTY;
-            } else {
-                replacedItem = removeProp(active0);
-                if (replacedItem == PropItem.EMPTY) {
-                    replacedItem = prop;
-                } else {
-                    if (hasSecondActive() && active1 == PropItem.EMPTY) {
-                        active1 = active0;
-                    }
-                    active0 = prop;
-                }
-            }
-        } else if (!passiveTypes.contains(prop.type)) {
-            passiveItems.add(prop);
-            passiveTypes.add(prop.type);
-            replacedItem = PropItem.EMPTY;
-        } else {
-            passiveItems.add(prop);
-            replacedItem = PropItem.EMPTY;
+        if (prop == PropItem.EMPTY) {
+            return PropItem.EMPTY;
         }
 
-        if (replacedItem != prop) {
-            heldTypes.add(prop.type);
+        PropItem returnItem;
+        PropType type = prop.type;
+        if (type.isActive()) {
+            // active item
+            if (active0 == PropItem.EMPTY) {
+                // no active item
+                active0 = prop;
+                returnItem = PropItem.EMPTY;
+            } else if (hasSecondActive()) {
+                // enable second
+                if (active1 == PropItem.EMPTY) {
+                    // no second
+                    active1 = active0;
+                    active0 = prop;
+                    returnItem = PropItem.EMPTY;
+                } else {
+                    // has second
+                    returnItem = active0;
+                    active0 = prop;
+                }
+            } else {
+                // only one item
+                returnItem = active0;
+                active0 = prop;
+            }
+        } else {
+            returnItem = PropItem.EMPTY;
+        }
+
+        // picked up
+        if (returnItem != prop) {
+            itemMap.computeIfAbsent(type, t -> new ArrayList<>()).add(prop);
+            itemList.add(prop);
             markDirty();
         }
-        return replacedItem;
+        return returnItem;
+    }
+
+    @Override
+    public Collection<PropItem> pickupProps(Collection<PropItem> props) {
+        return props.stream()
+                .map(this::pickupProp)
+                .filter(item -> item != PropItem.EMPTY)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -97,60 +110,44 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
         if (prop == PropItem.EMPTY) {
             return PropItem.EMPTY;
         }
-        PropType type = prop.type;
-        boolean isRemoved = false;
-        if (type.isActive()) {
-            if (active0 == prop) {
-                active0 = active1;
-                active1 = PropItem.EMPTY;
-                isRemoved = true;
-            } else if (active1 == prop) {
-                active1 = PropItem.EMPTY;
-                isRemoved = true;
-            }
-        } else if (passiveItems.remove(prop)) {
-            boolean remove = true;
-            for (PropItem passiveItem : passiveItems) {
-                if (passiveItem.type == type) {
-                    remove = false;
-                    break;
+        if (itemList.remove(prop)) {
+            PropType type = prop.type;
+            if (type.isActive()) {
+                if (active0 == prop) {
+                    active0 = active1;
+                    active1 = PropItem.EMPTY;
+                } else if (active1 == prop) {
+                    active1 = PropItem.EMPTY;
                 }
             }
-            if (remove) {
-                passiveTypes.remove(type);
-            }
-            isRemoved = true;
-        }
-        if (isRemoved) {
+            itemMap.get(type).remove(prop);
             markDirty();
             return prop;
-        } else {
-            return PropItem.EMPTY;
         }
+        return PropItem.EMPTY;
     }
 
     @Override
     public Collection<PropItem> removeAllProps(boolean removeActiveProp, boolean clearHeldPropRecord) {
-        ImmutableList.Builder<PropItem> builder = new ImmutableList.Builder<>();
+        Collection<PropItem> items = ImmutableList.copyOf(itemList);
+        itemList.clear();
         if (removeActiveProp) {
-            if (hasSecondActive() && removeProp(active1) != PropItem.EMPTY) {
-                builder.add(active1);
+            active0 = PropItem.EMPTY;
+            active1 = PropItem.EMPTY;
+        } else {
+            if (active0 != PropItem.EMPTY) {
+                itemList.add(active0);
             }
-            if (removeProp(active0) != PropItem.EMPTY) {
-                builder.add(active0);
-            }
-        }
-        for (PropItem prop : getAllPassiveProps()) {
-            if (removeProp(prop) != PropItem.EMPTY) {
-                builder.add(prop);
+            if (active1 != PropItem.EMPTY) {
+                itemList.add(active1);
             }
         }
         if (clearHeldPropRecord) {
-            // todo may be change some data
-            heldTypes.clear();
+            itemMap.clear();
+        } else {
+            itemMap.values().forEach(List::clear);
         }
-        markDirty();
-        return builder.build();
+        return items;
     }
 
     @Override
@@ -177,25 +174,24 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     }
 
     @Override
-    public ImmutableSet<PropType> getAllHeldProps() {
-        return ImmutableSet.copyOf(heldTypes);
+    public boolean contains(PropType type) {
+        List<PropItem> list = itemMap.get(type);
+        return list != null && !list.isEmpty();
     }
 
     @Override
-    public ImmutableList<PropItem> getAllPassiveProps() {
-        return ImmutableList.copyOf(passiveItems);
+    public boolean isHold(PropType type) {
+        return itemMap.containsKey(type);
+    }
+
+    @Override
+    public ImmutableSet<PropType> getAllHeldProps() {
+        return ImmutableSet.copyOf(itemMap.keySet());
     }
 
     @Override
     public ImmutableList<PropItem> getAllProps() {
-        ImmutableList.Builder<PropItem> builder = new ImmutableList.Builder<>();
-        if (active0 != PropItem.EMPTY) {
-            builder.add(active0);
-            if (hasSecondActive() && active1 != PropItem.EMPTY) {
-                builder.add(active1);
-            }
-        }
-        return builder.addAll(passiveItems).build();
+        return ImmutableList.copyOf(itemList);
     }
 
     @Override
@@ -207,26 +203,13 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
             active0 = pData.active0;
             active1 = pData.active1;
             hasSecondActive = pData.hasSecondActive;
-            passiveItems = new ArrayList<>(pData.passiveItems);
-            passiveTypes = new HashSet<>(pData.passiveTypes);
-            heldTypes  = new HashSet<>(pData.heldTypes);
+            itemMap.putAll(pData.itemMap);
+            itemList.addAll(pData.itemList);
         } else if (!(data instanceof DummyData)) {
-            active0 = PropItem.EMPTY;
-            active1 = PropItem.EMPTY;
-            hasSecondActive = false;
-            passiveItems = new ArrayList<>();
-            passiveTypes = new HashSet<>();
-            heldTypes = new HashSet<>(data.getAllHeldProps());
-            PropItem firstActiveProp = PropItem.EMPTY;
-            for (PropItem prop : getAllProps()) {
-                if (prop.type.isActive() && firstActiveProp == PropItem.EMPTY) {
-                    firstActiveProp = prop;
-                } else {
-                    pickupProp(prop);
-                }
+            for (PropType type : data.getAllHeldProps()) {
+                itemMap.put(type, new ArrayList<>());
             }
-            setHasSecondAction(data.hasSecondActive());
-            pickupProp(firstActiveProp);
+            pickupProps(data.getAllProps());
         }
         markDirty();
         return propItems;
@@ -234,88 +217,71 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
 
     @Override
     protected void read(PacketBuffer buffer, int version) {
+        removeAllProps(true, true);
         hasSecondActive = buffer.readBoolean();
-        active0 = PropItem.fromPacket(buffer);
-        active1 = hasSecondActive ? PropItem.fromPacket(buffer) : PropItem.EMPTY;
-        int passiveItemCount = buffer.readVarInt();
-        passiveItems = new ArrayList<>(passiveItemCount);
-        for (int i = 0; i < passiveItemCount; i++) {
-            passiveItems.add(PropItem.fromPacket(buffer));
+        int propItemCount = buffer.readVarInt();
+        for (int i = 0; i < propItemCount; i++) {
+            pickupProp(PropItem.fromPacket(buffer));
         }
-        passiveTypes = new HashSet<>();
-        for (PropItem passiveItem : passiveItems) {
-            passiveTypes.add(passiveItem.type);
-        }
-        int heldCount = buffer.readVarInt();
-        heldTypes = new HashSet<>(passiveItems.size() + heldCount + 2);
-        heldTypes.addAll(passiveTypes);
-        if (active0 != PropItem.EMPTY) {
-            heldTypes.add(active0.type);
-        }
-        if (active1 != PropItem.EMPTY) {
-            heldTypes.add(active1.type);
-        }
-        for (int i = 0; i < heldCount; i++) {
+        int heldItemCount = buffer.readVarInt();
+        for (int i = 0; i < heldItemCount; i++) {
             PropTypes.get(buffer.readResourceLocation())
-                    .filter(type -> type != PropTypes.EMPTY)
-                    .ifPresent(heldTypes::add);
+                    .ifPresent(type -> itemMap.put(type, new ArrayList<>()));
         }
     }
 
     @Override
     protected void write(PacketBuffer buffer, int version) {
         buffer.writeBoolean(hasSecondActive);
-        active0.write(buffer);
-        if (hasSecondActive) {
-            active1.write(buffer);
-        }
-        buffer.writeVarInt(passiveItems.size());
-        for (PropItem item : passiveItems) {
-            item.write(buffer);
-        }
-        Set<PropType> add = new HashSet<>(heldTypes);
-        add.removeAll(passiveTypes);
-        add.remove(active0.type);
-        add.remove(active1.type);
-        buffer.writeVarInt(add.size());
-        for (PropType type : add) {
-            buffer.writeResourceLocation(type.key);
+        buffer.writeVarInt(itemList.size());
+        itemList.forEach(item -> item.write(buffer));
+        ResourceLocation[] locations = itemMap.entrySet().stream()
+                .filter(entry -> entry.getValue().isEmpty())
+                .map(Map.Entry::getKey)
+                .map(type -> type.key)
+                .toArray(ResourceLocation[]::new);
+        buffer.writeVarInt(locations.length);
+        for (ResourceLocation location : locations) {
+            buffer.writeResourceLocation(location);
         }
     }
 
     @Override
     public CompoundNBT serializeNBT() {
-        CompoundNBT data = new CompoundNBT();
-        if (active0 != PropItem.EMPTY) data.put(KEY_ACT0, active0.serializeNBT());
-        if (active1 != PropItem.EMPTY) data.put(KEY_ACT1, active1.serializeNBT());
-        data.putBoolean(KEY_HAS_ACT2, hasSecondActive());
-        data.put(KEY_PASSIVE, NBTUtil.convert(passiveItems));
-        ListNBT held = new ListNBT();
-        for (PropType type : heldTypes) {
-            if (active0.type != type && active1.type != type && !passiveTypes.contains(type)) {
-                held.add(StringNBT.valueOf(type.key.toString()));
+        CompoundNBT nbt = new CompoundNBT();
+        CompoundNBT map = new CompoundNBT();
+        itemMap.forEach((type, items) -> {
+            ListNBT list = new ListNBT();
+            for (PropItem item : items) {
+                list.add(item.serializeNBT());
             }
-        }
-        data.put(KEY_HELD, held);
-        return data;
+            map.put(type.key.toString(), list);
+        });
+
+        nbt.put(KEY_ACT0, active0.serializeNBT());
+        nbt.put(KEY_ACT1, active1.serializeNBT());
+        nbt.putBoolean(KEY_HAS_ACT2, hasSecondActive);
+        nbt.put(KEY_ITEMS, map);
+        return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT data) {
-        active0 = data.contains(KEY_ACT0, TAG_COMPOUND) ? PropItem.fromNbt(data.getCompound(KEY_ACT0)) : PropItem.EMPTY;
-        active1 = data.contains(KEY_ACT1, TAG_COMPOUND) ? PropItem.fromNbt(data.getCompound(KEY_ACT1)) : PropItem.EMPTY;
+        removeAllProps(true, true);
+        active0 = PropItem.fromNbt(data.getCompound(KEY_ACT0));
+        active1 = PropItem.fromNbt(data.getCompound(KEY_ACT1));
         hasSecondActive = data.getBoolean(KEY_HAS_ACT2);
-        passiveItems = NBTUtil.convert(data.getList(KEY_PASSIVE, TAG_COMPOUND), PropItem::fromNbt);
-        passiveTypes = passiveItems.stream().map(item -> item.type).collect(Collectors.toSet());
-        heldTypes = new HashSet<>();
-        if (active0 != PropItem.EMPTY) heldTypes.add(active0.type);
-        if (active1 != PropItem.EMPTY) heldTypes.add(active1.type);
-        heldTypes.addAll(passiveTypes);
-        ListNBT held = data.getList(KEY_HELD, Constants.NBT.TAG_STRING);
-        for (INBT nbt : held) {
-            PropTypes.get(new ResourceLocation(nbt.getString())).ifPresent(heldTypes::add);
+        CompoundNBT map = data.getCompound(KEY_ITEMS);
+        for (String s : map.keySet()) {
+            PropTypes.get(new ResourceLocation(s)).ifPresent(propType -> {
+                List<PropItem> items = new ArrayList<>();
+                itemMap.put(propType, items);
+                ListNBT list = map.getList(s, Constants.NBT.TAG_COMPOUND);
+                for (INBT itemNbt : list) {
+                    pickupProp(PropItem.fromNbt((CompoundNBT) itemNbt));
+                }
+            });
         }
-        markDirty();
     }
 
     @Nonnull

@@ -1,23 +1,26 @@
 package lq2007.mcmod.isaacformc.isaac.prop.type;
 
-import lq2007.mcmod.isaacformc.common.Isaac;
+import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
+import lq2007.mcmod.isaacformc.isaac.EnumIsaacVersion;
+import lq2007.mcmod.isaacformc.isaac.prop.EnumPropTags;
+import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
+import lq2007.mcmod.isaacformc.isaac.prop.PropTag;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
-import net.minecraft.util.ResourceLocation;
+import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
+import lq2007.mcmod.isaacformc.isaac.tear.EnumTearEffects;
+import net.minecraft.entity.LivingEntity;
 
-/*
-被动道具,眼泪特效相关
-
-弯勺者
-Spoon Bende
-
-追踪射击
-Homing shots
-
-DLC
- */
+// https://isaac.huijiwiki.com/wiki/%E5%BC%AF%E5%8B%BA%E8%80%85
+@PropTag({EnumPropTags.PASSIVE, EnumPropTags.TEAR_EFFECT})
 public class SpoonBender extends PropType {
 
     public SpoonBender() {
-        super(new ResourceLocation(Isaac.ID, "spoon_bender"), , false, 3);
+        super("spoon_bender", EnumIsaacVersion.ISAAC_REBIRTH, false, 3, EnumRoom.NORMAL);
+    }
+
+    @Override
+    public void onPickup(LivingEntity entity, PropItem item) {
+        super.onPickup(entity, item);
+        IsaacCapabilities.getProperty(entity).addTearEffect(EnumTearEffects.TRACK);
     }
 }

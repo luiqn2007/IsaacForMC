@@ -1,7 +1,9 @@
 package lq2007.mcmod.isaacformc.common.capability;
 
+import com.google.common.collect.ImmutableSet;
 import lq2007.mcmod.isaacformc.common.network.IPacketReader;
 import lq2007.mcmod.isaacformc.common.network.IPacketWriter;
+import lq2007.mcmod.isaacformc.isaac.tear.EnumTearEffects;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -32,9 +34,31 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
 
     void tearSpeed(float count);
 
-    float tearDelay();
+    float shootDelay();
 
-    void tearDelay(float delay);
+    void shootDelay(float delay);
+
+    float shootDelayMultiple();
+
+    void shootDelayMultiple(float delay);
+
+    float damage();
+
+    void damage(float damage);
+
+    float damageMultiple();
+
+    void damageMultiple(float damageMultiple);
+
+    int knockBack();
+
+    void knockBack(int knockBack);
+
+    void addTearEffect(EnumTearEffects type);
+
+    ImmutableSet<EnumTearEffects> getTearEffects();
+
+    void removeTearEffect(EnumTearEffects type);
 
     class DummyData implements IIsaacProperty {
 
@@ -76,12 +100,55 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
         public void tearSpeed(float count) { }
 
         @Override
-        public float tearDelay() {
+        public float shootDelay() {
             return 0;
         }
 
         @Override
-        public void tearDelay(float delay) { }
+        public void shootDelay(float delay) { }
+
+        @Override
+        public float shootDelayMultiple() {
+            return 1;
+        }
+
+        @Override
+        public void shootDelayMultiple(float delay) { }
+
+        @Override
+        public float damage() {
+            return 0;
+        }
+
+        @Override
+        public void damage(float damage) { }
+
+        @Override
+        public float damageMultiple() {
+            return 1;
+        }
+
+        @Override
+        public void damageMultiple(float damageMultiple) { }
+
+        @Override
+        public int knockBack() {
+            return 0;
+        }
+
+        @Override
+        public void knockBack(int knockBack) { }
+
+        @Override
+        public void addTearEffect(EnumTearEffects type) { }
+
+        @Override
+        public ImmutableSet<EnumTearEffects> getTearEffects() {
+            return ImmutableSet.of();
+        }
+
+        @Override
+        public void removeTearEffect(EnumTearEffects type) { }
 
         @Override
         public CompoundNBT serializeNBT() {

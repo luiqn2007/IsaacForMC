@@ -1,6 +1,8 @@
 package lq2007.mcmod.isaacformc.isaac.prop;
 
+import com.google.common.collect.ImmutableList;
 import lq2007.mcmod.isaacformc.common.Isaac;
+import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.isaac.EnumIsaacVersion;
 import lq2007.mcmod.isaacformc.isaac.IsaacItem;
 import lq2007.mcmod.isaacformc.isaac.prop.data.IPropData;
@@ -30,8 +32,8 @@ public abstract class PropType extends IsaacItem {
         super(key, id, version, rooms);
         PropTypes.register(this);
         this.isActive = isActive;
-        this.nameKey = key.getNamespace() + "." + key.getPath() + ".name";
-        this.descriptionKey = key.getNamespace() + "." + key.getPath() + ".desc";
+        this.nameKey = key.getNamespace() + ".prop." + key.getPath() + ".name";
+        this.descriptionKey = key.getNamespace() + ".prop." + key.getPath() + ".desc";
     }
 
     public IPropData createData() {
@@ -60,19 +62,29 @@ public abstract class PropType extends IsaacItem {
         return false;
     }
 
-    public void onPickup(LivingEntity entity, PropItem item) {}
+    public void onPickup(LivingEntity entity, PropItem item) {
+        IsaacCapabilities.getPropData(entity).pickupProp(item);
+    }
 
-    public void onRemove(LivingEntity entity, PropItem item) {}
+    public void onRemove(LivingEntity entity, PropItem item, ImmutableList<PropItem> removedItems) {}
 
     public boolean isActive() {
         return isActive;
     }
 
+    // todo implement render
     @OnlyIn(Dist.CLIENT)
     public void renderOnFoundation(PropItem item, float partialTicks,
                                    com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
                                    net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
-                                   int combinedLightIn, int combinedOverlayIn) {
+                                   int combinedLightIn, int combinedOverlayIn) { }
 
+    public EnumPropTags[] getTags() {
+        PropTag tag = getClass().getAnnotation(PropTag.class);
+        if (tag == null) {
+            return new EnumPropTags[0];
+        } else {
+            return tag.value();
+        }
     }
 }

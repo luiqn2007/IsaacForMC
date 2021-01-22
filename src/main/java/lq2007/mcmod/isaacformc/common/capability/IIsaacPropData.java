@@ -32,6 +32,16 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
     PropItem pickupProp(PropItem prop);
 
     /**
+     * Pickup props once.
+     * <li>If an entity can't pickup any prop, collect them and return.
+     * <li>If this is an active prop, replaced active prop while be added to return.
+     *
+     * @param prop prop
+     * @return The props entity picked up then replaced or removed.
+     */
+    Collection<PropItem> pickupProps(Collection<PropItem> props);
+
+    /**
      * Remove a prop
      *
      * @param prop prop
@@ -78,19 +88,26 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
     PropItem setHasSecondAction(boolean second);
 
     /**
+     * Check if entity has specified type of item.
+     * @param type the prop type
+     * @return True if entity has the prop.
+     */
+    boolean contains(PropType type);
+
+    /**
+     * Check if entity ever received the specified type of item,
+     * @param type prop type
+     * @return True if entity ever hold or is holding the type of item.
+     */
+    boolean isHold(PropType type);
+
+    /**
      * <p>Get all prop types the entity picked up.
      * <p>It contains props entity picked up but removed.
      *
      * @return All prop type
      */
     ImmutableSet<PropType> getAllHeldProps();
-
-    /**
-     * Get all passive props the entity hold, exclude active props.
-     *
-     * @return All passive props
-     */
-    ImmutableList<PropItem> getAllPassiveProps();
 
     /**
      * Get all props contains active props.
@@ -106,6 +123,11 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
         @Override
         public PropItem pickupProp(PropItem prop) {
             return prop;
+        }
+
+        @Override
+        public Collection<PropItem> pickupProps(Collection<PropItem> props) {
+            return Collections.emptySet();
         }
 
         @Override
@@ -137,13 +159,18 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
         }
 
         @Override
-        public ImmutableSet<PropType> getAllHeldProps() {
-            return ImmutableSet.of();
+        public boolean contains(PropType type) {
+            return false;
         }
 
         @Override
-        public ImmutableList<PropItem> getAllPassiveProps() {
-            return ImmutableList.of();
+        public boolean isHold(PropType type) {
+            return false;
+        }
+
+        @Override
+        public ImmutableSet<PropType> getAllHeldProps() {
+            return ImmutableSet.of();
         }
 
         @Override
