@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacformc.common.util;
 
+import lq2007.mcmod.isaacformc.common.capability.IIsaacProperty;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
-import lq2007.mcmod.isaacformc.common.network.IsaacNetworks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifierManager;
@@ -58,15 +58,15 @@ public class EntityUtil {
 
     public static void bigger(LivingEntity entity) {
         if (entity.isServerWorld()) {
-            IsaacCapabilities.getProperty(entity).bigger();
-            IsaacNetworks.notifyEntitySizeChanged(entity);
+            IIsaacProperty property = IsaacCapabilities.getProperty(entity);
+            property.bodySize(property.bodySize() + 1);
         }
     }
 
     public static void smaller(LivingEntity entity) {
         if (entity.isServerWorld()) {
-            IsaacCapabilities.getProperty(entity).smaller();
-            IsaacNetworks.notifyEntitySizeChanged(entity);
+            IIsaacProperty property = IsaacCapabilities.getProperty(entity);
+            property.bodySize(property.bodySize() - 1);
         }
     }
 }

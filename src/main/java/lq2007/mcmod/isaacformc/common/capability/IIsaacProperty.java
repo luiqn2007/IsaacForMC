@@ -1,9 +1,14 @@
 package lq2007.mcmod.isaacformc.common.capability;
 
+import lq2007.mcmod.isaacformc.common.network.IPacketReader;
+import lq2007.mcmod.isaacformc.common.network.IPacketWriter;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public interface IIsaacProperty extends INBTSerializable<CompoundNBT> {
+public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
+        ICopyFromEntity<Void>, IDirtyData, IPacketReader, IPacketWriter {
 
     static IIsaacProperty dummy() {
         return DummyData.INSTANCE;
@@ -15,6 +20,8 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT> {
 
     void lockBodySize();
 
+    boolean isBodySizeLocked();
+
     int tearCount();
 
     void tearCount(int count);
@@ -23,7 +30,7 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT> {
 
     class DummyData implements IIsaacProperty {
 
-        private static DummyData INSTANCE = new DummyData();
+        private static final DummyData INSTANCE = new DummyData();
 
         @Override
         public int bodySize() {
@@ -35,6 +42,11 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT> {
 
         @Override
         public void lockBodySize() { }
+
+        @Override
+        public boolean isBodySizeLocked() {
+            return false;
+        }
 
         @Override
         public int tearCount() {
@@ -54,5 +66,31 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT> {
 
         @Override
         public void deserializeNBT(CompoundNBT nbt) { }
+
+        @Override
+        public Void copyFrom(LivingEntity entity) {
+            return null;
+        }
+
+        @Override
+        public void read(PacketBuffer buffer) {
+            if (buffer.readBoolean()) {
+                buffer.readVarInt();
+            }
+        }
+
+        @Override
+        public void write(PacketBuffer buffer) {
+            buffer.writeBoolean(true);
+            buffer.writeVarInt(-1);
+        }
+
+        @Override
+        public void markDirty() { }
+
+        @Override
+        public boolean isDirty() {
+            return false;
+        }
     }
 }

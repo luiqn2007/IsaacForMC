@@ -5,7 +5,11 @@ import net.minecraft.util.ResourceLocation;
 
 public abstract class Ornament extends IsaacItem {
 
+    public Ornament(ResourceLocation key, int id) {
+        super(key, id);
+    }
+
     public Ornament(ResourceLocation key) {
-        super(key);
+        super(key, 0);
     }
 }

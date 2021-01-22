@@ -1,7 +1,9 @@
 package lq2007.mcmod.isaacformc.isaac.prop;
 
+import lq2007.mcmod.isaacformc.common.network.IPacketWriter;
 import lq2007.mcmod.isaacformc.isaac.prop.data.IPropData;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -11,12 +13,12 @@ import net.minecraftforge.common.util.INBTSerializable;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class PropItem implements INBTSerializable<CompoundNBT> {
+public class PropItem implements INBTSerializable<CompoundNBT>, IPacketWriter {
 
     public static final PropItem EMPTY = new PropItem(PropTypes.EMPTY, IPropData.NO_DATA);
 
-    public final PropType type;
-    public final IPropData data;
+    public PropType type;
+    public IPropData data;
 
     public static PropItem fromNbt(@Nullable CompoundNBT nbt) {
         if (nbt != null && nbt.contains("_type", Constants.NBT.TAG_STRING)) {
@@ -32,10 +34,27 @@ public class PropItem implements INBTSerializable<CompoundNBT> {
         return PropItem.EMPTY;
     }
 
+    public static PropItem fromPacket(PacketBuffer buffer) {
+        PropType type = PropTypes.get(buffer.readResourceLocation(), null);
+        if (type != null) {
+            IPropData data = type.createData();
+            data.read(buffer);
+            PropItem item = new PropItem(type, data);
+            data.onBindTo(item);
+            return item;
+        }
+        return PropItem.EMPTY;
+    }
+
     public PropItem(PropType type) {
         this.type = type;
         this.data = type.createData();
         data.onBindTo(this);
+    }
+
+    private PropItem(PropType type, IPropData data) {
+        this.type = type;
+        this.data = data;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -43,11 +62,6 @@ public class PropItem implements INBTSerializable<CompoundNBT> {
                                    net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
                                    int combinedLightIn, int combinedOverlayIn) {
         type.renderOnFoundation(this, partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-    }
-
-    private PropItem(PropType type, IPropData data) {
-        this.type = type;
-        this.data = data;
     }
 
     @Override
@@ -74,5 +88,11 @@ public class PropItem implements INBTSerializable<CompoundNBT> {
     @Override
     public int hashCode() {
         return Objects.hash(type, data);
+    }
+
+    @Override
+    public void write(PacketBuffer buffer) {
+        buffer.writeResourceLocation(type.key);
+        data.write(buffer);
     }
 }

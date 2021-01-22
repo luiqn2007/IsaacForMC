@@ -7,9 +7,9 @@ import net.minecraftforge.common.capabilities.Capability;
 
 import javax.annotation.Nullable;
 
-public class IsaacPropStorage implements Capability.IStorage<IIsaacPropData> {
+public class IsaacPropDataStorage implements Capability.IStorage<IIsaacPropData> {
 
-    public static final IsaacPropStorage INSTANCE = new IsaacPropStorage();
+    public static final IsaacPropDataStorage INSTANCE = new IsaacPropDataStorage();
 
     @Nullable
     @Override

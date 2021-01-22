@@ -2,10 +2,11 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
-import lq2007.mcmod.isaacformc.isaac.prop.PropTypes;
-import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.common.util.NBTUtil;
+import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
+import lq2007.mcmod.isaacformc.isaac.prop.PropType;
+import lq2007.mcmod.isaacformc.isaac.prop.PropTypes;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -20,15 +21,12 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
 
-public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
+public class IsaacPropData extends VersionCapability implements IIsaacPropData, ICapabilityProvider {
 
     private static final String KEY_ACT0 = "_act0";
     private static final String KEY_ACT1 = "_act1";
@@ -43,11 +41,7 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
     private Set<PropType> passiveTypes = new HashSet<>();
     private Set<PropType> heldTypes = new HashSet<>();
 
-    private int clientVersion = 0, currentVersion = 0;
-
     private final LazyOptional<IIsaacPropData> dataOptional = LazyOptional.of(() -> this);
-
-    public IsaacPropData() { }
 
     @Override
     public PropItem getActiveProp() {
@@ -60,6 +54,7 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
             PropItem temp = active0;
             active0 = active1;
             active1 = temp;
+            markDirty();
         }
     }
 
@@ -71,14 +66,14 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
                 active0 = prop;
                 replacedItem = PropItem.EMPTY;
             } else {
-                replacedItem = active0;
-                if (removeProp(active0)) {
+                replacedItem = removeProp(active0);
+                if (replacedItem == PropItem.EMPTY) {
+                    replacedItem = prop;
+                } else {
                     if (hasSecondActive() && active1 == PropItem.EMPTY) {
                         active1 = active0;
                     }
                     active0 = prop;
-                } else {
-                    replacedItem = prop;
                 }
             }
         } else if (!passiveTypes.contains(prop.type)) {
@@ -92,14 +87,15 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
 
         if (replacedItem != prop) {
             heldTypes.add(prop.type);
+            markDirty();
         }
         return replacedItem;
     }
 
     @Override
-    public boolean removeProp(PropItem prop) {
+    public PropItem removeProp(PropItem prop) {
         if (prop == PropItem.EMPTY) {
-            return false;
+            return PropItem.EMPTY;
         }
         PropType type = prop.type;
         boolean isRemoved = false;
@@ -125,26 +121,36 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
             }
             isRemoved = true;
         }
-        return isRemoved;
+        if (isRemoved) {
+            markDirty();
+            return prop;
+        } else {
+            return PropItem.EMPTY;
+        }
     }
 
     @Override
-    public int removeAllProps(boolean removeActiveProp) {
-        int count = 0;
+    public Collection<PropItem> removeAllProps(boolean removeActiveProp, boolean clearHeldPropRecord) {
+        ImmutableList.Builder<PropItem> builder = new ImmutableList.Builder<>();
         if (removeActiveProp) {
-            if (hasSecondActive() && removeProp(active1)) {
-                count++;
+            if (hasSecondActive() && removeProp(active1) != PropItem.EMPTY) {
+                builder.add(active1);
             }
-            if (removeProp(active0)) {
-                count++;
+            if (removeProp(active0) != PropItem.EMPTY) {
+                builder.add(active0);
             }
         }
         for (PropItem prop : getAllPassiveProps()) {
-            if (removeProp(prop)) {
-                count++;
+            if (removeProp(prop) != PropItem.EMPTY) {
+                builder.add(prop);
             }
         }
-        return count;
+        if (clearHeldPropRecord) {
+            // todo may be change some data
+            heldTypes.clear();
+        }
+        markDirty();
+        return builder.build();
     }
 
     @Override
@@ -153,14 +159,21 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
     }
 
     @Override
-    public void setHasSecondAction(boolean hasSecondActive) {
-        if (hasSecondActive) {
-            this.hasSecondActive = true;
-        } else {
+    public PropItem setHasSecondAction(boolean hasSecondActive) {
+        PropItem removedItem = PropItem.EMPTY;
+        if (this.hasSecondActive && !hasSecondActive) {
             removeProp(active1);
             this.hasSecondActive = false;
+            removedItem = this.active1;
             this.active1 = PropItem.EMPTY;
+            markDirty();
+        } else if (!this.hasSecondActive && hasSecondActive) {
+            this.hasSecondActive = true;
+            removedItem = this.active1;
+            this.active1 = PropItem.EMPTY;
+            markDirty();
         }
+        return removedItem;
     }
 
     @Override
@@ -186,15 +199,10 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
     }
 
     @Override
-    public void copyFrom(IIsaacPropData data) {
-        if (data instanceof DummyData) {
-            active0 = PropItem.EMPTY;
-            active1 = PropItem.EMPTY;
-            hasSecondActive = false;
-            passiveItems.clear();
-            passiveTypes.clear();
-            heldTypes.clear();
-        } else if (data instanceof IsaacPropData) {
+    public Collection<PropItem> copyFrom(LivingEntity entity) {
+        IIsaacPropData data = IsaacCapabilities.getPropData(entity);
+        Collection<PropItem> propItems = removeAllProps(true, true);
+        if (data instanceof IsaacPropData) {
             IsaacPropData pData = (IsaacPropData) data;
             active0 = pData.active0;
             active1 = pData.active1;
@@ -202,7 +210,7 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
             passiveItems = new ArrayList<>(pData.passiveItems);
             passiveTypes = new HashSet<>(pData.passiveTypes);
             heldTypes  = new HashSet<>(pData.heldTypes);
-        } else {
+        } else if (!(data instanceof DummyData)) {
             active0 = PropItem.EMPTY;
             active1 = PropItem.EMPTY;
             hasSecondActive = false;
@@ -220,19 +228,59 @@ public class IsaacPropData implements IIsaacPropData, ICapabilityProvider {
             setHasSecondAction(data.hasSecondActive());
             pickupProp(firstActiveProp);
         }
+        markDirty();
+        return propItems;
     }
 
     @Override
-    public boolean serializePacket(PacketBuffer buffer) {
-        if (currentVersion <= clientVersion) return false;
-        buffer.writeBoolean(true);
-        buffer.writeVarInt(currentVersion);
-
+    protected void read(PacketBuffer buffer, int version) {
+        hasSecondActive = buffer.readBoolean();
+        active0 = PropItem.fromPacket(buffer);
+        active1 = hasSecondActive ? PropItem.fromPacket(buffer) : PropItem.EMPTY;
+        int passiveItemCount = buffer.readVarInt();
+        passiveItems = new ArrayList<>(passiveItemCount);
+        for (int i = 0; i < passiveItemCount; i++) {
+            passiveItems.add(PropItem.fromPacket(buffer));
+        }
+        passiveTypes = new HashSet<>();
+        for (PropItem passiveItem : passiveItems) {
+            passiveTypes.add(passiveItem.type);
+        }
+        int heldCount = buffer.readVarInt();
+        heldTypes = new HashSet<>(passiveItems.size() + heldCount + 2);
+        heldTypes.addAll(passiveTypes);
+        if (active0 != PropItem.EMPTY) {
+            heldTypes.add(active0.type);
+        }
+        if (active1 != PropItem.EMPTY) {
+            heldTypes.add(active1.type);
+        }
+        for (int i = 0; i < heldCount; i++) {
+            PropTypes.get(buffer.readResourceLocation())
+                    .filter(type -> type != PropTypes.EMPTY)
+                    .ifPresent(heldTypes::add);
+        }
     }
 
     @Override
-    public void deserializePacket(PacketBuffer buffer) {
-
+    protected void write(PacketBuffer buffer, int version) {
+        buffer.writeBoolean(hasSecondActive);
+        active0.write(buffer);
+        if (hasSecondActive) {
+            active1.write(buffer);
+        }
+        buffer.writeVarInt(passiveItems.size());
+        for (PropItem item : passiveItems) {
+            item.write(buffer);
+        }
+        Set<PropType> add = new HashSet<>(heldTypes);
+        add.removeAll(passiveTypes);
+        add.remove(active0.type);
+        add.remove(active1.type);
+        buffer.writeVarInt(add.size());
+        for (PropType type : add) {
+            buffer.writeResourceLocation(type.key);
+        }
     }
 
     @Override

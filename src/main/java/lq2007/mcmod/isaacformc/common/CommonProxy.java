@@ -29,8 +29,7 @@ public class CommonProxy {
     }
 
     private void setup(FMLCommonSetupEvent event) {
-        CapabilityManager.INSTANCE.register(IIsaacPropData.class, IsaacPropStorage.INSTANCE, IsaacPropData::new);
-        CapabilityManager.INSTANCE.register(IIsaacProperty.class, IsaacPropertyStorage.INSTANCE, IsaacProperty::new);
+        IsaacCapabilities.registerAll();
         IsaacNetworks.registerAll(channel);
     }
 

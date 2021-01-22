@@ -1,17 +1,13 @@
 package lq2007.mcmod.isaacformc.common.block;
 
-import lq2007.mcmod.isaacformc.common.Isaac;
+import lq2007.mcmod.isaacformc.common.network.IsaacNetworks;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
-import lq2007.mcmod.isaacformc.common.network.PacketFoundation;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.network.NetworkDirection;
 
 import javax.annotation.Nullable;
 
@@ -32,11 +28,7 @@ public class TileFoundation extends TileEntity {
             this.prop = prop;
             markDirty();
             if (world != null && !world.isRemote) {
-                PacketFoundation packet = new PacketFoundation(prop, pos);
-                for (PlayerEntity player : world.getPlayers()) {
-                    ServerPlayerEntity sp = (ServerPlayerEntity) player;
-                    Isaac.MOD.network.sendTo(packet, sp.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
-                }
+                IsaacNetworks.notifyFoundationChanged(world, this);
             }
         }
     }

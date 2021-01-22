@@ -22,12 +22,12 @@ public class PacketFoundation {
 
     public PacketFoundation(PacketBuffer buffer) {
         this.pos = buffer.readBlockPos();
-        this.prop = PropItem.fromNbt(buffer.readCompoundTag());
+        this.prop = PropItem.fromPacket(buffer);
     }
 
     public static void encode(PacketFoundation packet, PacketBuffer buffer) {
         buffer.writeBlockPos(packet.pos);
-        buffer.writeCompoundTag(packet.prop.serializeNBT());
+        packet.prop.write(buffer);
     }
 
     public static void apply(PacketFoundation packet, Supplier<NetworkEvent.Context> context) {

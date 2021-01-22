@@ -60,7 +60,9 @@ public abstract class PropType extends IsaacItem {
         return false;
     }
 
-    public void onPickup(LivingEntity entity) {}
+    public void onPickup(LivingEntity entity, PropItem item) {}
+
+    public void onRemove(LivingEntity entity, PropItem item) {}
 
     public boolean isActive() {
         return isActive;

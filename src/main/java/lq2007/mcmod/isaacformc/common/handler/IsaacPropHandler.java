@@ -1,17 +1,17 @@
 package lq2007.mcmod.isaacformc.common.handler;
 
-import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
+import lq2007.mcmod.isaacformc.common.capability.IIsaacProperty;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
+import lq2007.mcmod.isaacformc.common.capability.IsaacProperty;
+import lq2007.mcmod.isaacformc.common.network.IsaacNetworks;
 import lq2007.mcmod.isaacformc.isaac.prop.*;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.NetworkDirection;
 
 @Mod.EventBusSubscriber
 public class IsaacPropHandler {
@@ -19,16 +19,14 @@ public class IsaacPropHandler {
     @SubscribeEvent
     public static void onEntityUpdate(LivingEvent.LivingUpdateEvent event) {
         LivingEntity entity = event.getEntityLiving();
-        IIsaacPropData data = IsaacCapabilities.getPropData(entity);
-        for (PropItem propItem : data.getAllProps()) {
+        IIsaacPropData propData = IsaacCapabilities.getPropData(entity);
+        for (PropItem propItem : propData.getAllProps()) {
             if (propItem.type instanceof IUpdateType) {
                 ((IUpdateType) propItem.type).onUpdate(propItem, entity);
             }
         }
-        if (entity instanceof ServerPlayerEntity && data.isDirty()) {
-            Isaac.MOD.network.sendTo(new PacketEntityProp(data), ((ServerPlayerEntity) entity).connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
-            data.clearDirty();
-        }
+        IsaacNetworks.notifyPropDataChanged(propData, entity);
+        IsaacNetworks.notifyPropertyChanged(IsaacCapabilities.getProperty(entity), entity);
     }
 
     @SubscribeEvent

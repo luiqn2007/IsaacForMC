@@ -2,6 +2,8 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import lq2007.mcmod.isaacformc.common.network.IPacketReader;
+import lq2007.mcmod.isaacformc.common.network.IPacketWriter;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import net.minecraft.entity.LivingEntity;
@@ -9,7 +11,11 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
+import java.util.Collection;
+import java.util.Collections;
+
+public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
+        ICopyFromEntity<Collection<PropItem>>, IDirtyData, IPacketReader, IPacketWriter {
 
     static IIsaacPropData dummy() {
         return DummyData.INSTANCE;
@@ -29,17 +35,18 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
      * Remove a prop
      *
      * @param prop prop
-     * @return True if the prop removed from the entity.
+     * @return The item removed. If no one is removed, return {@link PropItem#EMPTY}
      */
-    boolean removeProp(PropItem prop);
+    PropItem removeProp(PropItem prop);
 
     /**
      * Remove all props
      *
      * @param removeActiveProp True if remove active props
-     * @return The count of props removed.
+     * @param clearHeldPropRecord True if clear the records of hold prop items
+     * @return The items removed.
      */
-    int removeAllProps(boolean removeActiveProp);
+    Collection<PropItem> removeAllProps(boolean removeActiveProp, boolean clearHeldPropRecord);
 
     /**
      * <p>Returns the first active prop.
@@ -66,9 +73,9 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
      * Set if allowed held the second active prop.
      *
      * @param second True if the second active prop slot is enabled.
-     *
+     * @return If second is false and has second item, return it.
      */
-    void setHasSecondAction(boolean second);
+    PropItem setHasSecondAction(boolean second);
 
     /**
      * <p>Get all prop types the entity picked up.
@@ -92,42 +99,6 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
      */
     ImmutableList<PropItem> getAllProps();
 
-    /**
-     * Copy props from another data.
-     *
-     * @param data another data
-     */
-    void copyFrom(IIsaacPropData data);
-
-    /**
-     * Copy props from another entity.
-     *
-     * @param entity another entity
-     */
-    default void copyFrom(LivingEntity entity) {
-        copyFrom(IsaacCapabilities.getPropData(entity));
-    }
-
-    /**
-     * <p>Write data to a buffer.
-     * <p>The method is called at server.
-     * <p>
-     * <p>This is a convention: the first value in the packet is a boolean. It means the capability type. True is
-     * default packet, and False is used for custom packet.
-     *
-     * @param buffer buffer
-     * @return False if the packet is empty, or the data is not used to sent to client.
-     */
-    boolean serializePacket(PacketBuffer buffer);
-
-    /**
-     * <p>Read data from a buffer.
-     * <p>The method is called at client.
-     *
-     * @param buffer buffer
-     */
-    void deserializePacket(PacketBuffer buffer);
-
     class DummyData implements IIsaacPropData {
 
         private static final DummyData INSTANCE = new DummyData();
@@ -138,13 +109,13 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
         }
 
         @Override
-        public boolean removeProp(PropItem prop) {
-            return false;
+        public PropItem removeProp(PropItem prop) {
+            return PropItem.EMPTY;
         }
 
         @Override
-        public int removeAllProps(boolean removeActiveProp) {
-            return 0;
+        public Collection<PropItem> removeAllProps(boolean removeActiveProp, boolean clearHeldPropRecord) {
+            return Collections.emptySet();
         }
 
         @Override
@@ -161,7 +132,9 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
         }
 
         @Override
-        public void setHasSecondAction(boolean second) { }
+        public PropItem setHasSecondAction(boolean second) {
+            return PropItem.EMPTY;
+        }
 
         @Override
         public ImmutableSet<PropType> getAllHeldProps() {
@@ -179,15 +152,17 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
         }
 
         @Override
-        public void copyFrom(IIsaacPropData data) { }
-
-        @Override
-        public boolean serializePacket(PacketBuffer buffer) {
-            return false;
+        public Collection<PropItem> copyFrom(LivingEntity entity) {
+            return Collections.emptySet();
         }
 
         @Override
-        public void deserializePacket(PacketBuffer buffer) { }
+        public void markDirty() { }
+
+        @Override
+        public boolean isDirty() {
+            return false;
+        }
 
         @Override
         public CompoundNBT serializeNBT() {
@@ -196,5 +171,18 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT> {
 
         @Override
         public void deserializeNBT(CompoundNBT nbt) { }
+
+        @Override
+        public void read(PacketBuffer buffer) {
+            if (buffer.readBoolean()) {
+                buffer.readVarInt();
+            }
+        }
+
+        @Override
+        public void write(PacketBuffer buffer) {
+            buffer.writeBoolean(true);
+            buffer.writeVarInt(-1);
+        }
     }
 }

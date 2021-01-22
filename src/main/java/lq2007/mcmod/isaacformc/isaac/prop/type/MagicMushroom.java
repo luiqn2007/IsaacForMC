@@ -2,6 +2,7 @@ package lq2007.mcmod.isaacformc.isaac.prop.type;
 
 import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.common.util.EntityUtil;
+import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
@@ -17,8 +18,8 @@ public class MagicMushroom extends PropType {
     }
 
     @Override
-    public void onPickup(LivingEntity entity) {
-        super.onPickup(entity);
+    public void onPickup(LivingEntity entity, PropItem item) {
+        super.onPickup(entity, item);
         if (entity.isServerWorld()) {
             EntityUtil.healthUp(entity, MODIFIER_HEALTH, "magic_mushroom.health", 2);
             EntityUtil.fullHealth(entity);

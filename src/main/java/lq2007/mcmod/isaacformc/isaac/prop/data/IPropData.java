@@ -1,10 +1,13 @@
 package lq2007.mcmod.isaacformc.isaac.prop.data;
 
+import lq2007.mcmod.isaacformc.common.network.IPacketReader;
+import lq2007.mcmod.isaacformc.common.network.IPacketWriter;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public interface IPropData extends INBTSerializable<CompoundNBT> {
+public interface IPropData extends INBTSerializable<CompoundNBT>, IPacketReader, IPacketWriter {
 
     void onBindTo(PropItem item);
 
@@ -25,6 +28,12 @@ public interface IPropData extends INBTSerializable<CompoundNBT> {
         public CompoundNBT serializeNBT() {
             return new CompoundNBT();
         }
+
+        @Override
+        public void read(PacketBuffer buffer) { }
+
+        @Override
+        public void write(PacketBuffer buffer) { }
     }
 
     class ChargeData implements IPropData {
@@ -51,6 +60,18 @@ public interface IPropData extends INBTSerializable<CompoundNBT> {
         public void deserializeNBT(CompoundNBT nbt) {
             totalCharge = nbt.getInt("total");
             charge = nbt.getInt("charge");
+        }
+
+        @Override
+        public void read(PacketBuffer buffer) {
+            totalCharge = buffer.readVarInt();
+            charge = buffer.readVarInt();
+        }
+
+        @Override
+        public void write(PacketBuffer buffer) {
+            buffer.writeVarInt(totalCharge);
+            buffer.writeVarInt(charge);
         }
     }
 }
