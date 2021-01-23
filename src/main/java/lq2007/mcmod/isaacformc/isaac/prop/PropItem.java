@@ -15,14 +15,14 @@ import java.util.Objects;
 
 public class PropItem implements INBTSerializable<CompoundNBT>, IPacketWriter {
 
-    public static final PropItem EMPTY = new PropItem(PropTypes.EMPTY, IPropData.NO_DATA);
+    public static final PropItem EMPTY = new PropItem(PropTypes.EMPTY);
 
-    public PropType type;
+    public PropType<?> type;
     public IPropData data;
 
     public static PropItem fromNbt(@Nullable CompoundNBT nbt) {
         if (nbt != null && nbt.contains("_type", Constants.NBT.TAG_STRING)) {
-            PropType type = PropTypes.get(new ResourceLocation(nbt.getString("_type")), null);
+            PropType<?> type = PropTypes.get(new ResourceLocation(nbt.getString("_type")), null);
             if (type != null) {
                 IPropData data = type.createData();
                 PropItem item = new PropItem(type, data);
@@ -35,7 +35,7 @@ public class PropItem implements INBTSerializable<CompoundNBT>, IPacketWriter {
     }
 
     public static PropItem fromPacket(PacketBuffer buffer) {
-        PropType type = PropTypes.get(buffer.readResourceLocation(), null);
+        PropType<?> type = PropTypes.get(buffer.readResourceLocation(), null);
         if (type != null) {
             IPropData data = type.createData();
             data.read(buffer);
@@ -46,13 +46,13 @@ public class PropItem implements INBTSerializable<CompoundNBT>, IPacketWriter {
         return PropItem.EMPTY;
     }
 
-    public PropItem(PropType type) {
+    public PropItem(PropType<?> type) {
         this.type = type;
         this.data = type.createData();
         data.onBindTo(this);
     }
 
-    private PropItem(PropType type, IPropData data) {
+    private PropItem(PropType<?> type, IPropData data) {
         this.type = type;
         this.data = data;
     }

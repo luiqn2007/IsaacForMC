@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacformc.isaac.prop.type;
 
+import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.common.util.EntityUtil;
 import lq2007.mcmod.isaacformc.isaac.prop.EnumPropTags;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
@@ -7,18 +8,19 @@ import lq2007.mcmod.isaacformc.isaac.prop.PropTag;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.data.NoData;
 import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
+import lq2007.mcmod.isaacformc.isaac.tear.EnumTearEffects;
 import net.minecraft.entity.LivingEntity;
 
 import java.util.UUID;
 
-// https://isaac.huijiwiki.com/wiki/%E5%85%8B%E9%87%8C%E5%90%89%E7%89%B9%E7%9A%84%E5%A4%B4
-@PropTag({EnumPropTags.PASSIVE, EnumPropTags.DAMAGE, EnumPropTags.DAMAGE_FIX, EnumPropTags.TEAR_EFFECT})
-public class CricketsHead extends PropType<NoData> {
+// https://isaac.huijiwiki.com/wiki/%E6%AE%89%E9%81%93%E8%80%85%E4%B9%8B%E8%A1%80
+@PropTag({EnumPropTags.PASSIVE, EnumPropTags.DAMAGE, EnumPropTags.DAMAGE_FIX, EnumPropTags.TEAR_TEXTURE})
+public class BloodOfTheMartyr extends PropType<NoData> {
 
-    public static final UUID DAMAGE_UP = UUID.fromString("3f42abf0-3b84-50d9-1d27-b064fc30badd");
+    public static final UUID DAMAGE_UP = UUID.fromString("56efdcb6-572a-62bd-b462-d8bdae5b1ad5");
 
-    public CricketsHead() {
-        super("crickets_head", false, 4, EnumRoom.NORMAL_AND_GOLDEN_CHEST);
+    public BloodOfTheMartyr() {
+        super("blood_of_the_martyr", false, 7, EnumRoom.NORMAL_AND_ANGLE);
     }
 
     @Override
@@ -28,10 +30,11 @@ public class CricketsHead extends PropType<NoData> {
 
     @Override
     public void onPickup(LivingEntity entity, PropItem item, PropItem itemBeforeEvent) {
-        if (!entity.world.isRemote) {
-            EntityUtil.damageUp(entity, DAMAGE_UP, "isaac.crickets_head.damage_up", 0.5);
-            EntityUtil.damageFixConflict(entity, TypeGroups.DAMAGE_FIX_0, 1.5);
-        }
         super.onPickup(entity, item);
+        if (!entity.world.isRemote) {
+            EntityUtil.damageUp(entity, DAMAGE_UP, "isaac.blood_of_the_martyr.damage_up", 1);
+            EntityUtil.damageFixConflict(entity, TypeGroups.DAMAGE_FIX_0, 1.5);
+            IsaacCapabilities.getProperty(entity).addTearEffect(EnumTearEffects.BLOOD);
+        }
     }
 }

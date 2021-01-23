@@ -20,6 +20,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class IsaacPropData extends VersionCapability implements IIsaacPropData, ICapabilityProvider {
@@ -27,14 +28,15 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     private static final String KEY_ACT0 = "_act0";
     private static final String KEY_ACT1 = "_act1";
     private static final String KEY_HAS_ACT2 = "_has2";
-    private static final String KEY_ITEMS = "_item";
+    private static final String KEY_ITEMS = "_items";
 
     private PropItem active0 = PropItem.EMPTY;
     private PropItem active1 = PropItem.EMPTY;
     private boolean hasSecondActive = false;
 
-    private final HashMap<PropType, List<PropItem>> itemMap = new HashMap<>();
+    private final HashMap<PropType<?>, List<PropItem>> itemMap = new HashMap<>();
     private final ArrayList<PropItem> itemList = new ArrayList<>();
+    private final ArrayList<PropType<?>> itemTypeList = new ArrayList<>();
 
     private final LazyOptional<IIsaacPropData> dataOptional = LazyOptional.of(() -> this);
 
@@ -60,7 +62,7 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
         }
 
         PropItem returnItem;
-        PropType type = prop.type;
+        PropType<?> type = prop.type;
         if (type.isActive()) {
             // active item
             if (active0 == PropItem.EMPTY) {
@@ -92,6 +94,7 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
         if (returnItem != prop) {
             itemMap.computeIfAbsent(type, t -> new ArrayList<>()).add(prop);
             itemList.add(prop);
+            itemTypeList.add(type);
             markDirty();
         }
         return returnItem;
@@ -111,7 +114,8 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
             return PropItem.EMPTY;
         }
         if (itemList.remove(prop)) {
-            PropType type = prop.type;
+            PropType<?> type = prop.type;
+            itemTypeList.remove(type);
             if (type.isActive()) {
                 if (active0 == prop) {
                     active0 = active1;
@@ -131,15 +135,18 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     public Collection<PropItem> removeAllProps(boolean removeActiveProp, boolean clearHeldPropRecord) {
         Collection<PropItem> items = ImmutableList.copyOf(itemList);
         itemList.clear();
+        itemTypeList.clear();
         if (removeActiveProp) {
             active0 = PropItem.EMPTY;
             active1 = PropItem.EMPTY;
         } else {
             if (active0 != PropItem.EMPTY) {
                 itemList.add(active0);
+                itemTypeList.add(active0.type);
             }
             if (active1 != PropItem.EMPTY) {
                 itemList.add(active1);
+                itemTypeList.add(active1.type);
             }
         }
         if (clearHeldPropRecord) {
@@ -174,24 +181,58 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     }
 
     @Override
-    public boolean contains(PropType type) {
-        List<PropItem> list = itemMap.get(type);
-        return list != null && !list.isEmpty();
+    public boolean contains(PropType<?> type) {
+        return itemTypeList.contains(type);
     }
 
     @Override
-    public boolean isHold(PropType type) {
+    public boolean contains(Class<?> type) {
+        for (PropType<?> propType : itemTypeList) {
+            if (type.isInstance(propType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean containsIf(Predicate<PropItem> condition) {
+        for (PropItem propItem : itemList) {
+            if (condition.test(propItem)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean containsTypeIf(Predicate<PropType<?>> condition) {
+        for (PropType<?> propType : itemTypeList) {
+            if (condition.test(propType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isHold(PropType<?> type) {
         return itemMap.containsKey(type);
     }
 
     @Override
-    public ImmutableSet<PropType> getAllHeldProps() {
+    public ImmutableSet<PropType<?>> getAllHeldProps() {
         return ImmutableSet.copyOf(itemMap.keySet());
     }
 
     @Override
     public ImmutableList<PropItem> getAllProps() {
         return ImmutableList.copyOf(itemList);
+    }
+
+    @Override
+    public ImmutableList<PropType<?>> getAllPropTypes() {
+        return ImmutableList.copyOf(itemTypeList);
     }
 
     @Override
@@ -205,8 +246,9 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
             hasSecondActive = pData.hasSecondActive;
             itemMap.putAll(pData.itemMap);
             itemList.addAll(pData.itemList);
+            itemTypeList.addAll(pData.itemTypeList);
         } else if (!(data instanceof DummyData)) {
-            for (PropType type : data.getAllHeldProps()) {
+            for (PropType<?> type : data.getAllHeldProps()) {
                 itemMap.put(type, new ArrayList<>());
             }
             pickupProps(data.getAllProps());

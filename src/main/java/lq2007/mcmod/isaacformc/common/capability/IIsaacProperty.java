@@ -34,6 +34,14 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
 
     void tearSpeed(float count);
 
+    float tearSpeedMultiple();
+
+    void tearSpeedMultiple(float count);
+
+    float tossUpSpeed();
+
+    void tossUpSpeed(float speed);
+
     float shootDelay();
 
     void shootDelay(float delay);
@@ -41,14 +49,6 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
     float shootDelayMultiple();
 
     void shootDelayMultiple(float delay);
-
-    float damage();
-
-    void damage(float damage);
-
-    float damageMultiple();
-
-    void damageMultiple(float damageMultiple);
 
     int knockBack();
 
@@ -59,6 +59,10 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
     ImmutableSet<EnumTearEffects> getTearEffects();
 
     void removeTearEffect(EnumTearEffects type);
+
+    float range();
+
+    void range(float range);
 
     class DummyData implements IIsaacProperty {
 
@@ -100,6 +104,22 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
         public void tearSpeed(float count) { }
 
         @Override
+        public float tearSpeedMultiple() {
+            return 1;
+        }
+
+        @Override
+        public void tearSpeedMultiple(float count) { }
+
+        @Override
+        public float tossUpSpeed() {
+            return 1;
+        }
+
+        @Override
+        public void tossUpSpeed(float speed) { }
+
+        @Override
         public float shootDelay() {
             return 0;
         }
@@ -114,22 +134,6 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
 
         @Override
         public void shootDelayMultiple(float delay) { }
-
-        @Override
-        public float damage() {
-            return 0;
-        }
-
-        @Override
-        public void damage(float damage) { }
-
-        @Override
-        public float damageMultiple() {
-            return 1;
-        }
-
-        @Override
-        public void damageMultiple(float damageMultiple) { }
 
         @Override
         public int knockBack() {
@@ -149,6 +153,16 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
 
         @Override
         public void removeTearEffect(EnumTearEffects type) { }
+
+        @Override
+        public float range() {
+            return 1;
+        }
+
+        @Override
+        public void range(float range) {
+
+        }
 
         @Override
         public CompoundNBT serializeNBT() {

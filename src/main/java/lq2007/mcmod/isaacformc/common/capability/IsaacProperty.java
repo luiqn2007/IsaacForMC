@@ -27,23 +27,25 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
     private final String KEY_BODY_LOCK = "_lock";
     private final String KEY_TEAR_COUNT = "_tear_count";
     private final String KEY_TEAR_SPEED = "_tear_speed";
+    private final String KEY_TEAR_SPEED_MULTIPLE = "_tear_speed_multiple";
+    private final String KEY_TOSS_UP_SPEED = "_toss_up_speed";
     private final String KEY_SHOOT_DELAY = "_shoot_delay";
-    private final String KEY_SHOOT_DELAY_MULTIPLE = "_shoot_delay";
+    private final String KEY_SHOOT_DELAY_MULTIPLE = "_shoot_delay_multiple";
     private final String KEY_TEAR_EFFECT = "_tear_effect";
-    private final String KEY_DAMAGE = "_damage";
-    private final String KEY_DAMAGE_MULTIPLE = "_damage_multiple";
     private final String KEY_KNOCK_BACK = "_knock_back";
+    private final String KEY_RANGE = "_range";
 
     private int size = 0;
     private boolean sizeLocked = false;
     private int tearCount = 1;
     private float tearSpeed = 1;
+    private float tearSpeedMultiple = 1;
+    private float tossUpSpeed = 1;
     private float shootDelay = 0;
     private float shootDelayMultiple = 1;
     private final Set<EnumTearEffects> tearEffects = new HashSet<>();
-    private float damage = 0;
-    private float damageMultiple = 1;
     private int knockBack = 0;
+    private float range = 1;
 
     private final LazyOptional<IIsaacProperty> get = LazyOptional.of(() -> this);
 
@@ -110,6 +112,32 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
     }
 
     @Override
+    public float tearSpeedMultiple() {
+        return tearSpeedMultiple;
+    }
+
+    @Override
+    public void tearSpeedMultiple(float count) {
+        if (count != 0 && count != tearSpeedMultiple) {
+            tearSpeedMultiple = count;
+            markDirty();
+        }
+    }
+
+    @Override
+    public float tossUpSpeed() {
+        return tossUpSpeed;
+    }
+
+    @Override
+    public void tossUpSpeed(float speed) {
+        if (this.tossUpSpeed != speed) {
+            this.tossUpSpeed = speed;
+            markDirty();
+        }
+    }
+
+    @Override
     public float shootDelay() {
         return shootDelay;
     }
@@ -131,32 +159,6 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
     public void shootDelayMultiple(float delay) {
         if (delay != 0 && shootDelayMultiple != delay) {
             shootDelayMultiple = delay;
-            markDirty();
-        }
-    }
-
-    @Override
-    public float damage() {
-        return damage;
-    }
-
-    @Override
-    public void damage(float damage) {
-        if (damage != this.damage) {
-            this.damage = damage;
-            markDirty();
-        }
-    }
-
-    @Override
-    public float damageMultiple() {
-        return damageMultiple;
-    }
-
-    @Override
-    public void damageMultiple(float damageMultiple) {
-        if (damageMultiple != this.damageMultiple) {
-            this.damageMultiple = damageMultiple;
             markDirty();
         }
     }
@@ -193,6 +195,19 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         }
     }
 
+    @Override
+    public float range() {
+        return range;
+    }
+
+    @Override
+    public void range(float range) {
+        if (this.range != range) {
+            this.range = range;
+            markDirty();
+        }
+    }
+
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
@@ -208,8 +223,6 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         tearSpeed = data.tearSpeed();
         shootDelay = data.shootDelay();
         shootDelayMultiple = data.shootDelayMultiple();
-        damage = data.damage();
-        damageMultiple = data.damageMultiple();
         knockBack = data.knockBack();
         markDirty();
         return null;
@@ -222,6 +235,8 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         nbt.putBoolean(KEY_BODY_LOCK, sizeLocked);
         nbt.putInt(KEY_TEAR_COUNT, tearCount);
         nbt.putFloat(KEY_TEAR_SPEED, tearSpeed);
+        nbt.putFloat(KEY_TEAR_SPEED_MULTIPLE, tearSpeedMultiple);
+        nbt.putFloat(KEY_TOSS_UP_SPEED, tossUpSpeed);
         nbt.putFloat(KEY_SHOOT_DELAY, shootDelay);
         nbt.putFloat(KEY_SHOOT_DELAY_MULTIPLE, shootDelayMultiple);
         ListNBT effects = new ListNBT();
@@ -229,9 +244,8 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
             effects.add(StringNBT.valueOf(effect.name()));
         }
         nbt.put(KEY_TEAR_EFFECT, effects);
-        nbt.putFloat(KEY_DAMAGE, damage);
-        nbt.putFloat(KEY_DAMAGE_MULTIPLE, damageMultiple);
         nbt.putInt(KEY_KNOCK_BACK, knockBack);
+        nbt.putFloat(KEY_RANGE, range);
         return nbt;
     }
 
@@ -241,6 +255,8 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         sizeLocked = nbt.getBoolean(KEY_BODY_LOCK);
         tearCount = nbt.getInt(KEY_TEAR_COUNT);
         tearSpeed = nbt.getFloat(KEY_TEAR_SPEED);
+        tearSpeedMultiple = nbt.getFloat(KEY_TEAR_SPEED_MULTIPLE);
+        tossUpSpeed = nbt.getFloat(KEY_TOSS_UP_SPEED);
         shootDelay = nbt.getFloat(KEY_SHOOT_DELAY);
         shootDelayMultiple = nbt.getFloat(KEY_SHOOT_DELAY_MULTIPLE);
         ListNBT effects = nbt.getList(KEY_TEAR_EFFECT, Constants.NBT.TAG_STRING);
@@ -248,9 +264,8 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         for (INBT effect : effects) {
             tearEffects.add(EnumTearEffects.valueOf(effect.getString()));
         }
-        damage = nbt.getFloat(KEY_DAMAGE);
-        damageMultiple = nbt.getFloat(KEY_DAMAGE_MULTIPLE);
         knockBack = nbt.getInt(KEY_KNOCK_BACK);
+        range = nbt.getFloat(KEY_RANGE);
         markDirty();
     }
 
@@ -260,12 +275,13 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         sizeLocked = buffer.readBoolean();
         tearCount = buffer.readVarInt();
         tearSpeed = buffer.readFloat();
+        tearSpeedMultiple = buffer.readFloat();
+        tossUpSpeed = buffer.readFloat();
         shootDelay = buffer.readFloat();
         shootDelayMultiple = buffer.readFloat();
         readEffects(buffer);
-        damage = buffer.readFloat();
-        damageMultiple = buffer.readFloat();
         knockBack = buffer.readVarInt();
+        range = buffer.readFloat();
     }
 
     @Override
@@ -274,12 +290,13 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         buffer.writeBoolean(sizeLocked);
         buffer.writeVarInt(tearCount);
         buffer.writeFloat(tearSpeed);
+        buffer.writeFloat(tearSpeedMultiple);
+        buffer.writeFloat(tossUpSpeed);
         buffer.writeFloat(shootDelay);
         buffer.writeFloat(shootDelayMultiple);
         writeEffects(buffer);
-        buffer.writeFloat(damage);
-        buffer.writeFloat(damageMultiple);
         buffer.writeVarInt(knockBack);
+        buffer.writeFloat(range);
     }
 
     private void readEffects(PacketBuffer buffer) {

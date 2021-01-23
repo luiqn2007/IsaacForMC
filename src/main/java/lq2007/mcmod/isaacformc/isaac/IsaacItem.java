@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacformc.isaac;
 
+import com.google.common.collect.Lists;
 import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -21,13 +22,13 @@ public abstract class IsaacItem {
      */
     public final EnumIsaacVersion version;
 
-    private List<EnumRoom> rooms;
+    private final List<EnumRoom> rooms;
 
-    public IsaacItem(ResourceLocation key, int id, EnumIsaacVersion version, EnumRoom... rooms) {
+    public IsaacItem(ResourceLocation key, int id, EnumRoom... rooms) {
         this.key = key;
         this.id = id;
-        this.version = version;
-        this.rooms = Arrays.asList(rooms);
+        this.version = EnumIsaacVersion.fromPropId(id);
+        this.rooms = Lists.newArrayList(rooms);
     }
 
     /**

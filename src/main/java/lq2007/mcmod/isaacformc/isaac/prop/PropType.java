@@ -3,6 +3,7 @@ package lq2007.mcmod.isaacformc.isaac.prop;
 import com.google.common.collect.ImmutableList;
 import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
+import lq2007.mcmod.isaacformc.common.event.PickupPropItemEvent;
 import lq2007.mcmod.isaacformc.isaac.EnumIsaacVersion;
 import lq2007.mcmod.isaacformc.isaac.IsaacItem;
 import lq2007.mcmod.isaacformc.isaac.prop.data.IPropData;
@@ -14,31 +15,29 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public abstract class PropType extends IsaacItem {
+public abstract class PropType<T extends IPropData> extends IsaacItem {
 
     private final String nameKey;
     private final String descriptionKey;
     private final boolean isActive;
 
     public PropType(ResourceLocation key, boolean isActive, EnumRoom... rooms) {
-        this(key, EnumIsaacVersion.MOD, isActive, 0, rooms);
+        this(key, isActive, 0, rooms);
     }
 
-    public PropType(String name, EnumIsaacVersion version, boolean isActive, int id, EnumRoom... rooms) {
-        this(new ResourceLocation(Isaac.ID, name), version, isActive, id, rooms);
+    public PropType(String name, boolean isActive, int id, EnumRoom... rooms) {
+        this(new ResourceLocation(Isaac.ID, name), isActive, id, rooms);
     }
 
-    protected PropType(ResourceLocation key, EnumIsaacVersion version, boolean isActive, int id, EnumRoom... rooms) {
-        super(key, id, version, rooms);
+    protected PropType(ResourceLocation key, boolean isActive, int id, EnumRoom... rooms) {
+        super(key, id, rooms);
         PropTypes.register(this);
         this.isActive = isActive;
         this.nameKey = key.getNamespace() + ".prop." + key.getPath() + ".name";
         this.descriptionKey = key.getNamespace() + ".prop." + key.getPath() + ".desc";
     }
 
-    public IPropData createData() {
-        return IPropData.NO_DATA;
-    }
+    abstract protected T createData();
 
     @Override
     public ITextComponent getName() {
@@ -58,11 +57,20 @@ public abstract class PropType extends IsaacItem {
         return descriptionKey;
     }
 
-    public boolean onActive(LivingEntity entity, PropItem prop) {
-        return false;
+    public void onActiveStart(LivingEntity entity, PropItem prop) { }
+
+    public void onActiveFinished(LivingEntity entity, PropItem prop) { }
+
+    public final void onPickup(LivingEntity entity, PropItem item) {
+        if (!entity.world.isRemote) {
+            PickupPropItemEvent event = new PickupPropItemEvent(entity, item);
+            if (!Isaac.MOD.eventBus.post(event)) {
+                onPickup(entity, event.getProp(), item);
+            }
+        }
     }
 
-    public void onPickup(LivingEntity entity, PropItem item) {
+    public void onPickup(LivingEntity entity, PropItem item, PropItem itemBeforeEvent) {
         IsaacCapabilities.getPropData(entity).pickupProp(item);
     }
 

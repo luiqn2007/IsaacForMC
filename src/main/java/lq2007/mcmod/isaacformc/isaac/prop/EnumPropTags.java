@@ -12,8 +12,6 @@ public enum EnumPropTags {
      */
     ACTIVE,
 
-    SHOOT_SPEED,
-
     /**
      * 射击延迟相关
      */
@@ -23,6 +21,16 @@ public enum EnumPropTags {
      * 射击延迟修正相关
      */
     SHOOT_DELAY_FIX,
+
+    /**
+     * 射程相关
+     */
+    SHOOT_RANGE,
+
+    /**
+     * 射击高度相关
+     */
+    SHOOT_HIGH,
 
     /**
      * 攻击方式相关
@@ -40,7 +48,17 @@ public enum EnumPropTags {
     DAMAGE_FIX,
 
     /**
+     * 弹速相关
+     */
+    TEAR_SPEED,
+
+    /**
      * 眼泪特殊效果
      */
     TEAR_EFFECT,
+
+    /**
+     * 眼泪贴图相关
+     */
+    TEAR_TEXTURE,
 }

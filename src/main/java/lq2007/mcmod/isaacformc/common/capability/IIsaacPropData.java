@@ -13,6 +13,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Predicate;
 
 public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
         ICopyFromEntity<Collection<PropItem>>, IDirtyData, IPacketReader, IPacketWriter {
@@ -36,7 +37,7 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
      * <li>If an entity can't pickup any prop, collect them and return.
      * <li>If this is an active prop, replaced active prop while be added to return.
      *
-     * @param prop prop
+     * @param props prop
      * @return The props entity picked up then replaced or removed.
      */
     Collection<PropItem> pickupProps(Collection<PropItem> props);
@@ -92,14 +93,35 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
      * @param type the prop type
      * @return True if entity has the prop.
      */
-    boolean contains(PropType type);
+    boolean contains(PropType<?> type);
+
+    /**
+     * Check if entity has item type implement class.
+     * @param type the prop type class
+     * @return True if entity has the prop.
+     */
+    boolean contains(Class<?> type);
+
+    /**
+     * Check if entity has item implemented the condition.
+     * @param condition condition
+     * @return True if entity has the prop.
+     */
+    boolean containsIf(Predicate<PropItem> condition);
+
+    /**
+     * Check if entity has specified type of item implemented the condition.
+     * @param condition condition
+     * @return True if entity has the prop.
+     */
+    boolean containsTypeIf(Predicate<PropType<?>> condition);
 
     /**
      * Check if entity ever received the specified type of item,
      * @param type prop type
      * @return True if entity ever hold or is holding the type of item.
      */
-    boolean isHold(PropType type);
+    boolean isHold(PropType<?> type);
 
     /**
      * <p>Get all prop types the entity picked up.
@@ -107,7 +129,7 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
      *
      * @return All prop type
      */
-    ImmutableSet<PropType> getAllHeldProps();
+    ImmutableSet<PropType<?>> getAllHeldProps();
 
     /**
      * Get all props contains active props.
@@ -115,6 +137,13 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
      * @return All props
      */
     ImmutableList<PropItem> getAllProps();
+
+    /**
+     * Get all prop types contains active props.
+     *
+     * @return All prop types
+     */
+    ImmutableList<PropType<?>> getAllPropTypes();
 
     class DummyData implements IIsaacPropData {
 
@@ -159,22 +188,42 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
         }
 
         @Override
-        public boolean contains(PropType type) {
+        public boolean contains(PropType<?> type) {
             return false;
         }
 
         @Override
-        public boolean isHold(PropType type) {
+        public boolean contains(Class<?> type) {
             return false;
         }
 
         @Override
-        public ImmutableSet<PropType> getAllHeldProps() {
+        public boolean containsIf(Predicate<PropItem> condition) {
+            return false;
+        }
+
+        @Override
+        public boolean containsTypeIf(Predicate<PropType<?>> condition) {
+            return false;
+        }
+
+        @Override
+        public boolean isHold(PropType<?> type) {
+            return false;
+        }
+
+        @Override
+        public ImmutableSet<PropType<?>> getAllHeldProps() {
             return ImmutableSet.of();
         }
 
         @Override
         public ImmutableList<PropItem> getAllProps() {
+            return ImmutableList.of();
+        }
+
+        @Override
+        public ImmutableList<PropType<?>> getAllPropTypes() {
             return ImmutableList.of();
         }
 

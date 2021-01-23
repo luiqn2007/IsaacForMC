@@ -6,5 +6,13 @@
   "isaacformc.prop.spoon_bender.name": "弯勺者",
   "isaacformc.prop.spoon_bender.description": "追踪射击",
   "isaacformc.prop.crickets_head.name": "克里吉特的头",
-  "isaacformc.prop.crickets_head.description": "伤害上升"
+  "isaacformc.prop.crickets_head.description": "伤害上升",
+  "isaacformc.prop.my_reflection.name": "我的镜像",
+  "isaacformc.prop.my_reflection.description": "回旋眼泪",
+  "isaacformc.prop.number_one.name": "小号",
+  "isaacformc.prop.number_one.description": "射速上升！",
+  "isaacformc.prop.blood_of_the_martyr.name": "殉道者之血",
+  "isaacformc.prop.blood_of_the_martyr.description": "伤害上升",
+  "isaacformc.prop.brother_bobby.name": "波比弟弟",
+  "isaacformc.prop.brother_bobby.description": "好基友一辈子"
 }

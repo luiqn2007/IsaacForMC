@@ -26,13 +26,13 @@ public class IsaacNetworks {
     }
 
     public static void notifyPropDataChanged(IIsaacPropData data, LivingEntity entity) {
-        if (data.isDirty() && entity.isServerWorld() && entity instanceof ServerPlayerEntity) {
+        if (data.isDirty() && !entity.world.isRemote && entity instanceof ServerPlayerEntity) {
             sendToClient((ServerPlayerEntity) entity, new PacketEntityProp(data));
         }
     }
 
     public static void notifyPropertyChanged(IIsaacProperty data, LivingEntity entity) {
-        if (data.isDirty() && entity.isServerWorld() && entity instanceof ServerPlayerEntity) {
+        if (data.isDirty() && !entity.world.isRemote && entity instanceof ServerPlayerEntity) {
             sendToClient((ServerPlayerEntity) entity, new PacketEntityProperty(data));
         }
     }

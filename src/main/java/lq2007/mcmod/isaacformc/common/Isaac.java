@@ -1,8 +1,10 @@
 package lq2007.mcmod.isaacformc.common;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.forgespi.Environment;
@@ -19,15 +21,19 @@ public class Isaac {
 
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
+    public static Isaac MOD;
 
-    public CommonProxy proxy;
-    public SimpleChannel network = NetworkRegistry.newSimpleChannel(new ResourceLocation(ID, "network"), () -> "0", v -> true, v -> true);
+    public final CommonProxy proxy;
+    public final IEventBus eventBus;
 
     public Isaac() {
-        if (Environment.get().getDist().isClient()) {
-            proxy = new lq2007.mcmod.isaacformc.client.ClientProxy(FMLJavaModLoadingContext.get().getModEventBus(), network);
+        MOD = this;
+        eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        SimpleChannel network = NetworkRegistry.newSimpleChannel(new ResourceLocation(ID, "network"), () -> "0", v -> true, v -> true);
+        if (FMLEnvironment.dist.isClient()) {
+            proxy = new lq2007.mcmod.isaacformc.client.ClientProxy(eventBus, network);
         } else {
-            proxy = new CommonProxy(FMLJavaModLoadingContext.get().getModEventBus(), network);
+            proxy = new CommonProxy(eventBus, network);
         }
     }
 }
