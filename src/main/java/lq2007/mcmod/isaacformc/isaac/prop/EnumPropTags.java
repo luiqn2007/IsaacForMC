@@ -61,4 +61,9 @@ public enum EnumPropTags {
      * 眼泪贴图相关
      */
     TEAR_TEXTURE,
+
+    /**
+     * 跟班
+     */
+    BABY,
 }

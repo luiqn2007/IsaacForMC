@@ -6,7 +6,7 @@ import lq2007.mcmod.isaacformc.common.util.EntityUtil;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.data.NoData;
-import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
+import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 
@@ -16,7 +16,7 @@ public class MagicMushroom extends PropType<NoData> {
 
     private static final UUID MODIFIER_HEALTH = UUID.fromString("57761f44-1b40-e862-2e72-07a43db0049a");
 
-    public MagicMushroom(ResourceLocation key, boolean isActive, EnumRoom... rooms) {
+    public MagicMushroom(ResourceLocation key, boolean isActive, EnumPropPools... rooms) {
         super(key, isActive, rooms);
     }
 

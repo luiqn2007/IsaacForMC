@@ -8,15 +8,15 @@ import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropTag;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.data.NoData;
-import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
+import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
 
 // https://isaac.huijiwiki.com/wiki/%E5%B0%8F%E5%8F%B7
 @PropTag({EnumPropTags.PASSIVE, EnumPropTags.SHOOT_DELAY, EnumPropTags.SHOOT_RANGE, EnumPropTags.SHOOT_HIGH, EnumPropTags.TEAR_TEXTURE})
 public class NumberOne extends PropType<NoData> {
 
-    public NumberOne() {
-        super("number_one", false, 6, EnumRoom.NORMAL);
+    public NumberOne(String name, boolean isActive, int id, EnumPropPools... rooms) {
+        super(name, isActive, id, rooms);
     }
 
     @Override

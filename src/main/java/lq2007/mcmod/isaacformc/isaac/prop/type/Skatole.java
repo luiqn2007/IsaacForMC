@@ -4,9 +4,10 @@ import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.data.NoData;
 import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 
-public class MutantSpider extends PropType<NoData> implements TypeGroups.ShootDelay0 {
+// https://isaac.huijiwiki.com/wiki/%E7%B2%AA%E8%87%AD%E7%B4%A0
+public class Skatole extends PropType<NoData> {
 
-    public MutantSpider(String name, boolean isActive, int id, EnumPropPools... rooms) {
+    public Skatole(String name, boolean isActive, int id, EnumPropPools... rooms) {
         super(name, isActive, id, rooms);
     }
 

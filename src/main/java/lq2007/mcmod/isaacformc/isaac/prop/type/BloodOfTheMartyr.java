@@ -7,7 +7,7 @@ import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropTag;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.data.NoData;
-import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
+import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumTearEffects;
 import net.minecraft.entity.LivingEntity;
 
@@ -19,8 +19,8 @@ public class BloodOfTheMartyr extends PropType<NoData> {
 
     public static final UUID DAMAGE_UP = UUID.fromString("56efdcb6-572a-62bd-b462-d8bdae5b1ad5");
 
-    public BloodOfTheMartyr() {
-        super("blood_of_the_martyr", false, 7, EnumRoom.NORMAL_AND_ANGLE);
+    public BloodOfTheMartyr(String name, boolean isActive, int id, EnumPropPools... rooms) {
+        super(name, isActive, id, rooms);
     }
 
     @Override

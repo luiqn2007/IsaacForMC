@@ -6,7 +6,7 @@ import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropTag;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.data.NoData;
-import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
+import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
 
 import java.util.UUID;
@@ -17,8 +17,8 @@ public class CricketsHead extends PropType<NoData> {
 
     public static final UUID DAMAGE_UP = UUID.fromString("3f42abf0-3b84-50d9-1d27-b064fc30badd");
 
-    public CricketsHead() {
-        super("crickets_head", false, 4, EnumRoom.NORMAL_AND_GOLDEN_CHEST);
+    public CricketsHead(String name, boolean isActive, int id, EnumPropPools... rooms) {
+        super(name, isActive, id, rooms);
     }
 
     @Override

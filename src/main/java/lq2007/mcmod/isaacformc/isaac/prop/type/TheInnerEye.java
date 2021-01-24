@@ -1,22 +1,22 @@
 package lq2007.mcmod.isaacformc.isaac.prop.type;
 
-import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacProperty;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
-import lq2007.mcmod.isaacformc.isaac.EnumIsaacVersion;
-import lq2007.mcmod.isaacformc.isaac.prop.*;
+import lq2007.mcmod.isaacformc.isaac.prop.EnumPropTags;
+import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
+import lq2007.mcmod.isaacformc.isaac.prop.PropTag;
+import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.data.NoData;
-import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
+import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.ResourceLocation;
 
 // https://isaac.huijiwiki.com/wiki/%E5%86%85%E7%9C%BC
 @PropTag({ EnumPropTags.PASSIVE, EnumPropTags.SHOOT_DELAY_FIX, EnumPropTags.ATTACK_TYPE })
 public class TheInnerEye extends PropType<NoData> implements TypeGroups.ShootDelay0 {
 
-    public TheInnerEye() {
-        super(new ResourceLocation(Isaac.ID, "the_inner_eye"), EnumIsaacVersion.ISAAC_REBIRTH, false, 2, EnumRoom.NORMAL);
+    public TheInnerEye(String name, boolean isActive, int id, EnumPropPools... rooms) {
+        super(name, isActive, id, rooms);
     }
 
     @Override

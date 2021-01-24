@@ -8,7 +8,7 @@ import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropTag;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.data.NoData;
-import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
+import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumTearEffects;
 import net.minecraft.entity.LivingEntity;
 
@@ -16,8 +16,8 @@ import net.minecraft.entity.LivingEntity;
 @PropTag({EnumPropTags.PASSIVE, EnumPropTags.SHOOT_RANGE, EnumPropTags.SHOOT_HIGH, EnumPropTags.TEAR_SPEED, EnumPropTags.TEAR_EFFECT})
 public class MyReflection extends PropType<NoData> {
 
-    public MyReflection() {
-        super("my_reflection", false, 5, EnumRoom.NORMAL);
+    public MyReflection(String name, boolean isActive, int id, EnumPropPools... rooms) {
+        super(name, isActive, id, rooms);
     }
 
     @Override

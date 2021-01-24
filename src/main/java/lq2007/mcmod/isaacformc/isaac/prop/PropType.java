@@ -1,13 +1,13 @@
 package lq2007.mcmod.isaacformc.isaac.prop;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.common.event.PickupPropItemEvent;
-import lq2007.mcmod.isaacformc.isaac.EnumIsaacVersion;
-import lq2007.mcmod.isaacformc.isaac.IsaacItem;
+import lq2007.mcmod.isaacformc.isaac.IsaacElement;
 import lq2007.mcmod.isaacformc.isaac.prop.data.IPropData;
-import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
+import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -15,23 +15,27 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public abstract class PropType<T extends IPropData> extends IsaacItem {
+import java.util.List;
+
+public abstract class PropType<T extends IPropData> extends IsaacElement {
 
     private final String nameKey;
     private final String descriptionKey;
     private final boolean isActive;
+    private final List<EnumPropPools> rooms;
 
-    public PropType(ResourceLocation key, boolean isActive, EnumRoom... rooms) {
+    public PropType(ResourceLocation key, boolean isActive, EnumPropPools... rooms) {
         this(key, isActive, 0, rooms);
     }
 
-    public PropType(String name, boolean isActive, int id, EnumRoom... rooms) {
+    public PropType(String name, boolean isActive, int id, EnumPropPools... rooms) {
         this(new ResourceLocation(Isaac.ID, name), isActive, id, rooms);
     }
 
-    protected PropType(ResourceLocation key, boolean isActive, int id, EnumRoom... rooms) {
-        super(key, id, rooms);
+    protected PropType(ResourceLocation key, boolean isActive, int id, EnumPropPools... rooms) {
+        super(key, id);
         PropTypes.register(this);
+        this.rooms = Lists.newArrayList(rooms);
         this.isActive = isActive;
         this.nameKey = key.getNamespace() + ".prop." + key.getPath() + ".name";
         this.descriptionKey = key.getNamespace() + ".prop." + key.getPath() + ".desc";
@@ -55,6 +59,10 @@ public abstract class PropType<T extends IPropData> extends IsaacItem {
 
     public String getDescriptionKey() {
         return descriptionKey;
+    }
+
+    public List<EnumPropPools> spawnRoom() {
+        return rooms;
     }
 
     public void onActiveStart(LivingEntity entity, PropItem prop) { }

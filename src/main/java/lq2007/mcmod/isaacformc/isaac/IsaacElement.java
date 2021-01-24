@@ -1,13 +1,11 @@
 package lq2007.mcmod.isaacformc.isaac;
 
-import com.google.common.collect.Lists;
-import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.*;
 
-public abstract class IsaacItem {
+public abstract class IsaacElement {
 
     public final ResourceLocation key;
 
@@ -22,13 +20,10 @@ public abstract class IsaacItem {
      */
     public final EnumIsaacVersion version;
 
-    private final List<EnumRoom> rooms;
-
-    public IsaacItem(ResourceLocation key, int id, EnumRoom... rooms) {
+    public IsaacElement(ResourceLocation key, int id) {
         this.key = key;
         this.id = id;
         this.version = EnumIsaacVersion.fromPropId(id);
-        this.rooms = Lists.newArrayList(rooms);
     }
 
     /**
@@ -56,16 +51,12 @@ public abstract class IsaacItem {
         return true;
     }
 
-    public List<EnumRoom> spawnRoom() {
-        return rooms;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        IsaacItem isaacItem = (IsaacItem) o;
-        return Objects.equals(key, isaacItem.key);
+        IsaacElement element = (IsaacElement) o;
+        return Objects.equals(key, element.key);
     }
 
     @Override

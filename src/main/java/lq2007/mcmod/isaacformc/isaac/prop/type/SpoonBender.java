@@ -6,7 +6,7 @@ import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropTag;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.data.NoData;
-import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
+import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumTearEffects;
 import net.minecraft.entity.LivingEntity;
 
@@ -14,8 +14,8 @@ import net.minecraft.entity.LivingEntity;
 @PropTag({EnumPropTags.PASSIVE, EnumPropTags.TEAR_EFFECT})
 public class SpoonBender extends PropType<NoData> {
 
-    public SpoonBender() {
-        super("spoon_bender", false, 3, EnumRoom.NORMAL);
+    public SpoonBender(String name, boolean isActive, int id, EnumPropPools... rooms) {
+        super(name, isActive, id, rooms);
     }
 
     @Override

@@ -5,12 +5,12 @@ import lq2007.mcmod.isaacformc.isaac.EnumIsaacVersion;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.data.ChargeData;
-import lq2007.mcmod.isaacformc.isaac.room.EnumRoom;
+import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
 
 public class TheBookOfBelial extends PropType<ChargeData> {
 
-    public TheBookOfBelial(String name, EnumIsaacVersion version, boolean isActive, int id, EnumRoom... rooms) {
+    public TheBookOfBelial(String name, EnumIsaacVersion version, boolean isActive, int id, EnumPropPools... rooms) {
         super(name, isActive, id, rooms);
     }
 
