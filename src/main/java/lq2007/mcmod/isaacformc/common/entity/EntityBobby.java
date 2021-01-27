@@ -9,7 +9,10 @@ import net.minecraft.world.World;
  */
 public class EntityBobby extends EntityFriend {
 
-    public EntityBobby(EntityType<?> entityTypeIn, World worldIn) {
-        super(entityTypeIn, worldIn);
+    public static final String NAME = "brother_bobby";
+    public static final EnumEntityType TYPE = EnumEntityType.FRIEND;
+
+    protected EntityBobby(EntityType<? extends EntityFriend> type, World worldIn) {
+        super(type, worldIn);
     }
 }

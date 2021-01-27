@@ -7,6 +7,11 @@ import net.minecraft.client.renderer.entity.model.EntityModel;
 
 public class ModelBobby extends EntityModel<EntityBobby> {
 
+    public ModelBobby() {
+        textureWidth = 512;
+        textureHeight = 512;
+    }
+
     @Override
     public void setRotationAngles(EntityBobby entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 

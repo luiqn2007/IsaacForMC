@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacformc.client;
 
+import lq2007.mcmod.isaacformc.client.render.Renders;
 import lq2007.mcmod.isaacformc.common.CommonProxy;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -12,5 +13,7 @@ public class ClientProxy extends CommonProxy {
         eventBus.addListener(this::setupClient);
     }
 
-    public void setupClient(FMLClientSetupEvent event) {}
+    public void setupClient(FMLClientSetupEvent event) {
+        Renders.register();
+    }
 }
