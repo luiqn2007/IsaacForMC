@@ -155,3 +155,7 @@ publishing {
         }
     }
 }
+
+mixin {
+    add sourceSets.main, "mixins.isaacformc.refmap.json"
+}
