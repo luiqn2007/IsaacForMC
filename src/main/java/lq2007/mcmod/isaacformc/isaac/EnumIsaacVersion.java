@@ -5,13 +5,18 @@ package lq2007.mcmod.isaacformc.isaac;
  */
 public enum EnumIsaacVersion {
 
-    EMPTY,
-    ISAAC_REBIRTH,
-    ISAAC_AFTER_REBIRTH,
-    ISAAC_AFTER_REBIRTH2,
-    MOD;
+    // todo id
+    EMPTY(0),
+    ISAAC_REBIRTH(0),
+    ISAAC_AFTER_REBIRTH(0),
+    ISAAC_AFTER_REBIRTH2(0),
+    MOD(0);
 
-    public final int maxPropId;
+    public final int lastPropId;
+
+    EnumIsaacVersion(int lastPropId) {
+        this.lastPropId = lastPropId;
+    }
 
     public boolean isAddedByMod() {
         return this == MOD;
@@ -21,11 +26,11 @@ public enum EnumIsaacVersion {
         if (id == 0) {
             return EMPTY;
         } else if (id > 0) {
-            if (id <= ISAAC_REBIRTH.maxPropId) {
+            if (id <= ISAAC_REBIRTH.lastPropId) {
                 return ISAAC_REBIRTH;
-            } else if (id <= ISAAC_AFTER_REBIRTH.maxPropId) {
+            } else if (id <= ISAAC_AFTER_REBIRTH.lastPropId) {
                 return ISAAC_AFTER_REBIRTH;
-            } else if (id <= ISAAC_AFTER_REBIRTH2.maxPropId) {
+            } else if (id <= ISAAC_AFTER_REBIRTH2.lastPropId) {
                 return ISAAC_AFTER_REBIRTH2;
             }
         }
