@@ -14,12 +14,13 @@ public class Entities {
 
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, ID);
 
-    public static final RegistryObject<EntityType<EntityBobby>> TYPE_BOBBY = ENTITIES.register("isaac.babby", () -> EntityType.Builder
-            .create(EntityBobby::new, EntityClassification.MISC)
-            .immuneToFire()
-            .disableSummoning()
-            // todo size etc.
-            .build("isaac.babby"));
+    public static final RegistryObject<EntityType<EntityBobby>> TYPE_BOBBY = ENTITIES.register("isaac.babby",
+            () -> EntityType.Builder
+                    .<EntityBobby>create(EntityBobby::new, EntityClassification.MISC)
+                    .immuneToFire()
+                    .disableSummoning()
+                    // todo size etc.
+                    .build("isaac.babby"));
 
     public static void register(IEventBus bus) {
         ENTITIES.register(bus);

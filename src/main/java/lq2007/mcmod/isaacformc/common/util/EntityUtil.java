@@ -1,7 +1,5 @@
 package lq2007.mcmod.isaacformc.common.util;
 
-import lq2007.mcmod.isaacformc.common.entity.friend.EntityFriend;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifierManager;
@@ -104,16 +102,6 @@ public class EntityUtil {
     public static void fullHealth(LivingEntity entity) {
         if (!entity.world.isRemote) {
             entity.setHealth(entity.getMaxHealth());
-        }
-    }
-
-    public static void spawnFollowing(LivingEntity entity, EntityType<? extends EntityFriend> type) {
-        if (!entity.world.isRemote) {
-            EntityFriend e = type.create(entity.world);
-            if (e != null) {
-                e.setOwner(entity);
-                entity.world.addEntity(e);
-            }
         }
     }
 }
