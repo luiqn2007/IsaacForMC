@@ -1,4 +1,4 @@
-package lq2007.mcmod.isaacformc.common.entity;
+package lq2007.mcmod.isaacformc.common.entity.friend;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

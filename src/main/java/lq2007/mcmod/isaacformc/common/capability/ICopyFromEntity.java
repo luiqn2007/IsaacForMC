@@ -8,7 +8,6 @@ public interface ICopyFromEntity<T> {
      * Copy props from another entity.
      *
      * @param entity another entity
-     * @return The side-effect of the operation.
      */
-    T copyFrom(LivingEntity entity);
+    void copyFrom(LivingEntity entity);
 }

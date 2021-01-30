@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacformc.common.util;
 
-import lq2007.mcmod.isaacformc.common.entity.EntityFriend;
+import lq2007.mcmod.isaacformc.common.entity.friend.EntityFriend;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;

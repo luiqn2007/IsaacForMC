@@ -236,7 +236,7 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     }
 
     @Override
-    public Collection<PropItem> copyFrom(LivingEntity entity) {
+    public void copyFrom(LivingEntity entity) {
         IIsaacPropData data = IsaacCapabilities.getPropData(entity);
         Collection<PropItem> propItems = removeAllProps(true, true);
         if (data instanceof IsaacPropData) {
@@ -254,7 +254,6 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
             pickupProps(data.getAllProps());
         }
         markDirty();
-        return propItems;
     }
 
     @Override

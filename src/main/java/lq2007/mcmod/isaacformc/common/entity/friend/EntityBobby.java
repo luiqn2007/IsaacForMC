@@ -1,5 +1,6 @@
-package lq2007.mcmod.isaacformc.common.entity;
+package lq2007.mcmod.isaacformc.common.entity.friend;
 
+import lq2007.mcmod.isaacformc.common.entity.EnumEntityType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.World;
 /**
@@ -14,5 +15,11 @@ public class EntityBobby extends EntityFriend {
 
     protected EntityBobby(EntityType<? extends EntityFriend> type, World worldIn) {
         super(type, worldIn);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
     }
 }

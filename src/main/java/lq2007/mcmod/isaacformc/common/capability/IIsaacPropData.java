@@ -228,8 +228,7 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
         }
 
         @Override
-        public Collection<PropItem> copyFrom(LivingEntity entity) {
-            return Collections.emptySet();
+        public void copyFrom(LivingEntity entity) {
         }
 
         @Override

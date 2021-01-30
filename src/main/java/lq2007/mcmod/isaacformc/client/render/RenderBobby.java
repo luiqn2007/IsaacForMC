@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacformc.client.render;
 
 import lq2007.mcmod.isaacformc.client.model.BaseObjModel;
-import lq2007.mcmod.isaacformc.common.entity.EntityBobby;
+import lq2007.mcmod.isaacformc.common.entity.friend.EntityBobby;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;

@@ -1,25 +1,21 @@
 package lq2007.mcmod.isaacformc.common.capability;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumTearEffects;
+import lq2007.mcmod.isaacformc.isaac.tear.EnumTearAppearances;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
+import net.minecraft.nbt.*;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class IsaacProperty extends VersionCapability implements IIsaacProperty, ICapabilityProvider {
 
@@ -32,6 +28,7 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
     private final String KEY_SHOOT_DELAY = "_shoot_delay";
     private final String KEY_SHOOT_DELAY_MULTIPLE = "_shoot_delay_multiple";
     private final String KEY_TEAR_EFFECT = "_tear_effect";
+    private final String KEY_TEAR_APPEARANCE = "_tear_appearance";
     private final String KEY_KNOCK_BACK = "_knock_back";
     private final String KEY_RANGE = "_range";
 
@@ -43,7 +40,8 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
     private float tossUpSpeed = 1;
     private float shootDelay = 0;
     private float shootDelayMultiple = 1;
-    private final Set<EnumTearEffects> tearEffects = new HashSet<>();
+    private Set<EnumTearEffects> tearEffects = new HashSet<>();
+    private List<EnumTearAppearances> tearAppearances = new ArrayList<>();
     private int knockBack = 0;
     private float range = 1;
 
@@ -196,6 +194,21 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
     }
 
     @Override
+    public void addTearAppearance(EnumTearAppearances appearance) {
+        tearAppearances.add(appearance);
+    }
+
+    @Override
+    public ImmutableList<EnumTearAppearances> getTearAppearances() {
+        return ImmutableList.copyOf(tearAppearances);
+    }
+
+    @Override
+    public void removeTearAppearance(EnumTearAppearances appearance) {
+        tearAppearances.remove(appearance);
+    }
+
+    @Override
     public float range() {
         return range;
     }
@@ -215,17 +228,21 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
     }
 
     @Override
-    public Void copyFrom(LivingEntity entity) {
+    public void copyFrom(LivingEntity entity) {
         IIsaacProperty data = IsaacCapabilities.getProperty(entity);
         size = data.bodySize();
-        tearCount = data.tearCount();
         sizeLocked = data.isBodySizeLocked();
+        tearCount = data.tearCount();
         tearSpeed = data.tearSpeed();
+        tearSpeedMultiple = data.tearSpeedMultiple();
+        tossUpSpeed = data.tossUpSpeed();
         shootDelay = data.shootDelay();
         shootDelayMultiple = data.shootDelayMultiple();
+        tearEffects = new HashSet<>(data.getTearEffects());
+        tearAppearances = new ArrayList<>(data.getTearAppearances());
         knockBack = data.knockBack();
+        range = data.range();
         markDirty();
-        return null;
     }
 
     @Override
@@ -239,11 +256,8 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         nbt.putFloat(KEY_TOSS_UP_SPEED, tossUpSpeed);
         nbt.putFloat(KEY_SHOOT_DELAY, shootDelay);
         nbt.putFloat(KEY_SHOOT_DELAY_MULTIPLE, shootDelayMultiple);
-        ListNBT effects = new ListNBT();
-        for (EnumTearEffects effect : tearEffects) {
-            effects.add(StringNBT.valueOf(effect.name()));
-        }
-        nbt.put(KEY_TEAR_EFFECT, effects);
+        writeEffects(nbt);
+        writeAppearances(nbt);
         nbt.putInt(KEY_KNOCK_BACK, knockBack);
         nbt.putFloat(KEY_RANGE, range);
         return nbt;
@@ -259,11 +273,8 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         tossUpSpeed = nbt.getFloat(KEY_TOSS_UP_SPEED);
         shootDelay = nbt.getFloat(KEY_SHOOT_DELAY);
         shootDelayMultiple = nbt.getFloat(KEY_SHOOT_DELAY_MULTIPLE);
-        ListNBT effects = nbt.getList(KEY_TEAR_EFFECT, Constants.NBT.TAG_STRING);
-        tearEffects.clear();
-        for (INBT effect : effects) {
-            tearEffects.add(EnumTearEffects.valueOf(effect.getString()));
-        }
+        readEffects(nbt.getByteArray(KEY_TEAR_EFFECT));
+        readAppearances(nbt.getByteArray(KEY_TEAR_APPEARANCE));
         knockBack = nbt.getInt(KEY_KNOCK_BACK);
         range = nbt.getFloat(KEY_RANGE);
         markDirty();
@@ -280,6 +291,7 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         shootDelay = buffer.readFloat();
         shootDelayMultiple = buffer.readFloat();
         readEffects(buffer);
+        readAppearances(buffer);
         knockBack = buffer.readVarInt();
         range = buffer.readFloat();
     }
@@ -295,24 +307,73 @@ public class IsaacProperty extends VersionCapability implements IIsaacProperty, 
         buffer.writeFloat(shootDelay);
         buffer.writeFloat(shootDelayMultiple);
         writeEffects(buffer);
+        writeAppearances(buffer);
         buffer.writeVarInt(knockBack);
         buffer.writeFloat(range);
     }
 
-    private void readEffects(PacketBuffer buffer) {
-        tearEffects.clear();
-        for (byte b : buffer.readByteArray()) {
+    private void readEffects(byte[] effects) {
+        tearEffects = new HashSet<>(effects.length);
+        for (byte b : effects) {
             tearEffects.add(EnumTearEffects.get(b));
         }
     }
 
+    private void readEffects(PacketBuffer buffer) {
+        tearEffects = new HashSet<>();
+        byte b = buffer.readByte();
+        while (b != -1) {
+            tearEffects.add(EnumTearEffects.get(b));
+            b = buffer.readByte();
+        }
+    }
+
     private void writeEffects(PacketBuffer buffer) {
+        for (EnumTearEffects tearEffect : tearEffects) {
+            buffer.writeByte(tearEffect.index);
+        }
+        buffer.writeByte(-1);
+    }
+
+    private void writeEffects(CompoundNBT nbt) {
         byte[] effects = new byte[tearEffects.size()];
         Iterator<EnumTearEffects> iterator = tearEffects.iterator();
         int i = 0;
         while (iterator.hasNext()) {
             effects[i++] = iterator.next().index;
         }
-        buffer.writeBytes(effects);
+        nbt.putByteArray(KEY_TEAR_EFFECT, effects);
+    }
+
+    private void readAppearances(byte[] appearances) {
+        tearAppearances = new ArrayList<>(appearances.length);
+        for (byte b : appearances) {
+            tearAppearances.add(EnumTearAppearances.get(b));
+        }
+    }
+
+    private void readAppearances(PacketBuffer buffer) {
+        tearAppearances = new ArrayList<>();
+        byte b = buffer.readByte();
+        while (b != -1) {
+            tearAppearances.add(EnumTearAppearances.get(b));
+            b = buffer.readByte();
+        }
+    }
+
+    private void writeAppearances(PacketBuffer buffer) {
+        for (EnumTearAppearances appearance : tearAppearances) {
+            buffer.writeByte(appearance.index);
+        }
+        buffer.writeByte(-1);
+    }
+
+    private void writeAppearances(CompoundNBT nbt) {
+        byte[] appearances = new byte[tearAppearances.size()];
+        int i = 0;
+        for (EnumTearAppearances appearance : tearAppearances) {
+            appearances[i] = appearance.index;
+        }
+        nbt.putByteArray(KEY_TEAR_APPEARANCE, appearances);
     }
 }

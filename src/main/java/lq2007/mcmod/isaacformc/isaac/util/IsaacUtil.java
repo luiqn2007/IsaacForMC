@@ -1,4 +1,4 @@
-package lq2007.mcmod.isaacformc.common.util;
+package lq2007.mcmod.isaacformc.isaac.util;
 
 import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
 

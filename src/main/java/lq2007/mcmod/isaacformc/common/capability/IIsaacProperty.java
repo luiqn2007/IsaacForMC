@@ -1,8 +1,10 @@
 package lq2007.mcmod.isaacformc.common.capability;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import lq2007.mcmod.isaacformc.common.network.IPacketReader;
 import lq2007.mcmod.isaacformc.common.network.IPacketWriter;
+import lq2007.mcmod.isaacformc.isaac.tear.EnumTearAppearances;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumTearEffects;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -59,6 +61,12 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
     ImmutableSet<EnumTearEffects> getTearEffects();
 
     void removeTearEffect(EnumTearEffects type);
+
+    void addTearAppearance(EnumTearAppearances appearance);
+
+    ImmutableList<EnumTearAppearances> getTearAppearances();
+
+    void removeTearAppearance(EnumTearAppearances appearance);
 
     float range();
 
@@ -155,6 +163,17 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
         public void removeTearEffect(EnumTearEffects type) { }
 
         @Override
+        public void addTearAppearance(EnumTearAppearances appearance) { }
+
+        @Override
+        public ImmutableList<EnumTearAppearances> getTearAppearances() {
+            return ImmutableList.of();
+        }
+
+        @Override
+        public void removeTearAppearance(EnumTearAppearances appearance) { }
+
+        @Override
         public float range() {
             return 1;
         }
@@ -173,8 +192,7 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
         public void deserializeNBT(CompoundNBT nbt) { }
 
         @Override
-        public Void copyFrom(LivingEntity entity) {
-            return null;
+        public void copyFrom(LivingEntity entity) {
         }
 
         @Override

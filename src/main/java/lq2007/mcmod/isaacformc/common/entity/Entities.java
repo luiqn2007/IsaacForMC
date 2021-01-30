@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacformc.common.entity;
 
+import lq2007.mcmod.isaacformc.common.entity.friend.EntityBobby;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
