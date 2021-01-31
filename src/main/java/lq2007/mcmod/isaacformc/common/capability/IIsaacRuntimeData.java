@@ -1,8 +1,6 @@
 package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
-import lq2007.mcmod.isaacformc.common.entity.EntityHandler;
-import lq2007.mcmod.isaacformc.common.entity.friend.EnumFriendTypes;
 
 public interface IIsaacRuntimeData {
 

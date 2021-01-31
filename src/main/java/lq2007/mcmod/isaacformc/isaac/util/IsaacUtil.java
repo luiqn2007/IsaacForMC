@@ -2,7 +2,6 @@ package lq2007.mcmod.isaacformc.isaac.util;
 
 import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
-import lq2007.mcmod.isaacformc.common.entity.friend.EnumFriendTypes;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.data.friend.FriendData;
 import lq2007.mcmod.isaacformc.isaac.data.friend.IDataWithFriends;

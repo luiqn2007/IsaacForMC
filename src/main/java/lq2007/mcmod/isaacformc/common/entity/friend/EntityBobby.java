@@ -2,7 +2,6 @@ package lq2007.mcmod.isaacformc.common.entity.friend;
 
 import lq2007.mcmod.isaacformc.common.entity.Entities;
 import lq2007.mcmod.isaacformc.common.entity.EnumEntityType;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.World;
@@ -17,11 +16,11 @@ public class EntityBobby extends EntityFriend {
     public static final EnumEntityType TYPE = EnumEntityType.FRIEND;
 
     public EntityBobby(EntityType<?> type, World worldIn) {
-        super(type, worldIn, EnumFriendTypes.FOLLOWING);
+        super(type, worldIn, EnumFriendTypes.DEFAULT);
     }
 
     public EntityBobby(LivingEntity owner) {
-        super(Entities.TYPE_BOBBY.get(), owner, EnumFriendTypes.FOLLOWING);
+        super(Entities.TYPE_BOBBY.get(), owner, EnumFriendTypes.DEFAULT);
     }
 
     @Override

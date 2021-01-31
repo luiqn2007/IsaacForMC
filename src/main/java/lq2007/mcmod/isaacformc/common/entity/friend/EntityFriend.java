@@ -1,6 +1,5 @@
 package lq2007.mcmod.isaacformc.common.entity.friend;
 
-import lq2007.mcmod.isaacformc.isaac.IsaacElement;
 import lq2007.mcmod.isaacformc.isaac.data.friend.IDataWithFriends;
 import lq2007.mcmod.isaacformc.isaac.util.IsaacUtil;
 import net.minecraft.entity.Entity;
@@ -18,7 +17,6 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -143,4 +141,6 @@ public abstract class EntityFriend extends Entity implements IEntityAdditionalSp
     }
 
     protected void setupTamedAI() { }
+
+    public abstract void setHandler(EntityHandler entityHandler);
 }
