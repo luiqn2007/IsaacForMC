@@ -18,7 +18,12 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-public abstract class EntityHandler implements INBTSerializable<CompoundNBT>, IPacketReader, IPacketWriter {
+/**
+ * todo
+ *  uuid 处理：currentUuid 永远是用于确定上次保存的结果
+ *  currentEntity 如果不存在则永远都是重新生成
+ */
+public abstract class EntityHandler implements INBTSerializable<CompoundNBT> {
 
     public static final EntityHandler EMPTY = new EntityHandler(PropItem.EMPTY, EnumFriendTypes.NONE) {
         @Override
@@ -37,10 +42,8 @@ public abstract class EntityHandler implements INBTSerializable<CompoundNBT>, IP
     protected EnumFriendTypes type;
 
     protected UUID currentUuid;
-    protected Integer currentId;
     protected Entity currentEntity;
     protected UUID ownerUuid;
-    protected Integer ownerId;
     protected LivingEntity ownerEntity;
 
     protected int index = -1;
@@ -53,32 +56,29 @@ public abstract class EntityHandler implements INBTSerializable<CompoundNBT>, IP
     }
 
     @Override
-    public void read(PacketBuffer buffer) {
-    }
-
-    @Override
-    public void write(PacketBuffer buffer) {
-
-    }
-
-    @Override
     public CompoundNBT serializeNBT() {
-        return null;
+        CompoundNBT nbt = new CompoundNBT();
+        if (currentUuid != null) {
+            nbt.putUniqueId("_entity_uuid", currentUuid);
+        }
+        if (ownerUuid != null) {
+            nbt.putUniqueId("_owner_uuid", ownerUuid);
+        }
+        return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-
+        if (nbt.hasUniqueId("_entity_uuid")) {
+            currentUuid = nbt.getUniqueId("_entity_uuid");
+        };
+        if (nbt.hasUniqueId("_owner_uuid")) {
+            ownerUuid = nbt.getUniqueId("_owner_uuid");
+        }
     }
 
     public Optional<Entity> getEntity(@Nullable World world) {
         if (world != null) {
-            if (currentEntity == null && currentId != null) {
-                currentEntity = world.getEntityByID(currentId);
-                if (currentEntity != null) {
-                    currentUuid = currentEntity.getUniqueID();
-                }
-            }
             if (currentEntity == null && currentUuid != null && world instanceof ServerWorld) {
                 currentEntity = ((ServerWorld) world).getEntityByUuid(currentUuid);
             }
@@ -88,12 +88,6 @@ public abstract class EntityHandler implements INBTSerializable<CompoundNBT>, IP
 
     public Optional<LivingEntity> getOwner(@Nullable World world) {
         if (world != null) {
-            if (ownerEntity == null && ownerId != null) {
-                ownerEntity = (LivingEntity) world.getEntityByID(ownerId);
-                if (ownerEntity != null) {
-                    ownerUuid = ownerEntity.getUniqueID();
-                }
-            }
             if (ownerEntity == null && ownerUuid != null) {
                 ownerEntity = world.getPlayerByUuid(ownerUuid);
                 if (ownerEntity == null && world instanceof ServerWorld) {
@@ -150,10 +144,11 @@ public abstract class EntityHandler implements INBTSerializable<CompoundNBT>, IP
             owner.world.addEntity(entity);
 
             this.ownerEntity = owner;
-            this.ownerId = owner.getUniqueID();
+            this.ownerUuid = owner.getUniqueID();
             this.currentEntity = entity;
-            this.currentId = entity.getUniqueID();
+            this.currentUuid = entity.getUniqueID();
 
+            entity.setHandler(this);
             runtimeData.insertFriend(this);
         });
     }
