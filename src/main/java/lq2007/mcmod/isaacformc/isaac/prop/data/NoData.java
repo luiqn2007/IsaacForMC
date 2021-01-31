@@ -6,12 +6,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public class NoData implements IPropData {
-
-    public static final NoData INSTANCE = new NoData();
-
-    @Override
-    public void onBindTo(PropItem item) { }
+public class NoData extends SimpleData {
 
     @Override
     public void update(LivingEntity entity, PropItem item) { }

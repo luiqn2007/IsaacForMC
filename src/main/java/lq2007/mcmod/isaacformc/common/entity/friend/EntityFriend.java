@@ -1,5 +1,7 @@
 package lq2007.mcmod.isaacformc.common.entity.friend;
 
+import lq2007.mcmod.isaacformc.isaac.IsaacElement;
+import lq2007.mcmod.isaacformc.isaac.data.friend.IDataWithFriends;
 import lq2007.mcmod.isaacformc.isaac.util.IsaacUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -27,11 +29,11 @@ import java.util.UUID;
  */
 public abstract class EntityFriend extends Entity implements IEntityAdditionalSpawnData {
 
-    public static final DataParameter<Optional<UUID>> PARAMETER_OWNER = EntityDataManager.createKey(EntityFriend.class, DataSerializers.OPTIONAL_UNIQUE_ID);
     public static final DataParameter<Integer> PARAMETER_INDEX = EntityDataManager.createKey(EntityFriend.class, DataSerializers.VARINT);
 
     protected LivingEntity owner;
     protected final EnumFriendTypes friendType;
+    public IDataWithFriends data;
 
     protected EntityFriend(EntityType<?> type, World worldIn, EnumFriendTypes friendType) {
         super(type, worldIn);
@@ -44,6 +46,11 @@ public abstract class EntityFriend extends Entity implements IEntityAdditionalSp
         this.friendType = friendType;
         this.setOwner(owner);
         this.setupTamedAI();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
     }
 
     @Override
@@ -107,8 +114,7 @@ public abstract class EntityFriend extends Entity implements IEntityAdditionalSp
         getDataManager().set(PARAMETER_OWNER, Optional.of(uuid));
     }
 
-    @Nullable
-    public LivingEntity getOwner() {
+    public Optional<LivingEntity> getOwner() {
         if (owner == null) {
             Optional<UUID> uuid = getOwnerId();
             if (uuid.isPresent()) {
@@ -121,7 +127,7 @@ public abstract class EntityFriend extends Entity implements IEntityAdditionalSp
                 }
             }
         }
-        return owner;
+        return Optional.ofNullable(owner);
     }
 
     public int getFriendIndex() {

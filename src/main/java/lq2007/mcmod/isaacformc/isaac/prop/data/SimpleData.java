@@ -5,9 +5,11 @@ import net.minecraft.entity.LivingEntity;
 
 public abstract class SimpleData implements IPropData {
 
+    private PropItem item = PropItem.EMPTY;
+
     @Override
     public void onBindTo(PropItem item) {
-
+        this.item = item;
     }
 
     @Override
@@ -23,5 +25,10 @@ public abstract class SimpleData implements IPropData {
     @Override
     public boolean isActive() {
         return false;
+    }
+
+    @Override
+    public PropItem getItem() {
+        return item;
     }
 }

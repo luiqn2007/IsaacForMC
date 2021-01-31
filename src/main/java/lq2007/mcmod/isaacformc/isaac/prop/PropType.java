@@ -82,7 +82,9 @@ public abstract class PropType<T extends IPropData> extends IsaacElement {
         IsaacCapabilities.getPropData(entity).pickupProp(item);
     }
 
-    public void onRemove(LivingEntity entity, PropItem item, ImmutableList<PropItem> removedItems) {}
+    public void onRemove(LivingEntity entity, PropItem item, ImmutableList<PropItem> removedItems) {
+        IsaacCapabilities.getPropData(entity).removeProp(item);
+    }
 
     public boolean isActive() {
         return isActive;

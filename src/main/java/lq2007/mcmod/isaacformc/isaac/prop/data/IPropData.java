@@ -16,4 +16,6 @@ public interface IPropData extends INBTSerializable<CompoundNBT>, IPacketReader,
     void active();
 
     boolean isActive();
+
+    PropItem getItem();
 }

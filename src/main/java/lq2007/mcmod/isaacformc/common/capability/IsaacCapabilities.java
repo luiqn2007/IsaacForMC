@@ -13,6 +13,9 @@ public class IsaacCapabilities {
     @CapabilityInject(IIsaacProperty.class)
     public static Capability<IIsaacProperty> CAPABILITY_PROPERTY;
 
+    @CapabilityInject(IIsaacRuntimeData.class)
+    public static Capability<IIsaacRuntimeData> CAPABILITY_RUNTIME_DATA;
+
     public static void registerAll() {
         CapabilityManager manager = CapabilityManager.INSTANCE;
         manager.register(IIsaacPropData.class, IsaacPropDataStorage.INSTANCE, IsaacPropData::new);
@@ -25,5 +28,9 @@ public class IsaacCapabilities {
 
     public static IIsaacProperty getProperty(LivingEntity entity) {
         return entity.getCapability(CAPABILITY_PROPERTY).orElseGet(IIsaacProperty::dummy);
+    }
+
+    public static IIsaacRuntimeData getRuntimeData(LivingEntity entity) {
+        return entity.getCapability(CAPABILITY_RUNTIME_DATA).orElseGet(IIsaacRuntimeData::dummy);
     }
 }

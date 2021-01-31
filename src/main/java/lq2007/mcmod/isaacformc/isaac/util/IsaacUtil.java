@@ -4,7 +4,8 @@ import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.common.entity.friend.EnumFriendTypes;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
-import lq2007.mcmod.isaacformc.isaac.prop.data.IDataWithFriends;
+import lq2007.mcmod.isaacformc.isaac.data.friend.FriendData;
+import lq2007.mcmod.isaacformc.isaac.data.friend.IDataWithFriends;
 import lq2007.mcmod.isaacformc.isaac.prop.data.IPropData;
 import net.minecraft.entity.LivingEntity;
 
@@ -20,7 +21,7 @@ public class IsaacUtil {
         for (PropItem allProp : propData.getAllProps()) {
             IPropData data = allProp.data;
             if (data instanceof IDataWithFriends) {
-                for (IDataWithFriends.FriendData friend : ((IDataWithFriends) data).getFriends()) {
+                for (FriendData friend : ((IDataWithFriends) data).getFriends()) {
                     if (type == friend.type && friend.hasEntity()) {
                         if (maxIndex < friend.index) {
                             maxIndex = friend.index;

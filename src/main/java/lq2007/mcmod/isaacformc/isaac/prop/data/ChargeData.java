@@ -5,7 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
-public class ChargeData implements IPropData {
+public class ChargeData extends SimpleData {
 
     public int totalCharge, charge;
     public int totalProcess, process;
@@ -16,9 +16,6 @@ public class ChargeData implements IPropData {
         this.process = -1;
         this.totalProcess = totalProcess;
     }
-
-    @Override
-    public void onBindTo(PropItem item) { }
 
     @Override
     public void update(LivingEntity entity, PropItem item) {
