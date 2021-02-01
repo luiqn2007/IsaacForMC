@@ -10,17 +10,17 @@ import net.minecraft.world.World;
  * 实体ID：3.1
  * 波比弟弟跟班跟随着角色，每秒发射1颗普通眼泪（相当于29点射击延迟），每颗造成3.50点伤害，弹速为1.00，射程为23.75
  */
-public class EntityBobby extends EntityFriend {
+public class EntityBobby extends EntityFriend<EntityBobby> {
 
     public static final String NAME = "brother_bobby";
     public static final EnumEntityType TYPE = EnumEntityType.FRIEND;
 
-    public EntityBobby(EntityType<?> type, World worldIn) {
-        super(type, worldIn, EnumFriendTypes.DEFAULT);
+    public EntityBobby(EntityType<EntityBobby> type, World worldIn) {
+        super(type, worldIn);
     }
 
     public EntityBobby(LivingEntity owner) {
-        super(Entities.TYPE_BOBBY.get(), owner, EnumFriendTypes.DEFAULT);
+        super(Entities.TYPE_BOBBY.get(), owner);
     }
 
     @Override

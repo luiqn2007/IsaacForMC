@@ -1,14 +1,59 @@
 package lq2007.mcmod.isaacformc.common.util;
 
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifierManager;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.AbstractChunkProvider;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.extensions.IForgeWorldServer;
 
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class EntityUtil {
+
+    public static final Map<World, Map<UUID, Entity>> WORLD_ENTITY_MAP = new HashMap<>();
+
+    @Nullable
+    public static Entity findEntityByUuid(@Nullable World world, @Nullable UUID uuid) {
+        if (world == null || uuid == null) return null;
+
+        // player
+        PlayerEntity player = world.getPlayerByUuid(uuid);
+        if (player != null) {
+            return player;
+        }
+
+        // server
+        if (world instanceof IForgeWorldServer) {
+            return ((IForgeWorldServer) world).getWorldServer().getEntityByUuid(uuid);
+        }
+
+        // client
+        if (world instanceof ClientWorld) {
+            Iterable<Entity> entities = ((ClientWorld) world).getAllEntities();
+            for (Entity entity : entities) {
+                if (entity.getUniqueID().equals(uuid)) {
+                    return entity;
+                }
+            }
+            return null;
+        }
+
+        // other
+        Map<UUID, Entity> entityMap = WORLD_ENTITY_MAP.get(world);
+        return entityMap != null ? entityMap.get(uuid) : null;
+
+    }
 
     public static void healthUp(LivingEntity entity, UUID uuid, String name, int healthCount) {
         if (!entity.world.isRemote) {

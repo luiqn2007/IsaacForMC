@@ -25,4 +25,8 @@ public class Entities {
     public static void register(IEventBus bus) {
         ENTITIES.register(bus);
     }
+
+    public static boolean isFriend(EntityType<?> type) {
+        return type == TYPE_BOBBY.get();
+    }
 }
