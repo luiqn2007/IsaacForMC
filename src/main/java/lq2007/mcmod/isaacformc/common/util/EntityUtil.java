@@ -9,14 +9,11 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.AbstractChunkProvider;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.extensions.IForgeWorldServer;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 public class EntityUtil {
@@ -24,13 +21,15 @@ public class EntityUtil {
     public static final Map<World, Map<UUID, Entity>> WORLD_ENTITY_MAP = new HashMap<>();
 
     @Nullable
-    public static Entity findEntityByUuid(@Nullable World world, @Nullable UUID uuid) {
+    public static Entity findEntityByUuid(@Nullable World world, @Nullable UUID uuid, boolean playerFirst) {
         if (world == null || uuid == null) return null;
 
         // player
-        PlayerEntity player = world.getPlayerByUuid(uuid);
-        if (player != null) {
-            return player;
+        if (playerFirst) {
+            PlayerEntity player = world.getPlayerByUuid(uuid);
+            if (player != null) {
+                return player;
+            }
         }
 
         // server
@@ -53,6 +52,42 @@ public class EntityUtil {
         Map<UUID, Entity> entityMap = WORLD_ENTITY_MAP.get(world);
         return entityMap != null ? entityMap.get(uuid) : null;
 
+    }
+
+    @Nullable
+    public static <T extends Entity> T findEntityByUuid(@Nullable World world, @Nullable UUID uuid, Class<?> type) {
+        if (world == null || uuid == null) return null;
+
+        // player
+        if (PlayerEntity.class.isAssignableFrom(type)) {
+            PlayerEntity player = world.getPlayerByUuid(uuid);
+            return type.isInstance(player) ? (T) player : null;
+        }
+
+        // server
+        if (world instanceof IForgeWorldServer) {
+            Entity entity = ((IForgeWorldServer) world).getWorldServer().getEntityByUuid(uuid);
+            return type.isInstance(entity) ? (T) entity : null;
+        }
+
+        // client
+        if (world instanceof ClientWorld) {
+            Iterable<Entity> entities = ((ClientWorld) world).getAllEntities();
+            for (Entity entity : entities) {
+                if (entity.getUniqueID().equals(uuid)) {
+                    return type.isInstance(entity) ? (T) entity : null;
+                }
+            }
+            return null;
+        }
+
+        // other
+        Map<UUID, Entity> entityMap = WORLD_ENTITY_MAP.get(world);
+        if (entityMap != null) {
+            Entity entity = entityMap.getOrDefault(uuid, null);
+            return type.isInstance(entity) ? (T) entity : null;
+        }
+        return null;
     }
 
     public static void healthUp(LivingEntity entity, UUID uuid, String name, int healthCount) {

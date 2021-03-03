@@ -2,6 +2,8 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import lq2007.mcmod.isaacformc.common.entity.ai.controller.path.BaseIsaacNavigate;
+import lq2007.mcmod.isaacformc.common.util.NBTUtils;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.PropTypes;
@@ -29,6 +31,7 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     private static final String KEY_ACT1 = "_act1";
     private static final String KEY_HAS_ACT2 = "_has2";
     private static final String KEY_ITEMS = "_items";
+    private static final String KEY_FRIENDS = "_friends";
 
     private PropItem active0 = PropItem.EMPTY;
     private PropItem active1 = PropItem.EMPTY;
@@ -37,6 +40,7 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     private final HashMap<PropType<?>, List<PropItem>> itemMap = new HashMap<>();
     private final ArrayList<PropItem> itemList = new ArrayList<>();
     private final ArrayList<PropType<?>> itemTypeList = new ArrayList<>();
+    private List<BaseIsaacNavigate> navigateList = new ArrayList<>();
 
     private final LazyOptional<IIsaacPropData> dataOptional = LazyOptional.of(() -> this);
 
@@ -236,6 +240,11 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     }
 
     @Override
+    public List<BaseIsaacNavigate> getFriends() {
+        return navigateList;
+    }
+
+    @Override
     public void copyFrom(LivingEntity entity) {
         IIsaacPropData data = IsaacCapabilities.getPropData(entity);
         Collection<PropItem> propItems = removeAllProps(true, true);
@@ -303,6 +312,13 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
         nbt.put(KEY_ACT1, active1.serializeNBT());
         nbt.putBoolean(KEY_HAS_ACT2, hasSecondActive);
         nbt.put(KEY_ITEMS, map);
+        nbt.put(KEY_FRIENDS, NBTUtils.convert(navigateList, navigate -> {
+            String type = navigate.getClass().getName();
+            CompoundNBT data = new CompoundNBT();
+            data.putString("_type", type);
+            data.put("_data", navigate.serializeNBT());
+            return data;
+        }));
         return nbt;
     }
 
@@ -323,6 +339,19 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
                 }
             });
         }
+        navigateList = NBTUtils.<CompoundNBT, BaseIsaacNavigate>convert(data.getList(KEY_FRIENDS, Constants.NBT.TAG_COMPOUND), nbt -> {
+            String type = nbt.getString("_type");
+            CompoundNBT d = nbt.getCompound("_data");
+            try {
+                Class<?> aClass = getClass().getClassLoader().loadClass(type);
+                BaseIsaacNavigate instance = (BaseIsaacNavigate) aClass.newInstance();
+                instance.deserializeNBT(d);
+                return instance;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        });
     }
 
     @Nonnull

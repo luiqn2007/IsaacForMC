@@ -2,6 +2,7 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import lq2007.mcmod.isaacformc.common.entity.ai.controller.path.BaseIsaacNavigate;
 import lq2007.mcmod.isaacformc.common.network.IPacketReader;
 import lq2007.mcmod.isaacformc.common.network.IPacketWriter;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
@@ -11,8 +12,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.function.Predicate;
 
 public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
@@ -145,6 +145,12 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
      */
     ImmutableList<PropType<?>> getAllPropTypes();
 
+    /**
+     * Get all friends
+     * @return friends
+     */
+    List<BaseIsaacNavigate> getFriends();
+
     class DummyData implements IIsaacPropData {
 
         private static final DummyData INSTANCE = new DummyData();
@@ -225,6 +231,11 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
         @Override
         public ImmutableList<PropType<?>> getAllPropTypes() {
             return ImmutableList.of();
+        }
+
+        @Override
+        public List<BaseIsaacNavigate> getFriends() {
+            return new HashSet<>();
         }
 
         @Override

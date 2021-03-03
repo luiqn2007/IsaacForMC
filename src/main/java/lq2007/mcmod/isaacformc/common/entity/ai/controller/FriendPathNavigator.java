@@ -1,6 +1,5 @@
 package lq2007.mcmod.isaacformc.common.entity.ai.controller;
 
-import lq2007.mcmod.isaacformc.common.entity.ai.controller.path.NavigateNode;
 import lq2007.mcmod.isaacformc.common.entity.friend.EntityFriend;
 import net.minecraft.pathfinding.FlyingPathNavigator;
 import net.minecraft.world.World;

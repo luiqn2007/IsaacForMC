@@ -2,7 +2,6 @@ package lq2007.mcmod.isaacformc.common.entity.friend;
 
 import lq2007.mcmod.isaacformc.common.entity.ai.controller.FriendMovementController;
 import lq2007.mcmod.isaacformc.common.entity.ai.controller.FriendPathNavigator;
-import lq2007.mcmod.isaacformc.common.entity.ai.controller.path.FriendFollowingNavigateNode;
 import lq2007.mcmod.isaacformc.common.util.EntityUtil;
 import net.minecraft.entity.*;
 import net.minecraft.fluid.Fluid;
@@ -16,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -117,7 +117,7 @@ public class EntityFriend<T extends EntityFriend<T>> extends Entity implements I
         return ownerUuid;
     }
 
-    public boolean isOwner(Entity entity) {
+    public boolean isOwner(@Nullable Entity entity) {
         return entity instanceof LivingEntity && getOwner().orElse(null) == entity;
     }
 }
