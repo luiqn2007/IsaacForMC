@@ -4,13 +4,17 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class NBTUtils {
 
-    public static ListNBT convert(List<? extends INBTSerializable<?>> list) {
+    public static ListNBT convert(Iterable<? extends INBTSerializable<?>> list) {
         ListNBT nbt = new ListNBT();
         for (INBTSerializable<?> item : list) {
             nbt.add(item.serializeNBT());
@@ -18,7 +22,7 @@ public class NBTUtils {
         return nbt;
     }
 
-    public static <ITEM, NBT extends INBT> ListNBT convert(List<ITEM> list, Function<ITEM, NBT> map) {
+    public static <ITEM, NBT extends INBT> ListNBT convert(Iterable<ITEM> list, Function<ITEM, NBT> map) {
         ListNBT nbt = new ListNBT();
         for (ITEM item : list) {
             nbt.add(map.apply(item));
@@ -36,5 +40,17 @@ public class NBTUtils {
             result.add(e);
         }
         return result;
+    }
+
+    public static <NBT extends INBT, K, V> Map<K, V> convert(ListNBT list, @Nullable Map<K, V> map, BiConsumer<NBT, Map<K, V>> putter) {
+        if (map == null) {
+            map = new HashMap<>();
+        } else {
+            map.clear();
+        }
+        for (INBT inbt : list) {
+            putter.accept((NBT) inbt, map);
+        }
+        return map;
     }
 }

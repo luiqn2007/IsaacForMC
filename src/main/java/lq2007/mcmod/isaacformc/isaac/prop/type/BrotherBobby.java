@@ -1,6 +1,8 @@
 package lq2007.mcmod.isaacformc.isaac.prop.type;
 
 import com.google.common.collect.ImmutableList;
+import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
+import lq2007.mcmod.isaacformc.common.data.IsaacFriends;
 import lq2007.mcmod.isaacformc.common.entity.friend.EntityBobby;
 import lq2007.mcmod.isaacformc.isaac.prop.EnumPropTags;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
@@ -30,10 +32,8 @@ public class BrotherBobby extends PropType<DataBrotherBobby> {
     public void onPickup(LivingEntity entity, PropItem item, PropItem itemBeforeEvent) {
         if (!entity.world.isRemote) {
             EntityBobby bobby = new EntityBobby(entity);
-            FriendData data = ((DataBrotherBobby) item.data).bobby;
-            data.index = bobby.getFriendIndex();
-            data.type = bobby.getFriendType();
-            data.id = bobby.getUniqueID();
+            ((DataBrotherBobby) item.data).bobby = bobby.getUniqueID();
+            IsaacCapabilities.getPropData(entity).getOrCreateFriends(IsaacFriends.FOLLOWING).add(entity, bobby);
             entity.world.addEntity(bobby);
         }
         super.onPickup(entity, item, itemBeforeEvent);

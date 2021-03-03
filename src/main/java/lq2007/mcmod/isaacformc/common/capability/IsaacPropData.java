@@ -2,21 +2,19 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import lq2007.mcmod.isaacformc.common.entity.ai.controller.path.BaseIsaacNavigate;
+import lq2007.mcmod.isaacformc.common.data.IsaacFriends;
 import lq2007.mcmod.isaacformc.common.util.NBTUtils;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
 import lq2007.mcmod.isaacformc.isaac.prop.PropTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -25,6 +23,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
+
 public class IsaacPropData extends VersionCapability implements IIsaacPropData, ICapabilityProvider {
 
     private static final String KEY_ACT0 = "_act0";
@@ -32,15 +32,17 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     private static final String KEY_HAS_ACT2 = "_has2";
     private static final String KEY_ITEMS = "_items";
     private static final String KEY_FRIENDS = "_friends";
+    private static final String KEY_TYPE = "_type";
+    private static final String KEY_DATA = "_data";
 
     private PropItem active0 = PropItem.EMPTY;
     private PropItem active1 = PropItem.EMPTY;
     private boolean hasSecondActive = false;
 
-    private final HashMap<PropType<?>, List<PropItem>> itemMap = new HashMap<>();
+    private final Map<PropType<?>, List<PropItem>> itemMap = new HashMap<>();
     private final ArrayList<PropItem> itemList = new ArrayList<>();
     private final ArrayList<PropType<?>> itemTypeList = new ArrayList<>();
-    private List<BaseIsaacNavigate> navigateList = new ArrayList<>();
+    private final Map<IsaacFriends.Type, IsaacFriends> friendsMap = new HashMap<>();
 
     private final LazyOptional<IIsaacPropData> dataOptional = LazyOptional.of(() -> this);
 
@@ -240,8 +242,21 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     }
 
     @Override
-    public List<BaseIsaacNavigate> getFriends() {
-        return navigateList;
+    public IsaacFriends getOrCreateFriends(IsaacFriends.Type type) {
+        if (type == IsaacFriends.NONE) {
+            return type.newInstance();
+        }
+        if (friendsMap.containsKey(type)) {
+            return friendsMap.get(type);
+        }
+        IsaacFriends newFriends = type.newInstance();
+        friendsMap.put(type, newFriends);
+        return newFriends;
+    }
+
+    @Override
+    public ImmutableList<IsaacFriends.Type> getFriendTypes() {
+        return ImmutableList.copyOf(friendsMap.keySet());
     }
 
     @Override
@@ -299,24 +314,20 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
-        CompoundNBT map = new CompoundNBT();
-        itemMap.forEach((type, items) -> {
-            ListNBT list = new ListNBT();
-            for (PropItem item : items) {
-                list.add(item.serializeNBT());
-            }
-            map.put(type.key.toString(), list);
-        });
-
         nbt.put(KEY_ACT0, active0.serializeNBT());
         nbt.put(KEY_ACT1, active1.serializeNBT());
         nbt.putBoolean(KEY_HAS_ACT2, hasSecondActive);
-        nbt.put(KEY_ITEMS, map);
-        nbt.put(KEY_FRIENDS, NBTUtils.convert(navigateList, navigate -> {
-            String type = navigate.getClass().getName();
+        nbt.put(KEY_ITEMS, NBTUtils.convert(itemMap.entrySet(), entry -> {
             CompoundNBT data = new CompoundNBT();
-            data.putString("_type", type);
-            data.put("_data", navigate.serializeNBT());
+            data.putString(KEY_TYPE, entry.getKey().key.toString());
+            data.put(KEY_DATA, NBTUtils.convert(entry.getValue(), PropItem::serializeNBT));
+            return data;
+        }));
+        nbt.put(KEY_FRIENDS, NBTUtils.convert(friendsMap.entrySet(), entry -> {
+            String type = entry.getKey().getName();
+            CompoundNBT data = new CompoundNBT();
+            data.putString(KEY_TYPE, type);
+            data.put(KEY_DATA, entry.getValue().serializeNBT());
             return data;
         }));
         return nbt;
@@ -328,28 +339,21 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
         active0 = PropItem.fromNbt(data.getCompound(KEY_ACT0));
         active1 = PropItem.fromNbt(data.getCompound(KEY_ACT1));
         hasSecondActive = data.getBoolean(KEY_HAS_ACT2);
-        CompoundNBT map = data.getCompound(KEY_ITEMS);
-        for (String s : map.keySet()) {
-            PropTypes.get(new ResourceLocation(s)).ifPresent(propType -> {
-                List<PropItem> items = new ArrayList<>();
-                itemMap.put(propType, items);
-                ListNBT list = map.getList(s, Constants.NBT.TAG_COMPOUND);
-                for (INBT itemNbt : list) {
-                    pickupProp(PropItem.fromNbt((CompoundNBT) itemNbt));
-                }
+        NBTUtils.<CompoundNBT, PropType<?>, List<PropItem>>convert(data.getList(KEY_ITEMS, TAG_COMPOUND), itemMap, (nbt, map) -> {
+            ResourceLocation key = new ResourceLocation(nbt.getString(KEY_TYPE));
+            PropTypes.get(key).ifPresent(propType -> {
+                ListNBT list = nbt.getList(KEY_DATA, TAG_COMPOUND);
+                map.put(propType, NBTUtils.convert(list, PropItem::fromNbt));
             });
-        }
-        navigateList = NBTUtils.<CompoundNBT, BaseIsaacNavigate>convert(data.getList(KEY_FRIENDS, Constants.NBT.TAG_COMPOUND), nbt -> {
-            String type = nbt.getString("_type");
-            CompoundNBT d = nbt.getCompound("_data");
-            try {
-                Class<?> aClass = getClass().getClassLoader().loadClass(type);
-                BaseIsaacNavigate instance = (BaseIsaacNavigate) aClass.newInstance();
-                instance.deserializeNBT(d);
-                return instance;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+        });
+        NBTUtils.<CompoundNBT, IsaacFriends.Type, IsaacFriends>convert(data.getList(KEY_FRIENDS, TAG_COMPOUND), friendsMap, (nbt, map) -> {
+            String t = nbt.getString(KEY_TYPE);
+            CompoundNBT d = nbt.getCompound(KEY_DATA);
+            IsaacFriends.Type type = IsaacFriends.TYPES.getOrDefault(t, null);
+            if (type != null) {
+                IsaacFriends friends = type.newInstance();
+                friends.deserializeNBT(d);
+                map.put(type, friends);
             }
         });
     }

@@ -2,7 +2,7 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import lq2007.mcmod.isaacformc.common.entity.ai.controller.path.BaseIsaacNavigate;
+import lq2007.mcmod.isaacformc.common.data.IsaacFriends;
 import lq2007.mcmod.isaacformc.common.network.IPacketReader;
 import lq2007.mcmod.isaacformc.common.network.IPacketWriter;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
@@ -149,7 +149,13 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
      * Get all friends
      * @return friends
      */
-    List<BaseIsaacNavigate> getFriends();
+    IsaacFriends getOrCreateFriends(IsaacFriends.Type type);
+
+    /**
+     * Get all friend types.
+     * @return types
+     */
+    ImmutableList<IsaacFriends.Type> getFriendTypes();
 
     class DummyData implements IIsaacPropData {
 
@@ -234,8 +240,13 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
         }
 
         @Override
-        public List<BaseIsaacNavigate> getFriends() {
-            return new HashSet<>();
+        public IsaacFriends getOrCreateFriends(IsaacFriends.Type type) {
+            return IsaacFriends.NONE.newInstance();
+        }
+
+        @Override
+        public ImmutableList<IsaacFriends.Type> getFriendTypes() {
+            return ImmutableList.of(IsaacFriends.NONE);
         }
 
         @Override

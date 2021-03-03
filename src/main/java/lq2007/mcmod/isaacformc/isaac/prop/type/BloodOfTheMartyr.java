@@ -6,8 +6,10 @@ import lq2007.mcmod.isaacformc.isaac.prop.EnumPropTags;
 import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.prop.PropTag;
 import lq2007.mcmod.isaacformc.isaac.prop.PropType;
+import lq2007.mcmod.isaacformc.isaac.prop.data.IPropData;
 import lq2007.mcmod.isaacformc.isaac.prop.data.NoData;
 import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
+import lq2007.mcmod.isaacformc.isaac.tear.EnumTearAppearances;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumTearEffects;
 import net.minecraft.entity.LivingEntity;
 
@@ -25,7 +27,7 @@ public class BloodOfTheMartyr extends PropType<NoData> {
 
     @Override
     protected NoData createData() {
-        return NoData.INSTANCE;
+        return new NoData();
     }
 
     @Override
@@ -34,7 +36,7 @@ public class BloodOfTheMartyr extends PropType<NoData> {
         if (!entity.world.isRemote) {
             EntityUtil.damageUp(entity, DAMAGE_UP, "isaac.blood_of_the_martyr.damage_up", 1);
             EntityUtil.damageFixConflict(entity, TypeGroups.DAMAGE_FIX_0, 1.5);
-            IsaacCapabilities.getProperty(entity).addTearEffect(EnumTearEffects.BLOOD);
+            IsaacCapabilities.getProperty(entity).addTearAppearance(EnumTearAppearances.BLOOD);
         }
     }
 }
