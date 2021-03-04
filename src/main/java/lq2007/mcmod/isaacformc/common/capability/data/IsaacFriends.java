@@ -1,4 +1,4 @@
-package lq2007.mcmod.isaacformc.common.data;
+package lq2007.mcmod.isaacformc.common.capability.data;
 
 import lq2007.mcmod.isaacformc.common.entity.friend.EntityFriend;
 import lq2007.mcmod.isaacformc.common.util.EntityUtil;
@@ -6,7 +6,6 @@ import lq2007.mcmod.isaacformc.common.util.NBTUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;

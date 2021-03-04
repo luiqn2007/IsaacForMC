@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacformc.common.block;
 
 import lq2007.mcmod.isaacformc.common.network.IsaacNetworks;
-import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.PropItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;

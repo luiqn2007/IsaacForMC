@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacformc.common.event;
 
-import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.PropItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;

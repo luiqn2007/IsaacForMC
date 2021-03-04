@@ -1,12 +1,12 @@
-package lq2007.mcmod.isaacformc.isaac.prop;
+package lq2007.mcmod.isaacformc.common.prop.type;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.common.event.PickupPropItemEvent;
+import lq2007.mcmod.isaacformc.common.prop.PropItem;
 import lq2007.mcmod.isaacformc.isaac.IsaacElement;
-import lq2007.mcmod.isaacformc.isaac.prop.data.IPropData;
 import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
@@ -14,34 +14,42 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class PropType<T extends IPropData> extends IsaacElement {
+public abstract class AbstractPropType extends IsaacElement {
 
     private final String nameKey;
     private final String descriptionKey;
-    private final boolean isActive;
+    private final int charge;
     private final List<EnumPropPools> rooms;
 
-    public PropType(ResourceLocation key, boolean isActive, EnumPropPools... rooms) {
-        this(key, isActive, 0, rooms);
+    public AbstractPropType(ResourceLocation key, EnumPropPools... rooms) {
+        this(key, -1, 0, rooms);
     }
 
-    public PropType(String name, boolean isActive, int id, EnumPropPools... rooms) {
-        this(new ResourceLocation(Isaac.ID, name), isActive, id, rooms);
+    public AbstractPropType(String name, int id, EnumPropPools... rooms) {
+        this(new ResourceLocation(Isaac.ID, name), id, 0, rooms);
     }
 
-    protected PropType(ResourceLocation key, boolean isActive, int id, EnumPropPools... rooms) {
+    public AbstractPropType(ResourceLocation key, int charge, EnumPropPools... rooms) {
+        this(key, -1, charge, rooms);
+    }
+
+    public AbstractPropType(String name, int id, int charge, EnumPropPools... rooms) {
+        this(new ResourceLocation(Isaac.ID, name), id, charge, rooms);
+    }
+
+    protected AbstractPropType(ResourceLocation key, int id, int charge, EnumPropPools... rooms) {
         super(key, id);
-        PropTypes.register(this);
+        Props.register(this);
         this.rooms = Lists.newArrayList(rooms);
-        this.isActive = isActive;
+        this.charge = charge;
         this.nameKey = key.getNamespace() + ".prop." + key.getPath() + ".name";
         this.descriptionKey = key.getNamespace() + ".prop." + key.getPath() + ".desc";
     }
-
-    abstract protected T createData();
 
     @Override
     public ITextComponent getName() {
@@ -87,7 +95,12 @@ public abstract class PropType<T extends IPropData> extends IsaacElement {
     }
 
     public boolean isActive() {
-        return isActive;
+        return charge > 0;
+    }
+
+    @Nullable
+    public ICapabilityProvider initCapabilities() {
+        return null;
     }
 
     // todo implement render

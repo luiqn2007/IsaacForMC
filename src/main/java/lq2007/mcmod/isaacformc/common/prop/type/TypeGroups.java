@@ -1,7 +1,10 @@
-package lq2007.mcmod.isaacformc.isaac.prop.type;
+package lq2007.mcmod.isaacformc.common.prop.type;
 
 import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacProperty;
+import lq2007.mcmod.isaacformc.common.prop.type.ab.BloodOfTheMartyr;
+import lq2007.mcmod.isaacformc.common.prop.type.ab.CricketsHead;
+import lq2007.mcmod.isaacformc.common.prop.type.ab.TheInnerEye;
 
 import java.util.UUID;
 

@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacformc.common.network;
 
 import lq2007.mcmod.isaacformc.common.block.TileFoundation;
-import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.PropItem;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;

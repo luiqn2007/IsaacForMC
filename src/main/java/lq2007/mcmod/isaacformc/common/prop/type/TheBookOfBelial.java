@@ -1,14 +1,13 @@
-package lq2007.mcmod.isaacformc.isaac.prop.type;
+package lq2007.mcmod.isaacformc.common.prop.type;
 
 import lq2007.mcmod.isaacformc.common.util.EntityUtil;
 import lq2007.mcmod.isaacformc.isaac.EnumIsaacVersion;
-import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
-import lq2007.mcmod.isaacformc.isaac.prop.PropType;
-import lq2007.mcmod.isaacformc.isaac.prop.data.ChargeData;
+import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.data.ChargeData;
 import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
 
-public class TheBookOfBelial extends PropType<ChargeData> {
+public class TheBookOfBelial extends AbstractPropType {
 
     public TheBookOfBelial(String name, EnumIsaacVersion version, boolean isActive, int id, EnumPropPools... rooms) {
         super(name, isActive, id, rooms);

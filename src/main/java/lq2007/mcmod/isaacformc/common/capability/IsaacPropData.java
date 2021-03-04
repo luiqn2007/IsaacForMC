@@ -2,11 +2,11 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import lq2007.mcmod.isaacformc.common.data.IsaacFriends;
+import lq2007.mcmod.isaacformc.common.capability.data.IsaacFriends;
 import lq2007.mcmod.isaacformc.common.util.NBTUtils;
-import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
-import lq2007.mcmod.isaacformc.isaac.prop.PropType;
-import lq2007.mcmod.isaacformc.isaac.prop.PropTypes;
+import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
+import lq2007.mcmod.isaacformc.common.prop.type.Props;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -39,9 +39,9 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     private PropItem active1 = PropItem.EMPTY;
     private boolean hasSecondActive = false;
 
-    private final Map<PropType<?>, List<PropItem>> itemMap = new HashMap<>();
+    private final Map<AbstractPropType, List<PropItem>> itemMap = new HashMap<>();
     private final ArrayList<PropItem> itemList = new ArrayList<>();
-    private final ArrayList<PropType<?>> itemTypeList = new ArrayList<>();
+    private final ArrayList<AbstractPropType> itemTypeList = new ArrayList<>();
     private final Map<IsaacFriends.Type, IsaacFriends> friendsMap = new HashMap<>();
 
     private final LazyOptional<IIsaacPropData> dataOptional = LazyOptional.of(() -> this);
@@ -68,7 +68,7 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
         }
 
         PropItem returnItem;
-        PropType<?> type = prop.type;
+        AbstractPropType type = prop.prop;
         if (type.isActive()) {
             // active item
             if (active0 == PropItem.EMPTY) {
@@ -120,7 +120,7 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
             return PropItem.EMPTY;
         }
         if (itemList.remove(prop)) {
-            PropType<?> type = prop.type;
+            AbstractPropType type = prop.prop;
             itemTypeList.remove(type);
             if (type.isActive()) {
                 if (active0 == prop) {
@@ -148,11 +148,11 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
         } else {
             if (active0 != PropItem.EMPTY) {
                 itemList.add(active0);
-                itemTypeList.add(active0.type);
+                itemTypeList.add(active0.prop);
             }
             if (active1 != PropItem.EMPTY) {
                 itemList.add(active1);
-                itemTypeList.add(active1.type);
+                itemTypeList.add(active1.prop);
             }
         }
         if (clearHeldPropRecord) {
@@ -187,13 +187,13 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     }
 
     @Override
-    public boolean contains(PropType<?> type) {
+    public boolean contains(AbstractPropType type) {
         return itemTypeList.contains(type);
     }
 
     @Override
     public boolean contains(Class<?> type) {
-        for (PropType<?> propType : itemTypeList) {
+        for (AbstractPropType propType : itemTypeList) {
             if (type.isInstance(propType)) {
                 return true;
             }
@@ -212,8 +212,8 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     }
 
     @Override
-    public boolean containsTypeIf(Predicate<PropType<?>> condition) {
-        for (PropType<?> propType : itemTypeList) {
+    public boolean containsTypeIf(Predicate<AbstractPropType> condition) {
+        for (AbstractPropType propType : itemTypeList) {
             if (condition.test(propType)) {
                 return true;
             }
@@ -222,12 +222,12 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     }
 
     @Override
-    public boolean isHold(PropType<?> type) {
+    public boolean isHold(AbstractPropType type) {
         return itemMap.containsKey(type);
     }
 
     @Override
-    public ImmutableSet<PropType<?>> getAllHeldProps() {
+    public ImmutableSet<AbstractPropType> getAllHeldProps() {
         return ImmutableSet.copyOf(itemMap.keySet());
     }
 
@@ -237,7 +237,7 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
     }
 
     @Override
-    public ImmutableList<PropType<?>> getAllPropTypes() {
+    public ImmutableList<AbstractPropType> getAllPropTypes() {
         return ImmutableList.copyOf(itemTypeList);
     }
 
@@ -272,7 +272,7 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
             itemList.addAll(pData.itemList);
             itemTypeList.addAll(pData.itemTypeList);
         } else if (!(data instanceof DummyData)) {
-            for (PropType<?> type : data.getAllHeldProps()) {
+            for (AbstractPropType type : data.getAllHeldProps()) {
                 itemMap.put(type, new ArrayList<>());
             }
             pickupProps(data.getAllProps());
@@ -290,7 +290,7 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
         }
         int heldItemCount = buffer.readVarInt();
         for (int i = 0; i < heldItemCount; i++) {
-            PropTypes.get(buffer.readResourceLocation())
+            Props.get(buffer.readResourceLocation())
                     .ifPresent(type -> itemMap.put(type, new ArrayList<>()));
         }
     }
@@ -339,9 +339,9 @@ public class IsaacPropData extends VersionCapability implements IIsaacPropData, 
         active0 = PropItem.fromNbt(data.getCompound(KEY_ACT0));
         active1 = PropItem.fromNbt(data.getCompound(KEY_ACT1));
         hasSecondActive = data.getBoolean(KEY_HAS_ACT2);
-        NBTUtils.<CompoundNBT, PropType<?>, List<PropItem>>convert(data.getList(KEY_ITEMS, TAG_COMPOUND), itemMap, (nbt, map) -> {
+        NBTUtils.<CompoundNBT, AbstractPropType, List<PropItem>>convert(data.getList(KEY_ITEMS, TAG_COMPOUND), itemMap, (nbt, map) -> {
             ResourceLocation key = new ResourceLocation(nbt.getString(KEY_TYPE));
-            PropTypes.get(key).ifPresent(propType -> {
+            Props.get(key).ifPresent(propType -> {
                 ListNBT list = nbt.getList(KEY_DATA, TAG_COMPOUND);
                 map.put(propType, NBTUtils.convert(list, PropItem::fromNbt));
             });

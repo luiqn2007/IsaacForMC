@@ -1,27 +1,21 @@
-package lq2007.mcmod.isaacformc.isaac.prop.type;
+package lq2007.mcmod.isaacformc.common.prop.type.ab;
 
 import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacProperty;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
-import lq2007.mcmod.isaacformc.isaac.prop.EnumPropTags;
-import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
-import lq2007.mcmod.isaacformc.isaac.prop.PropTag;
-import lq2007.mcmod.isaacformc.isaac.prop.PropType;
-import lq2007.mcmod.isaacformc.isaac.prop.data.NoData;
+import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
+import lq2007.mcmod.isaacformc.common.prop.type.EnumPropTags;
+import lq2007.mcmod.isaacformc.common.prop.type.PropTag;
 import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
 
 // https://isaac.huijiwiki.com/wiki/%E5%B0%8F%E5%8F%B7
 @PropTag({EnumPropTags.PASSIVE, EnumPropTags.SHOOT_DELAY, EnumPropTags.SHOOT_RANGE, EnumPropTags.SHOOT_HIGH, EnumPropTags.TEAR_TEXTURE})
-public class NumberOne extends PropType<NoData> {
+public class NumberOne extends AbstractPropType {
 
-    public NumberOne(String name, boolean isActive, int id, EnumPropPools... rooms) {
-        super(name, isActive, id, rooms);
-    }
-
-    @Override
-    protected NoData createData() {
-        return NoData.INSTANCE;
+    public NumberOne(int id) {
+        super("number_one", id, EnumPropPools.NORMAL);
     }
 
     @Override

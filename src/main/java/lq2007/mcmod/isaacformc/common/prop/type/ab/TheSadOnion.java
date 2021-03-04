@@ -1,26 +1,20 @@
-package lq2007.mcmod.isaacformc.isaac.prop.type;
+package lq2007.mcmod.isaacformc.common.prop.type.ab;
 
 import lq2007.mcmod.isaacformc.common.capability.IIsaacProperty;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
-import lq2007.mcmod.isaacformc.isaac.prop.EnumPropTags;
-import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
-import lq2007.mcmod.isaacformc.isaac.prop.PropTag;
-import lq2007.mcmod.isaacformc.isaac.prop.PropType;
-import lq2007.mcmod.isaacformc.isaac.prop.data.NoData;
+import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
+import lq2007.mcmod.isaacformc.common.prop.type.EnumPropTags;
+import lq2007.mcmod.isaacformc.common.prop.type.PropTag;
 import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
 
 // https://isaac.huijiwiki.com/wiki/%E4%BC%A4%E5%BF%83%E6%B4%8B%E8%91%B1
 @PropTag({EnumPropTags.PASSIVE, EnumPropTags.SHOOT_DELAY})
-public class TheSadOnion extends PropType<NoData> {
+public class TheSadOnion extends AbstractPropType {
 
-    public TheSadOnion(String name, boolean isActive, int id, EnumPropPools... rooms) {
-        super(name, isActive, id, rooms);
-    }
-
-    @Override
-    protected NoData createData() {
-        return NoData.INSTANCE;
+    public TheSadOnion(int id) {
+        super("the_sad_onion", id, EnumPropPools.NORMAL);
     }
 
     @Override

@@ -2,11 +2,11 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import lq2007.mcmod.isaacformc.common.data.IsaacFriends;
+import lq2007.mcmod.isaacformc.common.capability.data.IsaacFriends;
 import lq2007.mcmod.isaacformc.common.network.IPacketReader;
 import lq2007.mcmod.isaacformc.common.network.IPacketWriter;
-import lq2007.mcmod.isaacformc.isaac.prop.PropItem;
-import lq2007.mcmod.isaacformc.isaac.prop.PropType;
+import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -93,7 +93,7 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
      * @param type the prop type
      * @return True if entity has the prop.
      */
-    boolean contains(PropType<?> type);
+    boolean contains(AbstractPropType type);
 
     /**
      * Check if entity has item type implement class.
@@ -114,14 +114,14 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
      * @param condition condition
      * @return True if entity has the prop.
      */
-    boolean containsTypeIf(Predicate<PropType<?>> condition);
+    boolean containsTypeIf(Predicate<AbstractPropType> condition);
 
     /**
      * Check if entity ever received the specified type of item,
      * @param type prop type
      * @return True if entity ever hold or is holding the type of item.
      */
-    boolean isHold(PropType<?> type);
+    boolean isHold(AbstractPropType type);
 
     /**
      * <p>Get all prop types the entity picked up.
@@ -129,7 +129,7 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
      *
      * @return All prop type
      */
-    ImmutableSet<PropType<?>> getAllHeldProps();
+    ImmutableSet<AbstractPropType> getAllHeldProps();
 
     /**
      * Get all props contains active props.
@@ -143,7 +143,7 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
      *
      * @return All prop types
      */
-    ImmutableList<PropType<?>> getAllPropTypes();
+    ImmutableList<AbstractPropType> getAllPropTypes();
 
     /**
      * Get all friends
@@ -200,7 +200,7 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
         }
 
         @Override
-        public boolean contains(PropType<?> type) {
+        public boolean contains(AbstractPropType type) {
             return false;
         }
 
@@ -215,17 +215,17 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
         }
 
         @Override
-        public boolean containsTypeIf(Predicate<PropType<?>> condition) {
+        public boolean containsTypeIf(Predicate<AbstractPropType> condition) {
             return false;
         }
 
         @Override
-        public boolean isHold(PropType<?> type) {
+        public boolean isHold(AbstractPropType type) {
             return false;
         }
 
         @Override
-        public ImmutableSet<PropType<?>> getAllHeldProps() {
+        public ImmutableSet<AbstractPropType> getAllHeldProps() {
             return ImmutableSet.of();
         }
 
@@ -235,7 +235,7 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
         }
 
         @Override
-        public ImmutableList<PropType<?>> getAllPropTypes() {
+        public ImmutableList<AbstractPropType> getAllPropTypes() {
             return ImmutableList.of();
         }
 

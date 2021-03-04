@@ -1,6 +1,6 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package lq2007.mcmod.isaacformc.isaac.prop.type;
+package lq2007.mcmod.isaacformc.common.prop.type;
 
 import mcp.MethodsReturnNonnullByDefault;
 

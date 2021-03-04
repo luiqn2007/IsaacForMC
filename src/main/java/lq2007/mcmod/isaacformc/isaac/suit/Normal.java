@@ -1,12 +1,12 @@
 package lq2007.mcmod.isaacformc.isaac.suit;
 
-import lq2007.mcmod.isaacformc.isaac.prop.PropType;
+import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 public class Normal extends SuitType {
 
-    public Normal(String key, int id, PropType<?>... contains) {
+    public Normal(String key, int id, AbstractPropType... contains) {
         super(key, id, contains);
     }
 

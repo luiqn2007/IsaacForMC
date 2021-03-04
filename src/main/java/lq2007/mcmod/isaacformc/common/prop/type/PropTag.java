@@ -1,4 +1,4 @@
-package lq2007.mcmod.isaacformc.isaac.prop;
+package lq2007.mcmod.isaacformc.common.prop.type;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
