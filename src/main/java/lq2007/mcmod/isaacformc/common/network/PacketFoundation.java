@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacformc.common.network;
 
 import lq2007.mcmod.isaacformc.common.block.TileFoundation;
-import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.Prop;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -12,17 +12,17 @@ import java.util.function.Supplier;
 
 public class PacketFoundation {
 
-    public final PropItem prop;
+    public final Prop prop;
     public final BlockPos pos;
 
-    public PacketFoundation(PropItem prop, BlockPos pos) {
+    public PacketFoundation(Prop prop, BlockPos pos) {
         this.prop = prop;
         this.pos = pos;
     }
 
     public PacketFoundation(PacketBuffer buffer) {
         this.pos = buffer.readBlockPos();
-        this.prop = PropItem.fromPacket(buffer);
+        this.prop = Prop.fromPacket(buffer);
     }
 
     public static void encode(PacketFoundation packet, PacketBuffer buffer) {

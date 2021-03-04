@@ -1,7 +1,6 @@
 package lq2007.mcmod.isaacformc.common.handler;
 
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
-import lq2007.mcmod.isaacformc.common.event.PickupPropItemEvent;
 import lq2007.mcmod.isaacformc.isaac.util.IsaacUtil;
 import net.minecraft.entity.LivingEntity;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

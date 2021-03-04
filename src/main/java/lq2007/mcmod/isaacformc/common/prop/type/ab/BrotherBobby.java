@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.common.capability.data.IsaacFriends;
 import lq2007.mcmod.isaacformc.common.entity.friend.EntityBobby;
-import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.Prop;
 import lq2007.mcmod.isaacformc.common.prop.data.DataBrotherBobby;
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import lq2007.mcmod.isaacformc.common.prop.type.EnumPropTags;
@@ -28,7 +28,7 @@ public class BrotherBobby extends AbstractPropType {
     }
 
     @Override
-    public void onPickup(LivingEntity entity, PropItem item, PropItem itemBeforeEvent) {
+    public void onPickup(LivingEntity entity, Prop item, Prop itemBeforeEvent) {
         if (!entity.world.isRemote) {
             EntityBobby bobby = new EntityBobby(entity);
             ((DataBrotherBobby) item.data).bobby = bobby.getUniqueID();
@@ -39,7 +39,7 @@ public class BrotherBobby extends AbstractPropType {
     }
 
     @Override
-    public void onRemove(LivingEntity entity, PropItem item, ImmutableList<PropItem> removedItems) {
+    public void onRemove(LivingEntity entity, Prop item, ImmutableList<Prop> removedItems) {
         if (!entity.world.isRemote) {
             ServerWorld world = (ServerWorld) entity.world;
             DataBrotherBobby data = (DataBrotherBobby) item.data;

@@ -30,8 +30,8 @@ public class NBTUtils {
         return nbt;
     }
 
-    public static <NBT extends INBT, RESULT> List<RESULT> convert(ListNBT list, Function<NBT, RESULT> converter) {
-        List<RESULT> result = new ArrayList<>();
+    public static <NBT extends INBT, RESULT, LIST extends List<RESULT>> LIST convert(ListNBT list, LIST result, Function<NBT, RESULT> converter) {
+        result.clear();
         for (INBT nbt : list) {
             RESULT e = converter.apply((NBT) nbt);
             if (e == null) {

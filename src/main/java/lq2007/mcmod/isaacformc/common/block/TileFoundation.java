@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacformc.common.block;
 
-import lq2007.mcmod.isaacformc.common.network.IsaacNetworks;
-import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.Prop;
+import lq2007.mcmod.isaacformc.common.util.BlockUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
@@ -13,35 +13,32 @@ import javax.annotation.Nullable;
 
 public class TileFoundation extends TileEntity {
 
-    private PropItem prop = PropItem.EMPTY;
+    private Prop prop = Prop.EMPTY;
 
     public TileFoundation() {
         super(Blocks.TYPE_FOUNDATION.get());
     }
 
-    public PropItem getProp() {
+    public Prop getProp() {
         return prop;
     }
 
-    public void setProp(PropItem prop) {
+    public void setProp(Prop prop) {
         if (world != null && !world.isRemote && this.prop != prop) {
             this.prop = prop;
-            markDirty();
-            if (world != null && !world.isRemote) {
-                IsaacNetworks.notifyFoundationChanged(world, this);
-            }
+            BlockUtil.markDirtyAndUpdate(this);
         }
     }
 
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 0, prop != PropItem.EMPTY ? prop.serializeNBT() : new CompoundNBT());
+        return new SUpdateTileEntityPacket(pos, 0, prop != Prop.EMPTY ? prop.serializeNBT() : new CompoundNBT());
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        prop = PropItem.fromNbt(pkt.getNbtCompound());
+        prop = Prop.fromNbt(pkt.getNbtCompound());
     }
 
     @Override
@@ -53,15 +50,15 @@ public class TileFoundation extends TileEntity {
     public void read(BlockState state, CompoundNBT nbt) {
         super.read(state, nbt);
         prop = nbt.contains("_item", Constants.NBT.TAG_COMPOUND)
-                ? PropItem.fromNbt(nbt.getCompound("_item"))
-                : PropItem.EMPTY;
+                ? Prop.fromNbt(nbt.getCompound("_item"))
+                : Prop.EMPTY;
         markDirty();
     }
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         CompoundNBT nbt = super.write(compound);
-        if (prop != PropItem.EMPTY) {
+        if (prop != Prop.EMPTY) {
             nbt.put("_item", prop.serializeNBT());
         }
         return nbt;
@@ -71,7 +68,7 @@ public class TileFoundation extends TileEntity {
                                        com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
                                        net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
                                        int combinedLightIn, int combinedOverlayIn) {
-        if (prop != PropItem.EMPTY) {
+        if (prop != Prop.EMPTY) {
             prop.renderOnFoundation(partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
         }
     }

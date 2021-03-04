@@ -3,7 +3,7 @@ package lq2007.mcmod.isaacformc.common.prop.type.ab;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacProperty;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
-import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.Prop;
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import lq2007.mcmod.isaacformc.common.prop.type.EnumPropTags;
 import lq2007.mcmod.isaacformc.common.prop.type.PropTag;
@@ -20,7 +20,7 @@ public class MyReflection extends AbstractPropType {
     }
 
     @Override
-    public void onPickup(LivingEntity entity, PropItem item, PropItem itemBeforeEvent) {
+    public void onPickup(LivingEntity entity, Prop item, Prop itemBeforeEvent) {
         super.onPickup(entity, item, itemBeforeEvent);
         if (!entity.world.isRemote) {
             IIsaacProperty property = IsaacCapabilities.getProperty(entity);

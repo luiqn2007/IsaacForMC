@@ -2,7 +2,7 @@ package lq2007.mcmod.isaacformc.common.network;
 
 import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
-import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.Prop;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -35,8 +35,8 @@ public class PacketEntityProp {
             IIsaacPropData propData = IsaacCapabilities.getPropData(player);
             propData.removeAllProps(true, true);
             propData.read(packet.buffer);
-            for (PropItem prop : propData.getAllProps()) {
-                prop.prop.onPickup(player, prop);
+            for (Prop prop : propData.getAllProps()) {
+                prop.type.onPickup(player, prop);
             }
         }
     }

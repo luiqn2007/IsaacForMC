@@ -2,8 +2,9 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import lq2007.mcmod.isaacformc.common.network.IPacketReader;
-import lq2007.mcmod.isaacformc.common.network.IPacketWriter;
+import lq2007.mcmod.isaacformc.common.network.IPacketReadable;
+import lq2007.mcmod.isaacformc.common.network.IPacketWriteable;
+import lq2007.mcmod.isaacformc.common.network.ISynchronized;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumTearAppearances;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumTearEffects;
 import net.minecraft.entity.LivingEntity;
@@ -12,7 +13,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
-        ICopyFromEntity<Void>, IDirtyData, IPacketReader, IPacketWriter {
+        ICopyFromEntity<Void>, IDirtyData, ISynchronized {
 
     static IIsaacProperty dummy() {
         return DummyData.INSTANCE;

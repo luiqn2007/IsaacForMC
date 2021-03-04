@@ -1,4 +1,4 @@
-package lq2007.mcmod.isaacformc.common.event;
+package lq2007.mcmod.isaacformc.common.handler;
 
 import lq2007.mcmod.isaacformc.common.util.EntityUtil;
 import net.minecraft.client.world.ClientWorld;

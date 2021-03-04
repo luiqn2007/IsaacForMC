@@ -2,7 +2,7 @@ package lq2007.mcmod.isaacformc.common.network;
 
 import net.minecraft.network.PacketBuffer;
 
-public interface IPacketReader {
+public interface IPacketReadable {
 
     /**
      * Write data to a buffer.

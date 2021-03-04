@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
-import lq2007.mcmod.isaacformc.common.event.PickupPropItemEvent;
-import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.network.ISynchronizer;
+import lq2007.mcmod.isaacformc.common.prop.Prop;
 import lq2007.mcmod.isaacformc.isaac.IsaacElement;
 import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
@@ -19,7 +19,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class AbstractPropType extends IsaacElement {
+public abstract class AbstractPropType extends IsaacElement implements ISynchronizer<Prop> {
 
     private final String nameKey;
     private final String descriptionKey;
@@ -73,11 +73,11 @@ public abstract class AbstractPropType extends IsaacElement {
         return rooms;
     }
 
-    public void onActiveStart(LivingEntity entity, PropItem prop) { }
+    public void onActiveStart(LivingEntity entity, Prop prop) { }
 
-    public void onActiveFinished(LivingEntity entity, PropItem prop) { }
+    public void onActiveFinished(LivingEntity entity, Prop prop) { }
 
-    public final void onPickup(LivingEntity entity, PropItem item) {
+    public final void onPickup(LivingEntity entity, Prop item) {
         if (!entity.world.isRemote) {
             PickupPropItemEvent event = new PickupPropItemEvent(entity, item);
             if (!Isaac.MOD.eventBus.post(event)) {
@@ -86,16 +86,20 @@ public abstract class AbstractPropType extends IsaacElement {
         }
     }
 
-    public void onPickup(LivingEntity entity, PropItem item, PropItem itemBeforeEvent) {
+    public void onPickup(LivingEntity entity, Prop item, Prop itemBeforeEvent) {
         IsaacCapabilities.getPropData(entity).pickupProp(item);
     }
 
-    public void onRemove(LivingEntity entity, PropItem item, ImmutableList<PropItem> removedItems) {
+    public void onRemove(LivingEntity entity, Prop item, ImmutableList<Prop> removedItems) {
         IsaacCapabilities.getPropData(entity).removeProp(item);
     }
 
     public boolean isActive() {
         return charge > 0;
+    }
+
+    public boolean isExclusive() {
+        return isActive();
     }
 
     @Nullable
@@ -105,7 +109,7 @@ public abstract class AbstractPropType extends IsaacElement {
 
     // todo implement render
     @OnlyIn(Dist.CLIENT)
-    public void renderOnFoundation(PropItem item, float partialTicks,
+    public void renderOnFoundation(Prop item, float partialTicks,
                                    com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
                                    net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
                                    int combinedLightIn, int combinedOverlayIn) { }

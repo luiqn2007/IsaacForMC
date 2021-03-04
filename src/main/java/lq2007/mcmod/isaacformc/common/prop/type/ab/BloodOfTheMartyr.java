@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacformc.common.prop.type.ab;
 
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
-import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.prop.Prop;
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import lq2007.mcmod.isaacformc.common.prop.type.EnumPropTags;
 import lq2007.mcmod.isaacformc.common.prop.type.PropTag;
@@ -24,7 +24,7 @@ public class BloodOfTheMartyr extends AbstractPropType {
     }
 
     @Override
-    public void onPickup(LivingEntity entity, PropItem item, PropItem itemBeforeEvent) {
+    public void onPickup(LivingEntity entity, Prop item, Prop itemBeforeEvent) {
         super.onPickup(entity, item);
         if (!entity.world.isRemote) {
             EntityUtil.damageUp(entity, DAMAGE_UP, "isaac.blood_of_the_martyr.damage_up", 1);

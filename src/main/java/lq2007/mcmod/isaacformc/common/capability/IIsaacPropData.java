@@ -1,22 +1,27 @@
 package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import lq2007.mcmod.isaacformc.common.capability.data.IsaacFriends;
-import lq2007.mcmod.isaacformc.common.network.IPacketReader;
-import lq2007.mcmod.isaacformc.common.network.IPacketWriter;
-import lq2007.mcmod.isaacformc.common.prop.PropItem;
+import lq2007.mcmod.isaacformc.common.capability.data.PropRecord;
+import lq2007.mcmod.isaacformc.common.network.ISynchronized;
+import lq2007.mcmod.isaacformc.common.prop.Prop;
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.util.Direction;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.LazyOptional;
 
-import java.util.*;
-import java.util.function.Predicate;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Optional;
 
-public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
-        ICopyFromEntity<Collection<PropItem>>, IDirtyData, IPacketReader, IPacketWriter {
+/**
+ * Capability saves held props and records.
+ */
+public interface IIsaacPropData extends ICapabilitySerializable<CompoundNBT>, ICopyFromEntity<Collection<Prop>>, IDirtyData, ISynchronized {
 
     static IIsaacPropData dummy() {
         return DummyData.INSTANCE;
@@ -30,63 +35,32 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
      * @param prop prop
      * @return The prop that an entity pickup a prop and remove one.
      */
-    PropItem pickupProp(PropItem prop);
-
-    /**
-     * Pickup props once.
-     * <li>If an entity can't pickup any prop, collect them and return.
-     * <li>If this is an active prop, replaced active prop while be added to return.
-     *
-     * @param props prop
-     * @return The props entity picked up then replaced or removed.
-     */
-    Collection<PropItem> pickupProps(Collection<PropItem> props);
+    Optional<Prop> pickup(Prop prop);
 
     /**
      * Remove a prop
      *
      * @param prop prop
-     * @return The item removed. If no one is removed, return {@link PropItem#EMPTY}
+     * @param removeRecord True if should remove the record if no hold.
+     * @return The item removed. If no one is removed, return {@link Prop#EMPTY}
      */
-    PropItem removeProp(PropItem prop);
+    Optional<Prop> remove(Prop prop, boolean removeRecord);
 
     /**
      * Remove all props
      *
-     * @param removeActiveProp True if remove active props
-     * @param clearHeldPropRecord True if clear the records of hold prop items
-     * @return The items removed.
+     * @param removeActive True if remove active props
+     * @param removeRecord True if clear the records of hold prop items
      */
-    Collection<PropItem> removeAllProps(boolean removeActiveProp, boolean clearHeldPropRecord);
+    void clear(boolean removeActive, boolean removeRecord);
 
     /**
      * <p>Returns the first active prop.
-     * <p>If not exist, return {@link PropItem#EMPTY}
+     * <p>If not exist, return {@link Prop#EMPTY}
      *
      * @return An active prop
      */
-    PropItem getActiveProp();
-
-    /**
-     * <p>Switch the first active prop.
-     * <p>If entity has second active prop slot, it will swap slot0 and slot1.
-     */
-    void switchActiveProp();
-
-    /**
-     * Return if allowed held the second active prop.
-     *
-     * @return True if the second active prop slot is enabled.
-     */
-    boolean hasSecondActive();
-
-    /**
-     * Set if allowed held the second active prop.
-     *
-     * @param second True if the second active prop slot is enabled.
-     * @return If second is false and has second item, return it.
-     */
-    PropItem setHasSecondAction(boolean second);
+    Optional<Prop> getActive();
 
     /**
      * Check if entity has specified type of item.
@@ -103,100 +77,61 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
     boolean contains(Class<?> type);
 
     /**
-     * Check if entity has item implemented the condition.
-     * @param condition condition
-     * @return True if entity has the prop.
-     */
-    boolean containsIf(Predicate<PropItem> condition);
-
-    /**
-     * Check if entity has specified type of item implemented the condition.
-     * @param condition condition
-     * @return True if entity has the prop.
-     */
-    boolean containsTypeIf(Predicate<AbstractPropType> condition);
-
-    /**
      * Check if entity ever received the specified type of item,
      * @param type prop type
      * @return True if entity ever hold or is holding the type of item.
      */
-    boolean isHold(AbstractPropType type);
+    boolean containsRecord(AbstractPropType type);
 
     /**
-     * <p>Get all prop types the entity picked up.
-     * <p>It contains props entity picked up but removed.
+     * Get all prop records.
      *
-     * @return All prop type
+     * @param containsActive True if the list contains active prop. If have, it will be first.
+     * @return All prop records
      */
-    ImmutableSet<AbstractPropType> getAllHeldProps();
+    ImmutableList<PropRecord> getAllRecords(boolean containsActive);
 
-    /**
-     * Get all props contains active props.
-     *
-     * @return All props
-     */
-    ImmutableList<PropItem> getAllProps();
-
-    /**
-     * Get all prop types contains active props.
-     *
-     * @return All prop types
-     */
-    ImmutableList<AbstractPropType> getAllPropTypes();
-
-    /**
-     * Get all friends
-     * @return friends
-     */
-    IsaacFriends getOrCreateFriends(IsaacFriends.Type type);
-
-    /**
-     * Get all friend types.
-     * @return types
-     */
-    ImmutableList<IsaacFriends.Type> getFriendTypes();
+    @Nonnull
+    @Override
+    default <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        return IsaacCapabilities.CAPABILITY_PROP.orEmpty(cap, LazyOptional.of(() -> this));
+    }
 
     class DummyData implements IIsaacPropData {
 
         private static final DummyData INSTANCE = new DummyData();
 
         @Override
-        public PropItem pickupProp(PropItem prop) {
-            return prop;
+        public void copyFrom(LivingEntity entity) {
+
         }
 
         @Override
-        public Collection<PropItem> pickupProps(Collection<PropItem> props) {
-            return Collections.emptySet();
+        public void markDirty() {
+
         }
 
         @Override
-        public PropItem removeProp(PropItem prop) {
-            return PropItem.EMPTY;
-        }
-
-        @Override
-        public Collection<PropItem> removeAllProps(boolean removeActiveProp, boolean clearHeldPropRecord) {
-            return Collections.emptySet();
-        }
-
-        @Override
-        public PropItem getActiveProp() {
-            return PropItem.EMPTY;
-        }
-
-        @Override
-        public void switchActiveProp() { }
-
-        @Override
-        public boolean hasSecondActive() {
+        public boolean isDirty() {
             return false;
         }
 
         @Override
-        public PropItem setHasSecondAction(boolean second) {
-            return PropItem.EMPTY;
+        public Optional<Prop> pickup(Prop prop) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Optional<Prop> remove(Prop prop, boolean removeRecord) {
+            return Optional.empty();
+        }
+
+        @Override
+        public void clear(boolean removeActive, boolean removeRecord) { }
+
+        @Override
+        public Optional<Prop> getActive() {
+            return Optional.empty();
         }
 
         @Override
@@ -210,55 +145,23 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
         }
 
         @Override
-        public boolean containsIf(Predicate<PropItem> condition) {
+        public boolean containsRecord(AbstractPropType type) {
             return false;
         }
 
         @Override
-        public boolean containsTypeIf(Predicate<AbstractPropType> condition) {
-            return false;
-        }
-
-        @Override
-        public boolean isHold(AbstractPropType type) {
-            return false;
-        }
-
-        @Override
-        public ImmutableSet<AbstractPropType> getAllHeldProps() {
-            return ImmutableSet.of();
-        }
-
-        @Override
-        public ImmutableList<PropItem> getAllProps() {
+        public ImmutableList<PropRecord> getAllRecords(boolean containsActive) {
             return ImmutableList.of();
         }
 
         @Override
-        public ImmutableList<AbstractPropType> getAllPropTypes() {
-            return ImmutableList.of();
+        public void read(PacketBuffer buffer) {
+
         }
 
         @Override
-        public IsaacFriends getOrCreateFriends(IsaacFriends.Type type) {
-            return IsaacFriends.NONE.newInstance();
-        }
+        public void write(PacketBuffer buffer) {
 
-        @Override
-        public ImmutableList<IsaacFriends.Type> getFriendTypes() {
-            return ImmutableList.of(IsaacFriends.NONE);
-        }
-
-        @Override
-        public void copyFrom(LivingEntity entity) {
-        }
-
-        @Override
-        public void markDirty() { }
-
-        @Override
-        public boolean isDirty() {
-            return false;
         }
 
         @Override
@@ -267,16 +170,8 @@ public interface IIsaacPropData extends INBTSerializable<CompoundNBT>,
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) { }
+        public void deserializeNBT(CompoundNBT nbt) {
 
-        @Override
-        public void read(PacketBuffer buffer) {
-            buffer.readByte();
-        }
-
-        @Override
-        public void write(PacketBuffer buffer) {
-            buffer.writeByte(0);
         }
     }
 }
