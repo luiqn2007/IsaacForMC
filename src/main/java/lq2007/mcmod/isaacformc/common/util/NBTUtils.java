@@ -1,28 +1,18 @@
 package lq2007.mcmod.isaacformc.common.util;
 
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.*;
 import java.util.function.Function;
 
 public class NBTUtils {
 
-    public static ListNBT convert(Iterable<? extends INBTSerializable<?>> list) {
-        ListNBT nbt = new ListNBT();
-        for (INBTSerializable<?> item : list) {
-            nbt.add(item.serializeNBT());
-        }
-        return nbt;
-    }
-
-    public static <ITEM, NBT extends INBT> ListNBT convert(Iterable<ITEM> list, Function<ITEM, NBT> map) {
+    public static <ITEM, NBT extends INBT> ListNBT write(Iterable<ITEM> list, Function<ITEM, NBT> map) {
         ListNBT nbt = new ListNBT();
         for (ITEM item : list) {
             nbt.add(map.apply(item));
@@ -30,7 +20,35 @@ public class NBTUtils {
         return nbt;
     }
 
-    public static <NBT extends INBT, RESULT, LIST extends List<RESULT>> LIST convert(ListNBT list, LIST result, Function<NBT, RESULT> converter) {
+    public static ListNBT write(Iterable<? extends INBTSerializable<?>> list) {
+        return write(list, INBTSerializable::serializeNBT);
+    }
+
+    public static <ITEM extends Enum<ITEM>> ListNBT writeEnum(Iterable<ITEM> list) {
+        return write(list, item -> StringNBT.valueOf(item.name()));
+    }
+
+    public static <K, V extends INBTSerializable<? extends INBT>> CompoundNBT write(Map<K, V> map, Function<K, String> keyFunction) {
+        CompoundNBT nbt = new CompoundNBT();
+        map.forEach((key, value) -> nbt.put(keyFunction.apply(key), value.serializeNBT()));
+        return nbt;
+    }
+
+    public static <K, V extends INBTSerializable<? extends INBT>> CompoundNBT write(Map<K, V> map) {
+        return write(map, Objects::toString);
+    }
+
+    public static <K, V, NBT extends INBT> void read(CompoundNBT nbt, Map<K, V> map, Function<String, K> keyFunction, Function<NBT, V> valueFunction) {
+        map.clear();
+        for (String kStr : nbt.keySet()) {
+            K key = keyFunction.apply(kStr);
+            NBT vNbt = (NBT) nbt.get(kStr);
+            V value = valueFunction.apply(vNbt);
+            map.put(key, value);
+        }
+    }
+
+    public static <NBT extends INBT, RESULT> void read(ListNBT list, Collection<RESULT> result, Function<NBT, RESULT> converter) {
         result.clear();
         for (INBT nbt : list) {
             RESULT e = converter.apply((NBT) nbt);
@@ -39,18 +57,9 @@ public class NBTUtils {
             }
             result.add(e);
         }
-        return result;
     }
 
-    public static <NBT extends INBT, K, V> Map<K, V> convert(ListNBT list, @Nullable Map<K, V> map, BiConsumer<NBT, Map<K, V>> putter) {
-        if (map == null) {
-            map = new HashMap<>();
-        } else {
-            map.clear();
-        }
-        for (INBT inbt : list) {
-            putter.accept((NBT) inbt, map);
-        }
-        return map;
+    public static <RESULT extends Enum<RESULT>, LIST extends Collection<RESULT>> void read(ListNBT list, LIST result, Class<RESULT> enumType) {
+        read(list, result, nbt -> Enum.valueOf(enumType, nbt.getString()));
     }
 }

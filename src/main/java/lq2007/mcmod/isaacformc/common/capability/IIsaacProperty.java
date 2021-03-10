@@ -2,18 +2,20 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import lq2007.mcmod.isaacformc.common.network.IPacketReadable;
-import lq2007.mcmod.isaacformc.common.network.IPacketWriteable;
-import lq2007.mcmod.isaacformc.common.network.ISynchronized;
+import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializable;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumTearAppearances;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumTearEffects;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.util.Direction;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.LazyOptional;
 
-public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
-        ICopyFromEntity<Void>, IDirtyData, ISynchronized {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public interface IIsaacProperty extends ICapabilitySerializable<CompoundNBT>, IPacketSerializable {
 
     static IIsaacProperty dummy() {
         return DummyData.INSTANCE;
@@ -72,6 +74,8 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
     float range();
 
     void range(float range);
+
+    void copy(IIsaacProperty source);
 
     class DummyData implements IIsaacProperty {
 
@@ -180,9 +184,10 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
         }
 
         @Override
-        public void range(float range) {
+        public void range(float range) { }
 
-        }
+        @Override
+        public void copy(IIsaacProperty source) { }
 
         @Override
         public CompoundNBT serializeNBT() {
@@ -193,25 +198,15 @@ public interface IIsaacProperty extends INBTSerializable<CompoundNBT>,
         public void deserializeNBT(CompoundNBT nbt) { }
 
         @Override
-        public void copyFrom(LivingEntity entity) {
-        }
+        public void read(PacketBuffer buffer) { }
 
         @Override
-        public void markDirty() { }
+        public void write(PacketBuffer buffer) { }
 
+        @Nonnull
         @Override
-        public boolean isDirty() {
-            return false;
-        }
-
-        @Override
-        public void read(PacketBuffer buffer) {
-            buffer.readByte();
-        }
-
-        @Override
-        public void write(PacketBuffer buffer) {
-            buffer.writeByte(0);
+        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+            return LazyOptional.empty();
         }
     }
 }

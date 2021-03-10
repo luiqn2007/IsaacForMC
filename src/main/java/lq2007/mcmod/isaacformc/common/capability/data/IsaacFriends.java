@@ -11,7 +11,6 @@ import net.minecraftforge.common.util.INBTSerializable;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static net.minecraftforge.common.util.Constants.NBT.TAG_INT_ARRAY;
 import static net.minecraftforge.common.util.Constants.NBT.TAG_LIST;
 
 public class IsaacFriends implements INBTSerializable<CompoundNBT> {
@@ -66,7 +65,7 @@ public class IsaacFriends implements INBTSerializable<CompoundNBT> {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.put("_friends", NBTUtils.convert(friendList, NBTUtil::func_240626_a_));
+        nbt.put("_friends", NBTUtils.write(friendList, NBTUtil::func_240626_a_));
         return null;
     }
 
@@ -75,7 +74,7 @@ public class IsaacFriends implements INBTSerializable<CompoundNBT> {
         friendMap.clear();
         friendList.clear();
         if (nbt.contains("_friends", TAG_LIST)) {
-            friendList = NBTUtils.convert(nbt.getList("_friends", TAG_INT_ARRAY), NBTUtil::readUniqueId);
+//            friendList = NBTUtils.convert(nbt.getList("_friends", TAG_INT_ARRAY), NBTUtil::readUniqueId);
         }
     }
 

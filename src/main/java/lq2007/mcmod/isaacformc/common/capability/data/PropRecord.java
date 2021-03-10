@@ -2,28 +2,28 @@ package lq2007.mcmod.isaacformc.common.capability.data;
 
 import lq2007.mcmod.isaacformc.common.prop.Prop;
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
-import lq2007.mcmod.isaacformc.common.util.NBTUtils;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.INBTSerializable;
+import lq2007.mcmod.isaacformc.common.util.serializer.nbt.INBTSerializable;
+import lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTData;
+import lq2007.mcmod.isaacformc.common.util.serializer.network.BufferData;
+import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializable;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 
-public class PropRecord implements INBTSerializable<CompoundNBT> {
+public class PropRecord implements INBTSerializable, IPacketSerializable {
 
-    private final AbstractPropType type;
-    private final LinkedList<Prop> props = new LinkedList<>();
-
+    @BufferData @NBTData
+    public AbstractPropType type;
+    @NBTData(collection = LinkedList.class, V = Prop.class)
+    @BufferData(collection = LinkedList.class, V = Prop.class)
+    private LinkedList<Prop> props = new LinkedList<>();
+    @BufferData @NBTData
     private boolean noPicked = true;
+
+    public PropRecord() { }
 
     public PropRecord(AbstractPropType type) {
         this.type = type;
-    }
-
-    public PropRecord(AbstractPropType type, Prop prop) {
-        this(type);
-        add(prop);
     }
 
     @Nullable
@@ -42,16 +42,13 @@ public class PropRecord implements INBTSerializable<CompoundNBT> {
         return removed;
     }
 
-    @Nullable
-    public Prop remove(boolean removeRecord) {
+    public void remove(boolean removeRecord) {
         if (!noPicked) {
             Prop prop = props.pollLast();
             if (removeRecord && props.isEmpty()) {
                 noPicked = true;
             }
-            return prop;
         }
-        return null;
     }
 
     public void clear(boolean removeRecord) {
@@ -63,27 +60,15 @@ public class PropRecord implements INBTSerializable<CompoundNBT> {
         }
     }
 
+    public Prop getFirst() {
+        return props.isEmpty() ? Prop.EMPTY : props.getFirst();
+    }
+
     public boolean isEmpty() {
-        return noPicked;
+        return noPicked || props.isEmpty();
     }
 
-    @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
-        nbt.putBoolean("_noPicked", noPicked);
-        if (!noPicked && !props.isEmpty()) {
-            nbt.put("_props", NBTUtils.convert(props, Prop::serializeNBT));
-        }
-        return nbt;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        noPicked = nbt.getBoolean("_noPicked");
-        if (!noPicked && nbt.contains("_props", Constants.NBT.TAG_LIST)) {
-            NBTUtils.convert(nbt.getList("_props", Constants.NBT.TAG_COMPOUND), props, Prop::fromNbt);
-        } else {
-            props.clear();
-        }
+    public boolean isPicked() {
+        return !noPicked;
     }
 }

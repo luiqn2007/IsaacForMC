@@ -1,11 +1,10 @@
 package lq2007.mcmod.isaacformc.common.prop;
 
-import lq2007.mcmod.isaacformc.common.network.IPacketWriteable;
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import lq2007.mcmod.isaacformc.common.prop.type.Props;
+import lq2007.mcmod.isaacformc.common.util.serializer.PropSerializer;
+import lq2007.mcmod.isaacformc.common.util.serializer.Serializer;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
@@ -13,43 +12,19 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class Prop extends CapabilityProvider<Prop> implements INBTSerializable<CompoundNBT>, IPacketWriteable {
+@Serializer(PropSerializer.class)
+public class Prop extends CapabilityProvider<Prop> implements INBTSerializable<CompoundNBT> {
 
     public static final Prop EMPTY = new Prop(Props.EMPTY);
 
     public AbstractPropType type;
 
-    public static Prop fromNbt(@Nullable CompoundNBT nbt) {
-        if (nbt != null && nbt.contains("_prop", Constants.NBT.TAG_STRING)) {
-            AbstractPropType type = Props.get(new ResourceLocation(nbt.getString("_prop")), null);
-            if (type != null) {
-                Prop item = new Prop(type);
-                item.deserializeNBT(nbt);
-                return item;
-            }
-        }
-        return Prop.EMPTY;
-    }
-
-    public static Prop fromPacket(PacketBuffer buffer) {
-        AbstractPropType type = Props.get(buffer.readResourceLocation(), null);
-        if (type != null) {
-            return type.read(new Prop(), buffer);
-        }
-        return Prop.EMPTY;
-    }
-
     public Prop(AbstractPropType type) {
-        this();
+        super(Prop.class);
         ICapabilityProvider capabilities = type.initCapabilities();
         gatherCapabilities(capabilities);
-    }
-
-    private Prop() {
-        super(Prop.class);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -57,12 +32,6 @@ public class Prop extends CapabilityProvider<Prop> implements INBTSerializable<C
                                    net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
                                    int combinedLightIn, int combinedOverlayIn) {
         type.renderOnFoundation(this, partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-    }
-
-    @Override
-    public void write(PacketBuffer buffer) {
-        buffer.writeResourceLocation(type.key);
-        type.write(this, buffer);
     }
 
     @Override

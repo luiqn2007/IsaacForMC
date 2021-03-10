@@ -3,9 +3,10 @@ package lq2007.mcmod.isaacformc.common.prop.type;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import lq2007.mcmod.isaacformc.common.Isaac;
-import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
-import lq2007.mcmod.isaacformc.common.network.ISynchronizer;
+import lq2007.mcmod.isaacformc.common.util.serializer.Serializer;
+import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializer;
 import lq2007.mcmod.isaacformc.common.prop.Prop;
+import lq2007.mcmod.isaacformc.common.util.serializer.PropTypeSerializer;
 import lq2007.mcmod.isaacformc.isaac.IsaacElement;
 import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
@@ -19,7 +20,8 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class AbstractPropType extends IsaacElement implements ISynchronizer<Prop> {
+@Serializer(PropTypeSerializer.class)
+public abstract class AbstractPropType extends IsaacElement implements IPacketSerializer<Prop> {
 
     private final String nameKey;
     private final String descriptionKey;
@@ -79,19 +81,19 @@ public abstract class AbstractPropType extends IsaacElement implements ISynchron
 
     public final void onPickup(LivingEntity entity, Prop item) {
         if (!entity.world.isRemote) {
-            PickupPropItemEvent event = new PickupPropItemEvent(entity, item);
-            if (!Isaac.MOD.eventBus.post(event)) {
-                onPickup(entity, event.getProp(), item);
-            }
+//            PickupPropItemEvent event = new PickupPropItemEvent(entity, item);
+//            if (!Isaac.MOD.eventBus.post(event)) {
+//                onPickup(entity, event.getProp(), item);
+//            }
         }
     }
 
     public void onPickup(LivingEntity entity, Prop item, Prop itemBeforeEvent) {
-        IsaacCapabilities.getPropData(entity).pickupProp(item);
+//        IsaacCapabilities.getPropData(entity).pickupProp(item);
     }
 
     public void onRemove(LivingEntity entity, Prop item, ImmutableList<Prop> removedItems) {
-        IsaacCapabilities.getPropData(entity).removeProp(item);
+//        IsaacCapabilities.getPropData(entity).removeProp(item);
     }
 
     public boolean isActive() {

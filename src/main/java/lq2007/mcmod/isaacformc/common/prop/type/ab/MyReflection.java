@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacformc.common.prop.type.ab;
 
-import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
+import lq2007.mcmod.isaacformc.common.capability.IIsaacProps;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacProperty;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.common.prop.Prop;
@@ -24,7 +24,7 @@ public class MyReflection extends AbstractPropType {
         super.onPickup(entity, item, itemBeforeEvent);
         if (!entity.world.isRemote) {
             IIsaacProperty property = IsaacCapabilities.getProperty(entity);
-            IIsaacPropData propData = IsaacCapabilities.getPropData(entity);
+            IIsaacProps propData = IsaacCapabilities.getProps(entity);
 
             property.range(property.range() + 1.5F);
             property.tossUpSpeed(property.tossUpSpeed() + 1);

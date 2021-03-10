@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacformc.common.prop.type.ab;
 
-import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
+import lq2007.mcmod.isaacformc.common.capability.IIsaacProps;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacProperty;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.common.prop.Prop;
@@ -22,14 +22,14 @@ public class TheInnerEye extends AbstractPropType implements TypeGroups.ShootDel
     @Override
     public void onPickup(LivingEntity entity, Prop item, Prop itemBeforeEvent) {
         if (!entity.world.isRemote) {
-            IIsaacPropData propData = IsaacCapabilities.getPropData(entity);
+            IIsaacProps propData = IsaacCapabilities.getProps(entity);
             IIsaacProperty property = IsaacCapabilities.getProperty(entity);
 
             if (!propData.contains(TypeGroups.ShootDelay0.class)) {
                 apply(propData, property);
             }
             property.tearCount(property.tearCount() + 3, 16);
-            propData.pickupProp(item);
+//            propData.pickupProp(item);
         }
         super.onPickup(entity, item);
     }

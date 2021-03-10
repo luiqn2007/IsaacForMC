@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacformc.common.prop.type.ab;
 
-import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
+import lq2007.mcmod.isaacformc.common.capability.IIsaacProps;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacProperty;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.common.prop.Prop;
@@ -21,7 +21,7 @@ public class NumberOne extends AbstractPropType {
     @Override
     public void onPickup(LivingEntity entity, Prop item, Prop itemBeforeEvent) {
         if (!entity.world.isRemote) {
-            IIsaacPropData propData = IsaacCapabilities.getPropData(entity);
+            IIsaacProps propData = IsaacCapabilities.getProps(entity);
             if (!propData.contains(this)) {
                 IIsaacProperty property = IsaacCapabilities.getProperty(entity);
                 property.tearSpeed(property.tearSpeed() + 1.5F);

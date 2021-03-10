@@ -5,7 +5,6 @@ import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.common.capability.data.IsaacFriends;
 import lq2007.mcmod.isaacformc.common.entity.friend.EntityBobby;
 import lq2007.mcmod.isaacformc.common.prop.Prop;
-import lq2007.mcmod.isaacformc.common.prop.data.DataBrotherBobby;
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import lq2007.mcmod.isaacformc.common.prop.type.EnumPropTags;
 import lq2007.mcmod.isaacformc.common.prop.type.PropTag;
@@ -23,16 +22,11 @@ public class BrotherBobby extends AbstractPropType {
     }
 
     @Override
-    protected DataBrotherBobby createData() {
-        return new DataBrotherBobby();
-    }
-
-    @Override
     public void onPickup(LivingEntity entity, Prop item, Prop itemBeforeEvent) {
         if (!entity.world.isRemote) {
             EntityBobby bobby = new EntityBobby(entity);
-            ((DataBrotherBobby) item.data).bobby = bobby.getUniqueID();
-            IsaacCapabilities.getPropData(entity).getOrCreateFriends(IsaacFriends.FOLLOWING).add(entity, bobby);
+//            ((DataBrotherBobby) item.data).bobby = bobby.getUniqueID();
+//            IsaacCapabilities.getPropData(entity).getOrCreateFriends(IsaacFriends.FOLLOWING).add(entity, bobby);
             entity.world.addEntity(bobby);
         }
         super.onPickup(entity, item, itemBeforeEvent);
@@ -42,8 +36,8 @@ public class BrotherBobby extends AbstractPropType {
     public void onRemove(LivingEntity entity, Prop item, ImmutableList<Prop> removedItems) {
         if (!entity.world.isRemote) {
             ServerWorld world = (ServerWorld) entity.world;
-            DataBrotherBobby data = (DataBrotherBobby) item.data;
-            data.bobby.getEntity(world).ifPresent(Entity::remove);
+//            DataBrotherBobby data = (DataBrotherBobby) item.data;
+//            data.bobby.getEntity(world).ifPresent(Entity::remove);
         }
         super.onRemove(entity, item, removedItems);
     }

@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacformc.common.prop.type;
 
-import lq2007.mcmod.isaacformc.common.capability.IIsaacPropData;
+import lq2007.mcmod.isaacformc.common.capability.IIsaacProps;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacProperty;
 import lq2007.mcmod.isaacformc.common.prop.type.ab.BloodOfTheMartyr;
 import lq2007.mcmod.isaacformc.common.prop.type.ab.CricketsHead;
@@ -27,7 +27,7 @@ public class TypeGroups {
      * @see Polyphemus
      */
     public interface ShootDelay0 {
-        default void apply(IIsaacPropData propData, IIsaacProperty property) {
+        default void apply(IIsaacProps propData, IIsaacProperty property) {
             // 射速延迟 +3 *210%
             property.shootDelay(property.shootDelay() + 3);
             property.shootDelayMultiple(property.shootDelayMultiple() * 2.1F /* 210% */);
