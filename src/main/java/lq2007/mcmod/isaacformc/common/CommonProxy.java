@@ -4,6 +4,7 @@ import lq2007.mcmod.isaacformc.common.block.Blocks;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
 import lq2007.mcmod.isaacformc.common.entity.Entities;
 import lq2007.mcmod.isaacformc.common.network.IsaacNetworks;
+import lq2007.mcmod.isaacformc.common.util.serializer.ObjectPacketSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.*;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -34,11 +35,13 @@ public class CommonProxy {
         IsaacNetworks.registerAll(channel);
     }
 
-    private void constructMod(FMLConstructModEvent event) {}
+    private void constructMod(FMLConstructModEvent event) {
+        ObjectPacketSerializer.collectClass();
+    }
 
     private void setupServer(FMLDedicatedServerSetupEvent event) {}
 
-    private void loadComplete(FMLLoadCompleteEvent event) {}
+    private void loadComplete(FMLLoadCompleteEvent event) { }
 
     private void gatherData(GatherDataEvent event) {}
 

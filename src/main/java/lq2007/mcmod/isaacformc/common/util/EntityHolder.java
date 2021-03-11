@@ -13,6 +13,12 @@ import java.util.UUID;
 
 public class EntityHolder<T extends Entity> implements INBTSerializable, IPacketSerializable {
 
+    public static final EntityHolder EMPTY = new EntityHolder(null, null);
+
+    public static final <T extends Entity> EntityHolder<T> empty() {
+        return EMPTY;
+    }
+
     @BufferData
     public int id;
     @NBTData
@@ -102,6 +108,15 @@ public class EntityHolder<T extends Entity> implements INBTSerializable, IPacket
         if (this.uuid != null) return this.uuid.equals(entity.getUniqueID());
         if (this.hasId) return this.id == entity.getEntityId();
         return false;
+    }
+
+    public boolean isEmpty() {
+        return entity != null && uuid != null && !hasId;
+    }
+
+    public boolean isExist(World world) {
+        loadEntity(world);
+        return entity != null;
     }
 
     protected void loadEntity(@Nullable World world) {

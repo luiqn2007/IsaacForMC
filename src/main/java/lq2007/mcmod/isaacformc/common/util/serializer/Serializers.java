@@ -1,8 +1,8 @@
 package lq2007.mcmod.isaacformc.common.util.serializer;
 
+import lq2007.mcmod.isaacformc.common.util.ReflectionUtil;
 import lq2007.mcmod.isaacformc.common.util.serializer.nbt.*;
 import lq2007.mcmod.isaacformc.common.util.serializer.network.*;
-import lq2007.mcmod.isaacformc.common.util.ReflectionUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -16,8 +16,6 @@ import java.util.UUID;
 public class Serializers {
 
     private static final Map<Class<? extends Enum<?>>, EnumSerializer<?>> ENUM_SERIALIZER_MAP = new HashMap<>();
-    private static final Map<Class<? extends INBTReadable>, DefaultNBTReader<?>> DEF_NBT_READER_MAP = new HashMap<>();
-    private static final Map<Class<? extends IPacketReadable>, DefaultPacketReader<?>> DEF_PKT_READER_MAP = new HashMap<>();
 
     public static final Map<Class<? extends INBTReader<?>>, INBTReader<?>> NBT_READER_MAP = new HashMap<>();
     public static final Map<Class<? extends INBTWriter<?>>, INBTWriter<?>> NBT_WRITER_MAP = new HashMap<>();
@@ -31,55 +29,54 @@ public class Serializers {
 
     public static <T> IPacketWriter<T> getPacketWriter(Class<T> dataType, boolean compress) {
         PacketSerializer annotation = dataType.getAnnotation(PacketSerializer.class);
-        if (annotation != null) {
-            if (annotation.reader() != IPacketWriter.class) {
-                return ReflectionUtil.getOrCreate(annotation.reader(), PKT_WRITER_MAP);
-            }
-            if (annotation.serializer() != IPacketSerializer.class) {
-                return ReflectionUtil.getOrCreate(annotation.serializer(), PKT_SERIALIZER_MAP);
-            }
+        if (annotation != null && annotation.writer() != IPacketWriter.class) {
+            return ReflectionUtil.getOrCreate(annotation.reader(), PKT_WRITER_MAP);
         }
-        ISerializer<T> serializer = getSerializer(dataType, compress);
+        IPacketSerializer<T> serializer = getPacketSerializer(dataType, compress);
         if (serializer != null) return serializer;
         if (IPacketWriteable.class.isAssignableFrom(dataType)) {
-            return DefaultPacketWriter.INSTANCE;
+            return ObjectPacketSerializer.INSTANCE;
         }
         throw new NullPointerException("Unknown type " + dataType);
     }
 
     public static <T> IPacketReader<T> getPacketReader(Class<T> dataType, boolean compress) {
         PacketSerializer annotation = dataType.getAnnotation(PacketSerializer.class);
-        if (annotation != null) {
-            if (annotation.reader() != IPacketReader.class) {
-                return ReflectionUtil.getOrCreate(annotation.reader(), PKT_READER_MAP);
-            }
-            if (annotation.serializer() != IPacketSerializer.class) {
-                return ReflectionUtil.getOrCreate(annotation.serializer(), PKT_SERIALIZER_MAP);
-            }
+        if (annotation != null && annotation.reader() != IPacketReader.class) {
+            return ReflectionUtil.getOrCreate(annotation.reader(), PKT_READER_MAP);
         }
-        ISerializer<T> serializer = getSerializer(dataType, compress);
+        IPacketSerializer<T> serializer = getPacketSerializer(dataType, compress);
         if (serializer != null) return serializer;
         if (IPacketReadable.class.isAssignableFrom(dataType)) {
-            return (IPacketReader<T>) DEF_PKT_READER_MAP.computeIfAbsent((Class<? extends IPacketReadable>) dataType, DefaultPacketReader::new);
+            return ObjectPacketSerializer.INSTANCE;
         }
         throw new NullPointerException("Unknown type " + dataType);
+    }
+
+    @Nullable
+    public static <T> IPacketSerializer<T> getPacketSerializer(Class<?> dataType, boolean compress) {
+        PacketSerializer annotation = dataType.getAnnotation(PacketSerializer.class);
+        if (annotation != null && annotation.serializer() != IPacketSerializer.class) {
+            return ReflectionUtil.getOrCreate(annotation.serializer(), PKT_SERIALIZER_MAP);
+        }
+        ISerializer<T> serializer = (ISerializer<T>) getSerializer(dataType, compress);
+        if (serializer != null) return serializer;
+        if (IPacketSerializable.class.isAssignableFrom(dataType)) {
+            return ObjectPacketSerializer.INSTANCE;
+        }
+        return null;
     }
 
     public static <T> INBTWriter<T> getNBTWriter(Class<T> dataType) {
         lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTSerializer annotation =
                 dataType.getAnnotation(lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTSerializer.class);
-        if (annotation != null) {
-            if (annotation.writer() != INBTWriter.class) {
-                return ReflectionUtil.getOrCreate(annotation.writer(), NBT_WRITER_MAP);
-            }
-            if (annotation.serializer() != INBTSerializer.class) {
-                return ReflectionUtil.getOrCreate(annotation.serializer(), NBT_SERIALIZER_MAP);
-            }
+        if (annotation != null && annotation.writer() != INBTWriter.class) {
+            return ReflectionUtil.getOrCreate(annotation.writer(), NBT_WRITER_MAP);
         }
-        ISerializer<T> serializer = getSerializer(dataType, false);
+        INBTSerializer<T> serializer = getNBTSerializer(dataType);
         if (serializer != null) return serializer;
         if (INBTWriteable.class.isAssignableFrom(dataType)) {
-            return DefaultNBTWriter.INSTANCE;
+            return ObjectNBTSerializer.INSTANCE;
         }
         throw new NullPointerException("Unknown type " + dataType);
     }
@@ -87,20 +84,30 @@ public class Serializers {
     public static <T> INBTReader<T> getNBTReader(Class<T> dataType) {
         lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTSerializer annotation =
                 dataType.getAnnotation(lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTSerializer.class);
-        if (annotation != null) {
-            if (annotation.reader() != INBTReader.class) {
-                return ReflectionUtil.getOrCreate(annotation.reader(), NBT_READER_MAP);
-            }
-            if (annotation.serializer() != INBTSerializer.class) {
-                return ReflectionUtil.getOrCreate(annotation.serializer(), NBT_SERIALIZER_MAP);
-            }
+        if (annotation != null && annotation.reader() != INBTReader.class) {
+            return ReflectionUtil.getOrCreate(annotation.reader(), NBT_READER_MAP);
         }
-        ISerializer<T> serializer = getSerializer(dataType, false);
+        INBTSerializer<T> serializer = getNBTSerializer(dataType);
         if (serializer != null) return serializer;
         if (INBTReadable.class.isAssignableFrom(dataType)) {
-            return (INBTReader<T>) DEF_NBT_READER_MAP.computeIfAbsent((Class<? extends INBTReadable>) dataType, DefaultNBTReader::new);
+            return ObjectNBTSerializer.INSTANCE;
         }
         throw new NullPointerException("Unknown type " + dataType);
+    }
+
+    @Nullable
+    public static <T> INBTSerializer<T> getNBTSerializer(Class<?> dataType) {
+        lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTSerializer annotation =
+                dataType.getAnnotation(lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTSerializer.class);
+        if (annotation != null && annotation.serializer() != INBTSerializer.class) {
+            return ReflectionUtil.getOrCreate(annotation.serializer(), NBT_SERIALIZER_MAP);
+        }
+        ISerializer<T> serializer = (ISerializer<T>) getSerializer(dataType, false);
+        if (serializer != null) return serializer;
+        if (INBTSerializable.class.isAssignableFrom(dataType)) {
+            return ObjectNBTSerializer.INSTANCE;
+        }
+        return null;
     }
 
     @Nullable
