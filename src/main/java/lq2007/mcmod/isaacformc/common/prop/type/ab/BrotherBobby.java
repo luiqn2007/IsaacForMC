@@ -12,6 +12,7 @@ import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.network.PacketBuffer;
 
 // https://isaac.huijiwiki.com/wiki/%E6%B3%A2%E6%AF%94%E5%BC%9F%E5%BC%9F
 @PropTag({EnumPropTags.PASSIVE, EnumPropTags.BABY})
@@ -40,5 +41,15 @@ public class BrotherBobby extends AbstractPropType {
 //            data.bobby.getEntity(world).ifPresent(Entity::remove);
         }
         super.onRemove(entity, item, removedItems);
+    }
+
+    @Override
+    public Prop read(PacketBuffer buffer) {
+        return null;
+    }
+
+    @Override
+    public PacketBuffer write(Prop item, PacketBuffer buffer) {
+        return null;
     }
 }

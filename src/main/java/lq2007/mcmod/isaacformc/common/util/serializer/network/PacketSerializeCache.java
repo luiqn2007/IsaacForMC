@@ -1,5 +1,8 @@
 package lq2007.mcmod.isaacformc.common.util.serializer.network;
 
+import lq2007.mcmod.isaacformc.common.util.ReflectionUtil;
+import lq2007.mcmod.isaacformc.common.util.serializer.Serializers;
+
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -31,13 +34,13 @@ public class PacketSerializeCache {
                     field.setAccessible(true);
                     FieldPacketWrapper wrapper = new FieldPacketWrapper(field);
                     if (data.reader() != IPacketReader.class) {
-                        wrapper.reader = IPacketReader.createReader(data.reader());
+                        wrapper.reader = ReflectionUtil.getOrCreate(data.reader(), Serializers.PKT_READER_MAP);
                     }
                     if (data.writer() != IPacketWriter.class) {
-                        wrapper.writer = IPacketWriter.createWriter(data.writer());
+                        wrapper.reader = ReflectionUtil.getOrCreate(data.writer(), Serializers.PKT_WRITER_MAP);
                     }
                     if (data.serializer() != IPacketSerializer.class) {
-                        IPacketSerializer<?> synchronizer = IPacketSerializer.createSerializer(data.serializer());
+                        IPacketSerializer<?> synchronizer = ReflectionUtil.getOrCreate(data.serializer(), Serializers.PKT_SERIALIZER_MAP);
                         if (wrapper.reader == null) wrapper.reader = synchronizer;
                         if (wrapper.writer == null) wrapper.writer = synchronizer;
                     }
@@ -45,18 +48,18 @@ public class PacketSerializeCache {
                     if (Collection.class.isAssignableFrom(type)) {
                         wrapper.parent = data.collection();
                         wrapper.isCollection = true;
-                        wrapper.readerV = IPacketReader.getReader(data.V(), data.compress());
-                        wrapper.writerV = IPacketWriter.getWriter(data.V(), data.compress());
+                        wrapper.readerV = Serializers.getPacketReader(data.V(), data.compress());
+                        wrapper.writerV = Serializers.getPacketWriter(data.V(), data.compress());
                     } else if (Map.class.isAssignableFrom(type)) {
                         wrapper.parent = data.map();
                         wrapper.isMap = true;
-                        wrapper.readerK = IPacketReader.getReader(data.K(), data.compress());
-                        wrapper.writerK = IPacketWriter.getWriter(data.K(), data.compress());
-                        wrapper.readerV = IPacketReader.getReader(data.V(), data.compress());
-                        wrapper.writerV = IPacketWriter.getWriter(data.V(), data.compress());
+                        wrapper.readerK = Serializers.getPacketReader(data.K(), data.compress());
+                        wrapper.writerK = Serializers.getPacketWriter(data.K(), data.compress());
+                        wrapper.readerV = Serializers.getPacketReader(data.V(), data.compress());
+                        wrapper.writerV = Serializers.getPacketWriter(data.V(), data.compress());
                     } else {
-                        if (wrapper.reader == null) wrapper.reader = IPacketReader.getReader(type, data.compress());
-                        if (wrapper.writer == null) wrapper.writer = IPacketWriter.getWriter(type, data.compress());
+                        if (wrapper.reader == null) wrapper.reader = Serializers.getPacketReader(type, data.compress());
+                        if (wrapper.writer == null) wrapper.writer = Serializers.getPacketWriter(type, data.compress());
                     }
                     if (data.nullable()) {
                         nullableFields.add(wrapper);

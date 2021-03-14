@@ -1,6 +1,7 @@
 package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
+import lq2007.mcmod.isaacformc.common.capability.data.FriendManager;
 import lq2007.mcmod.isaacformc.common.capability.data.IPropRecords;
 import lq2007.mcmod.isaacformc.common.capability.data.PropRecord;
 import lq2007.mcmod.isaacformc.common.prop.Prop;
@@ -32,6 +33,9 @@ public class IsaacProps implements IIsaacProps, INBTSerializable {
     @BufferData(K = AbstractPropType.class, V = PropRecord.class)
     @NBTData(K = AbstractPropType.class, V = PropRecord.class)
     private HashMap<AbstractPropType, PropRecord> activeMap = new HashMap<>();
+    @BufferData(K = Class.class, V = FriendManager.class)
+    @NBTData(K = Class.class, V = FriendManager.class)
+    private Map<Class<?>, FriendManager> friends = new HashMap<>();
 
     private final IPropRecords records = new PropRecords();
 
@@ -182,6 +186,11 @@ public class IsaacProps implements IIsaacProps, INBTSerializable {
             activeRecord0 = activeRecord1;
             activeRecord1 = ar;
         }
+    }
+
+    @Override
+    public Map<Class<?>, FriendManager> getFriends() {
+        return friends;
     }
 
     private PropRecord getRecord(AbstractPropType type) {

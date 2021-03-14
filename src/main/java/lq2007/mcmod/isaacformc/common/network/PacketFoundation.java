@@ -2,6 +2,9 @@ package lq2007.mcmod.isaacformc.common.network;
 
 import lq2007.mcmod.isaacformc.common.block.TileFoundation;
 import lq2007.mcmod.isaacformc.common.prop.Prop;
+import lq2007.mcmod.isaacformc.common.util.serializer.BlockPosSerializer;
+import lq2007.mcmod.isaacformc.common.util.serializer.ObjectPacketSerializer;
+import lq2007.mcmod.isaacformc.common.util.serializer.Serializers;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -22,12 +25,13 @@ public class PacketFoundation extends BasePacket {
 
     public PacketFoundation(PacketBuffer buffer) {
         this.pos = buffer.readBlockPos();
-        this.prop = Prop.fromPacket(buffer);
+        // todo Prop.EMPTY
+        this.prop = Serializers.getPacketReader(Prop.class, false).read(buffer);
     }
 
     public static void encode(PacketFoundation packet, PacketBuffer buffer) {
         buffer.writeBlockPos(packet.pos);
-        packet.prop.write(buffer);
+        Serializers.getPacketWriter(Prop.class, false).write(packet.prop, buffer);
     }
 
     public static void apply(PacketFoundation packet, Supplier<NetworkEvent.Context> context) {

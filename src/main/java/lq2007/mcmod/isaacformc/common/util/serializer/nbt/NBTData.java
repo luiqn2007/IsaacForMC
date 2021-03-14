@@ -21,12 +21,6 @@ public @interface NBTData {
     boolean nullable() default false;
 
     /**
-     * True if the field is integer or long, and use varint or varlong.
-     * @return if the integer will compress.
-     */
-    boolean compress() default false;
-
-    /**
      * <p>Appoint a type to create the object from a nbt.</p>
      * <p>It must implement {@link INBTReader} interface and have a constructor with zero parameter.</p>
      * @return Reader class

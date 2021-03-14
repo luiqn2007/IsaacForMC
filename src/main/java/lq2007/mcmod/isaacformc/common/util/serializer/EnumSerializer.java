@@ -1,6 +1,5 @@
 package lq2007.mcmod.isaacformc.common.util.serializer;
 
-import com.sun.xml.internal.ws.api.message.Packet;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 

@@ -139,7 +139,7 @@ public class Serializers {
         } else if (dataType == UUID.class) {
             return (ISerializer<T>) UUIDSerializer.INSTANCE;
         } else if (Enum.class.isAssignableFrom(dataType)) {
-            return (ISerializer<T>) ENUM_SERIALIZER_MAP.computeIfAbsent((Class<? extends Enum<?>>) dataType, EnumSerializer::new);
+            return (ISerializer<T>) ENUM_SERIALIZER_MAP.computeIfAbsent((Class<? extends Enum<?>>) dataType, c -> new EnumSerializer(c));
         } else {
             return null;
         }

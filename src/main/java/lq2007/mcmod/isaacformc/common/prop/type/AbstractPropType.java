@@ -3,10 +3,10 @@ package lq2007.mcmod.isaacformc.common.prop.type;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import lq2007.mcmod.isaacformc.common.Isaac;
-import lq2007.mcmod.isaacformc.common.util.serializer.Serializer;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializer;
 import lq2007.mcmod.isaacformc.common.prop.Prop;
 import lq2007.mcmod.isaacformc.common.util.serializer.PropTypeSerializer;
+import lq2007.mcmod.isaacformc.common.util.serializer.Serializer;
+import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializer;
 import lq2007.mcmod.isaacformc.isaac.IsaacElement;
 import lq2007.mcmod.isaacformc.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
@@ -16,6 +16,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -75,9 +76,11 @@ public abstract class AbstractPropType extends IsaacElement implements IPacketSe
         return rooms;
     }
 
-    public void onActiveStart(LivingEntity entity, Prop prop) { }
+    public void onActiveStart(LivingEntity entity, Prop prop) {
+    }
 
-    public void onActiveFinished(LivingEntity entity, Prop prop) { }
+    public void onActiveFinished(LivingEntity entity, Prop prop) {
+    }
 
     public final void onPickup(LivingEntity entity, Prop item) {
         if (!entity.world.isRemote) {
@@ -114,7 +117,8 @@ public abstract class AbstractPropType extends IsaacElement implements IPacketSe
     public void renderOnFoundation(Prop item, float partialTicks,
                                    com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
                                    net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
-                                   int combinedLightIn, int combinedOverlayIn) { }
+                                   int combinedLightIn, int combinedOverlayIn) {
+    }
 
     public EnumPropTags[] getTags() {
         PropTag tag = getClass().getAnnotation(PropTag.class);

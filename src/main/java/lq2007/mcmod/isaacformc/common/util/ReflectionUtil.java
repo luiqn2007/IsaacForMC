@@ -1,9 +1,16 @@
 package lq2007.mcmod.isaacformc.common.util;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+
+import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.util.Map;
 
 public class ReflectionUtil {
 
+    public static Table<Class<?>, String, Field> FIELD_TABLE = HashBasedTable.create();
+    
     public static <T> T getOrCreate(Class<?> aClass, Map cache) {
         Object result = cache.get(aClass);
         if (result == null) {
@@ -15,5 +22,22 @@ public class ReflectionUtil {
             }
         }
         return (T) result;
+    }
+    
+    public static <T> T get(Class<?> aClass, @Nullable Object object, String name) {
+        try {
+            Field field = CollectionUtils.computeIfAbsent(FIELD_TABLE, aClass, name, () -> {
+                try {
+                    Field f = aClass.getDeclaredField(name);
+                    f.setAccessible(true);
+                    return f;
+                } catch (NoSuchFieldException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            return (T) field.get(object);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

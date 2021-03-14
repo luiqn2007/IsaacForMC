@@ -1,5 +1,9 @@
 package lq2007.mcmod.isaacformc.common;
 
+import lq2007.mcmod.isaacformc.register.Register;
+import lq2007.mcmod.isaacformc.register.registers.*;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -18,6 +22,12 @@ public class Isaac {
 
     public static final String ID = "isaacformc";
 
+    public static Register REGISTER;
+    public static BlockRegister BLOCKS;
+    public static ItemRegister ITEMS;
+    public static TileEntityRegister TILES;
+    public static EntityRegister ENTITIES;
+
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
     public static Isaac MOD;
@@ -34,5 +44,23 @@ public class Isaac {
         } else {
             proxy = new CommonProxy(eventBus, network);
         }
+
+        REGISTER = new Register();
+        BLOCKS = REGISTER.add(new BlockRegister(REGISTER, "lq2007.mcmod.isaacformc"));
+        ITEMS = REGISTER.add(new ItemRegister(REGISTER, "lq2007.mcmod.isaacformc"));
+        TILES = REGISTER.add(new TileEntityRegister(REGISTER, "lq2007.mcmod.isaacformc", aClass -> {
+            String tileName = aClass.getSimpleName();
+            String blockName = "Block" + tileName.substring(4 /* Tile */);
+            try {
+                Class<? extends Block> blockType =
+                        (Class<? extends Block>) aClass.getClassLoader().loadClass("lq2007.mcmod.isaacformc.common.block." + blockName);
+                return new Block[] { BLOCKS.get(blockType) };
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+        ENTITIES = REGISTER.add(new EntityRegister(REGISTER, "lq2007.mcmod.isaacformc"));
+        REGISTER.add(new BlockItemRegister(ITEMS.register, BLOCKS, block -> new Item.Properties()));
+
     }
 }

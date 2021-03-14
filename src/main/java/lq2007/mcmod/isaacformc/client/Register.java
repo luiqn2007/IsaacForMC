@@ -1,7 +1,8 @@
 package lq2007.mcmod.isaacformc.client;
 
 import lq2007.mcmod.isaacformc.client.ter.TerFoundation;
-import lq2007.mcmod.isaacformc.common.block.Blocks;
+import lq2007.mcmod.isaacformc.common.Isaac;
+import lq2007.mcmod.isaacformc.common.block.TileFoundation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -16,7 +17,7 @@ public class Register {
 
     @SubscribeEvent
     public static void register(ModelRegistryEvent event) {
-        ClientRegistry.bindTileEntityRenderer(Blocks.TYPE_FOUNDATION.get(), TerFoundation::new);
+        ClientRegistry.bindTileEntityRenderer(Isaac.TILES.get(TileFoundation.class), TerFoundation::new);
     }
 }
 

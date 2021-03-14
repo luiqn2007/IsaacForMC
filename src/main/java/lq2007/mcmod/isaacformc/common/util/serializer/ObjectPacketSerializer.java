@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacformc.common.util.serializer;
 
+import lq2007.mcmod.isaacformc.common.util.ReflectionUtil;
 import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketReadable;
 import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializable;
 import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializer;
@@ -27,9 +28,9 @@ public class ObjectPacketSerializer<T extends IPacketSerializable> implements IP
         ModContainer container = ModLoadingContext.get().getActiveContainer();
         Set<Class<?>> set = new HashSet<>();
         if (container instanceof FMLModContainer) {
-            ModFileScanData data = container.scanResults;
+            ModFileScanData data = ((FMLModContainer) container).scanResults;
             for (ModFileScanData.ClassData classData : data.getClasses()) {
-                Type clazz = classData.clazz;
+                Type clazz = ReflectionUtil.get(ModFileScanData.ClassData.class, classData, "clazz");
                 try {
                     Class<?> aClass = ObjectPacketSerializer.class.getClassLoader().loadClass(clazz.getClassName());
                     if (aClass.isInterface() || aClass.isAnnotation() || aClass.isEnum() || aClass.isAnonymousClass()) continue;

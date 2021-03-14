@@ -1,13 +1,14 @@
 package lq2007.mcmod.isaacformc.common.block;
 
+import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.common.prop.Prop;
 import lq2007.mcmod.isaacformc.common.util.BlockUtil;
+import lq2007.mcmod.isaacformc.common.util.serializer.Serializers;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
@@ -16,7 +17,7 @@ public class TileFoundation extends TileEntity {
     private Prop prop = Prop.EMPTY;
 
     public TileFoundation() {
-        super(Blocks.TYPE_FOUNDATION.get());
+        super(Isaac.TILES.get(TileFoundation.class));
     }
 
     public Prop getProp() {
@@ -33,12 +34,13 @@ public class TileFoundation extends TileEntity {
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 0, prop != Prop.EMPTY ? prop.serializeNBT() : new CompoundNBT());
+        CompoundNBT nbt = Serializers.getNBTWriter(Prop.class).write(new CompoundNBT(), "prop", prop);
+        return new SUpdateTileEntityPacket(pos, 0, nbt);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        prop = Prop.fromNbt(pkt.getNbtCompound());
+        prop = Serializers.getNBTReader(Prop.class).read(pkt.getNbtCompound(), "prop");
     }
 
     @Override
@@ -49,9 +51,7 @@ public class TileFoundation extends TileEntity {
     @Override
     public void read(BlockState state, CompoundNBT nbt) {
         super.read(state, nbt);
-        prop = nbt.contains("_item", Constants.NBT.TAG_COMPOUND)
-                ? Prop.fromNbt(nbt.getCompound("_item"))
-                : Prop.EMPTY;
+        prop = Serializers.getNBTReader(Prop.class).read(nbt, "prop");
         markDirty();
     }
 
@@ -59,7 +59,7 @@ public class TileFoundation extends TileEntity {
     public CompoundNBT write(CompoundNBT compound) {
         CompoundNBT nbt = super.write(compound);
         if (prop != Prop.EMPTY) {
-            nbt.put("_item", prop.serializeNBT());
+            Serializers.getNBTWriter(Prop.class).write(compound, "prop", prop);
         }
         return nbt;
     }

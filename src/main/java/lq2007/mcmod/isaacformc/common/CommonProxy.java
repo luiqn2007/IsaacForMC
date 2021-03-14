@@ -1,8 +1,6 @@
 package lq2007.mcmod.isaacformc.common;
 
-import lq2007.mcmod.isaacformc.common.block.Blocks;
 import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
-import lq2007.mcmod.isaacformc.common.entity.Entities;
 import lq2007.mcmod.isaacformc.common.network.IsaacNetworks;
 import lq2007.mcmod.isaacformc.common.util.serializer.ObjectPacketSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -25,9 +23,6 @@ public class CommonProxy {
         eventBus.addListener(this::gatherData);
         eventBus.addListener(this::imcEnqueue);
         eventBus.addListener(this::imcProcess);
-
-        Blocks.register(eventBus);
-        Entities.register(eventBus);
     }
 
     private void setup(FMLCommonSetupEvent event) {
