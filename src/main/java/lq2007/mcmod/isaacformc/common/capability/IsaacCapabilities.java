@@ -4,7 +4,6 @@ import lq2007.mcmod.isaacformc.common.prop.Prop;
 import net.minecraft.entity.LivingEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 
 public class IsaacCapabilities {
 
@@ -19,15 +18,6 @@ public class IsaacCapabilities {
 
     @CapabilityInject(IPropEntity.class)
     public static Capability<IPropEntity> CAPABILITY_PROP_ENTITY;
-
-    public static void registerAll() {
-        CapabilityManager manager = CapabilityManager.INSTANCE;
-        manager.register(IIsaacProps.class, CompoundNBTStorage.get(), IsaacProps::new);
-        manager.register(IIsaacProperty.class, CompoundNBTStorage.get(), IsaacProperty::new);
-        manager.register(IPropEntity.class, CompoundNBTStorage.get(), PropEntity::new);
-
-        manager.register(IIsaacRuntimeData.class, NoStorage.get(), IsaacRuntimeData::new);
-    }
 
     public static IIsaacProps getProps(LivingEntity entity) {
         return entity.getCapability(CAPABILITY_PROPS).orElseGet(IIsaacProps::dummy);

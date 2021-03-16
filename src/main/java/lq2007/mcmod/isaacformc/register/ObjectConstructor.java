@@ -2,9 +2,10 @@ package lq2007.mcmod.isaacformc.register;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-public class ObjectConstructor<T> implements Supplier<T> {
+public class ObjectConstructor<T> implements Supplier<T>, Callable<T> {
 
     private final Constructor<? extends T> constructor;
 
@@ -16,9 +17,14 @@ public class ObjectConstructor<T> implements Supplier<T> {
     @Override
     public T get() {
         try {
-            return constructor.newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            return call();
+        } catch (Exception e) {
             throw new RuntimeException("Can't create a instance with constructor.", e);
         }
+    }
+
+    @Override
+    public T call() throws Exception {
+        return constructor.newInstance();
     }
 }

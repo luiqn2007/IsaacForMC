@@ -26,7 +26,7 @@ public class CommonProxy {
     }
 
     private void setup(FMLCommonSetupEvent event) {
-        IsaacCapabilities.registerAll();
+        Isaac.CAPABILITIES.apply();
         IsaacNetworks.registerAll(channel);
     }
 

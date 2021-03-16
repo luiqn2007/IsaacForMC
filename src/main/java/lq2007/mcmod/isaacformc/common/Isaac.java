@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacformc.common;
 
+import lq2007.mcmod.isaacformc.common.capability.CapabilityRegister;
 import lq2007.mcmod.isaacformc.register.Register;
 import lq2007.mcmod.isaacformc.register.registers.*;
 import net.minecraft.block.Block;
@@ -27,6 +28,8 @@ public class Isaac {
     public static ItemRegister ITEMS;
     public static TileEntityRegister TILES;
     public static EntityRegister ENTITIES;
+
+    public static CapabilityRegister CAPABILITIES;
 
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
@@ -61,6 +64,8 @@ public class Isaac {
         }));
         ENTITIES = REGISTER.add(new EntityRegister(REGISTER, "lq2007.mcmod.isaacformc"));
         REGISTER.add(new BlockItemRegister(ITEMS.register, BLOCKS, block -> new Item.Properties()));
+        CAPABILITIES = REGISTER.add(new CapabilityRegister());
 
+        REGISTER.execute();
     }
 }
