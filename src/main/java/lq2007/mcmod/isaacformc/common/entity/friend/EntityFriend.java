@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -106,6 +107,19 @@ public class EntityFriend<T extends EntityFriend<T>> extends Entity implements I
     @Override
     public CompoundNBT writeWithoutTypeId(CompoundNBT compound) {
         return compound;
+    }
+
+    public void setOwner(@Nullable UUID ownerId, @Nullable UUID friendId) {
+        if (ownerId == null) {
+            setDead();
+        } else {
+            if (friendId != null) {
+                setUniqueId(friendId);
+            }
+            if (!Objects.equals(ownerId, owner.uuid)) {
+                owner.setEntity(world, ownerId);
+            }
+        }
     }
 
     public Optional<LivingEntity> getOwner() {

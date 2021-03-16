@@ -1,23 +1,20 @@
 package lq2007.mcmod.isaacformc.common.capability;
 
 import lq2007.mcmod.isaacformc.common.util.EntityHolder;
-import lq2007.mcmod.isaacformc.common.util.serializer.nbt.INBTSerializable;
-import lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTData;
+import lq2007.mcmod.isaacformc.common.util.serializer.packet.INBTSerializable;
+import lq2007.mcmod.isaacformc.common.util.serializer.packet.NBTData;
 import net.minecraft.entity.Entity;
-
-import javax.annotation.Nullable;
 
 public class PropEntity implements IPropEntity, INBTSerializable {
 
     @NBTData
-    private EntityHolder<?> entity = null;
+    private EntityHolder<?> entity = EntityHolder.EMPTY;
 
     @Override
     public boolean hasEntity() {
         return entity == null;
     }
 
-    @Nullable
     @Override
     public EntityHolder<?> getEntity() {
         return entity;

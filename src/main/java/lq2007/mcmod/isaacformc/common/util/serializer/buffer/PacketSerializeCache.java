@@ -1,4 +1,4 @@
-package lq2007.mcmod.isaacformc.common.util.serializer.network;
+package lq2007.mcmod.isaacformc.common.util.serializer.buffer;
 
 import lq2007.mcmod.isaacformc.common.util.ReflectionUtil;
 import lq2007.mcmod.isaacformc.common.util.serializer.Serializers;

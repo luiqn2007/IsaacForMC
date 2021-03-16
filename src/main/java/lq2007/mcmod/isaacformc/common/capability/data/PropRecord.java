@@ -2,10 +2,10 @@ package lq2007.mcmod.isaacformc.common.capability.data;
 
 import lq2007.mcmod.isaacformc.common.prop.Prop;
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
-import lq2007.mcmod.isaacformc.common.util.serializer.nbt.INBTSerializable;
-import lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTData;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.BufferData;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializable;
+import lq2007.mcmod.isaacformc.common.util.serializer.packet.INBTSerializable;
+import lq2007.mcmod.isaacformc.common.util.serializer.packet.NBTData;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.BufferData;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.IPacketSerializable;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;

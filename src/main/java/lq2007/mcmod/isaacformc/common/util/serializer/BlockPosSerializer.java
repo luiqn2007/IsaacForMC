@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacformc.common.util.serializer;
 
-import lq2007.mcmod.isaacformc.common.util.serializer.nbt.INBTSerializer;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializer;
+import lq2007.mcmod.isaacformc.common.util.serializer.packet.INBTSerializer;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.IPacketSerializer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;

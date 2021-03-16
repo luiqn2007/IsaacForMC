@@ -1,10 +1,10 @@
 package lq2007.mcmod.isaacformc.common.util.serializer;
 
 import lq2007.mcmod.isaacformc.common.util.ReflectionUtil;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketReadable;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializable;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializer;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketWriteable;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.IPacketReadable;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.IPacketSerializable;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.IPacketSerializer;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.IPacketWriteable;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;

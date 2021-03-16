@@ -1,4 +1,4 @@
-package lq2007.mcmod.isaacformc.common.util.serializer.network;
+package lq2007.mcmod.isaacformc.common.util.serializer.buffer;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

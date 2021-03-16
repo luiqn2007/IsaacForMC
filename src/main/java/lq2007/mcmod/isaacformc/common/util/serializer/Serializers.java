@@ -1,8 +1,8 @@
 package lq2007.mcmod.isaacformc.common.util.serializer;
 
 import lq2007.mcmod.isaacformc.common.util.ReflectionUtil;
-import lq2007.mcmod.isaacformc.common.util.serializer.nbt.*;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.*;
+import lq2007.mcmod.isaacformc.common.util.serializer.packet.*;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -68,8 +68,8 @@ public class Serializers {
     }
 
     public static <T> INBTWriter<T> getNBTWriter(Class<T> dataType) {
-        lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTSerializer annotation =
-                dataType.getAnnotation(lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTSerializer.class);
+        lq2007.mcmod.isaacformc.common.util.serializer.packet.NBTSerializer annotation =
+                dataType.getAnnotation(lq2007.mcmod.isaacformc.common.util.serializer.packet.NBTSerializer.class);
         if (annotation != null && annotation.writer() != INBTWriter.class) {
             return ReflectionUtil.getOrCreate(annotation.writer(), NBT_WRITER_MAP);
         }
@@ -82,8 +82,8 @@ public class Serializers {
     }
 
     public static <T> INBTReader<T> getNBTReader(Class<T> dataType) {
-        lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTSerializer annotation =
-                dataType.getAnnotation(lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTSerializer.class);
+        lq2007.mcmod.isaacformc.common.util.serializer.packet.NBTSerializer annotation =
+                dataType.getAnnotation(lq2007.mcmod.isaacformc.common.util.serializer.packet.NBTSerializer.class);
         if (annotation != null && annotation.reader() != INBTReader.class) {
             return ReflectionUtil.getOrCreate(annotation.reader(), NBT_READER_MAP);
         }
@@ -97,8 +97,8 @@ public class Serializers {
 
     @Nullable
     public static <T> INBTSerializer<T> getNBTSerializer(Class<?> dataType) {
-        lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTSerializer annotation =
-                dataType.getAnnotation(lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTSerializer.class);
+        lq2007.mcmod.isaacformc.common.util.serializer.packet.NBTSerializer annotation =
+                dataType.getAnnotation(lq2007.mcmod.isaacformc.common.util.serializer.packet.NBTSerializer.class);
         if (annotation != null && annotation.serializer() != INBTSerializer.class) {
             return ReflectionUtil.getOrCreate(annotation.serializer(), NBT_SERIALIZER_MAP);
         }

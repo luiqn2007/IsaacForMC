@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacformc.common.util.serializer;
 
-import lq2007.mcmod.isaacformc.common.util.serializer.nbt.INBTSerializable;
-import lq2007.mcmod.isaacformc.common.util.serializer.nbt.INBTSerializer;
+import lq2007.mcmod.isaacformc.common.util.serializer.packet.INBTSerializable;
+import lq2007.mcmod.isaacformc.common.util.serializer.packet.INBTSerializer;
 import net.minecraft.nbt.CompoundNBT;
 
 public class ObjectNBTSerializer<T extends INBTSerializable> implements INBTSerializer<T> {

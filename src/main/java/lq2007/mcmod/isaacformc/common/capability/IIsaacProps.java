@@ -1,10 +1,11 @@
 package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
-import lq2007.mcmod.isaacformc.common.capability.data.FriendManager;
 import lq2007.mcmod.isaacformc.common.capability.data.PropRecord;
 import lq2007.mcmod.isaacformc.common.capability.data.IPropRecords;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializable;
+import lq2007.mcmod.isaacformc.common.entity.friend.manager.FriendType;
+import lq2007.mcmod.isaacformc.common.entity.friend.manager.IFriendManager;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.IPacketSerializable;
 import lq2007.mcmod.isaacformc.common.prop.Prop;
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import net.minecraft.nbt.CompoundNBT;
@@ -114,7 +115,13 @@ public interface IIsaacProps extends ICapabilitySerializable<CompoundNBT>, IPack
      * Get all friends
      * @return friends
      */
-    Map<Class<?>, FriendManager> getFriends();
+    Map<FriendType, IFriendManager> getFriends();
+
+    /**
+     * Get all friends with type
+     * @return friends
+     */
+    IFriendManager getFriends(FriendType type);
 
     @Nonnull
     @Override
@@ -214,8 +221,13 @@ public interface IIsaacProps extends ICapabilitySerializable<CompoundNBT>, IPack
         public void switchActive() { }
 
         @Override
-        public Map<Class<?>, FriendManager> getFriends() {
+        public Map<FriendType, IFriendManager> getFriends() {
             return new HashMap<>();
+        }
+
+        @Override
+        public IFriendManager getFriends(FriendType type) {
+            return IFriendManager.EMPTY;
         }
 
         @Override

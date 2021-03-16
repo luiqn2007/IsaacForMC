@@ -1,17 +1,17 @@
 package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
-import lq2007.mcmod.isaacformc.common.capability.data.FriendManager;
 import lq2007.mcmod.isaacformc.common.capability.data.IPropRecords;
 import lq2007.mcmod.isaacformc.common.capability.data.PropRecord;
+import lq2007.mcmod.isaacformc.common.entity.friend.manager.FriendType;
+import lq2007.mcmod.isaacformc.common.entity.friend.manager.IFriendManager;
 import lq2007.mcmod.isaacformc.common.prop.Prop;
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import lq2007.mcmod.isaacformc.common.prop.type.EmptyProp;
 import lq2007.mcmod.isaacformc.common.prop.type.Props;
-import lq2007.mcmod.isaacformc.common.util.serializer.nbt.INBTSerializable;
-import lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTData;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.BufferData;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializable;
+import lq2007.mcmod.isaacformc.common.util.serializer.packet.INBTSerializable;
+import lq2007.mcmod.isaacformc.common.util.serializer.packet.NBTData;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.BufferData;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -33,9 +33,9 @@ public class IsaacProps implements IIsaacProps, INBTSerializable {
     @BufferData(K = AbstractPropType.class, V = PropRecord.class)
     @NBTData(K = AbstractPropType.class, V = PropRecord.class)
     private HashMap<AbstractPropType, PropRecord> activeMap = new HashMap<>();
-    @BufferData(K = Class.class, V = FriendManager.class)
-    @NBTData(K = Class.class, V = FriendManager.class)
-    private Map<Class<?>, FriendManager> friends = new HashMap<>();
+    @BufferData(K = FriendType.class, V = IFriendManager.class)
+    @NBTData(K = FriendType.class, V = IFriendManager.class)
+    private Map<FriendType, IFriendManager> friends = new HashMap<>();
 
     private final IPropRecords records = new PropRecords();
 
@@ -189,8 +189,13 @@ public class IsaacProps implements IIsaacProps, INBTSerializable {
     }
 
     @Override
-    public Map<Class<?>, FriendManager> getFriends() {
+    public Map<FriendType, IFriendManager> getFriends() {
         return friends;
+    }
+
+    @Override
+    public IFriendManager getFriends(FriendType type) {
+        return friends.getOrDefault(type, IFriendManager.EMPTY);
     }
 
     private PropRecord getRecord(AbstractPropType type) {

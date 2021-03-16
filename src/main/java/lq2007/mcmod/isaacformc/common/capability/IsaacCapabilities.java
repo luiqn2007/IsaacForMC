@@ -26,7 +26,7 @@ public class IsaacCapabilities {
         manager.register(IIsaacProperty.class, CompoundNBTStorage.get(), IsaacProperty::new);
         manager.register(IPropEntity.class, CompoundNBTStorage.get(), PropEntity::new);
 
-        manager.register(IIsaacRuntimeData.class, EmptyStorage.get(), IsaacRuntimeData::new);
+        manager.register(IIsaacRuntimeData.class, NoStorage.get(), IsaacRuntimeData::new);
     }
 
     public static IIsaacProps getProps(LivingEntity entity) {

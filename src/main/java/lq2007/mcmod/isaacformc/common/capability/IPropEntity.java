@@ -19,7 +19,6 @@ public interface IPropEntity extends ICapabilitySerializable<CompoundNBT> {
 
     boolean hasEntity();
 
-    @Nullable
     EntityHolder<?> getEntity();
 
     void bindEntity(Entity entity);
@@ -40,10 +39,9 @@ public interface IPropEntity extends ICapabilitySerializable<CompoundNBT> {
             return false;
         }
 
-        @Nullable
         @Override
         public EntityHolder<?> getEntity() {
-            return null;
+            return EntityHolder.EMPTY;
         }
 
         @Override

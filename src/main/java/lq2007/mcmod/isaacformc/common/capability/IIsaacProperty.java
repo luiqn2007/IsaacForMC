@@ -2,7 +2,7 @@ package lq2007.mcmod.isaacformc.common.capability;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializable;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.IPacketSerializable;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumTearAppearances;
 import lq2007.mcmod.isaacformc.isaac.tear.EnumTearEffects;
 import net.minecraft.nbt.CompoundNBT;

@@ -2,20 +2,24 @@ package lq2007.mcmod.isaacformc.common.prop;
 
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import lq2007.mcmod.isaacformc.common.prop.type.Props;
-import lq2007.mcmod.isaacformc.common.util.serializer.PropSerializer;
+import lq2007.mcmod.isaacformc.common.util.serializer.ISerializer;
 import lq2007.mcmod.isaacformc.common.util.serializer.Serializer;
+import lq2007.mcmod.isaacformc.common.util.serializer.Serializers;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.Objects;
+import java.util.Optional;
 
-@Serializer(PropSerializer.class)
-public class Prop extends CapabilityProvider<Prop> implements INBTSerializable<CompoundNBT> {
+@Serializer(Prop.Serializer.class)
+public class Prop extends CapabilityProvider<Prop> {
 
     public static final Prop EMPTY = new Prop(Props.EMPTY);
 
@@ -23,8 +27,7 @@ public class Prop extends CapabilityProvider<Prop> implements INBTSerializable<C
 
     public Prop(AbstractPropType type) {
         super(Prop.class);
-        ICapabilityProvider capabilities = type.initCapabilities();
-        gatherCapabilities(capabilities);
+        gatherCapabilities(type.initCapabilities());
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -32,24 +35,6 @@ public class Prop extends CapabilityProvider<Prop> implements INBTSerializable<C
                                    net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
                                    int combinedLightIn, int combinedOverlayIn) {
         type.renderOnFoundation(this, partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-    }
-
-    @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
-        nbt.putString("_type", type.key.toString());
-        CompoundNBT caps = serializeCaps();
-        if (caps != null) {
-            nbt.put("_caps", caps);
-        }
-        return nbt;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        if (nbt.contains("_caps", Constants.NBT.TAG_COMPOUND)) {
-            deserializeCaps(nbt.getCompound("_caps"));
-        }
     }
 
     @Override
@@ -63,5 +48,57 @@ public class Prop extends CapabilityProvider<Prop> implements INBTSerializable<C
     @Override
     public int hashCode() {
         return Objects.hash(type, getCapabilities());
+    }
+
+    public static class Serializer implements ISerializer<Prop> {
+
+        @Override
+        public Prop read(PacketBuffer buffer) {
+            AbstractPropType type = Serializers.getPacketReader(AbstractPropType.class, false).read(buffer);
+            if (type != Props.EMPTY) {
+                Prop prop = new Prop(type);
+                CompoundNBT cap = buffer.readCompoundTag();
+                if (cap != null) {
+                    prop.deserializeCaps(cap);
+                }
+            }
+            return Prop.EMPTY;
+        }
+
+        @Override
+        public PacketBuffer write(Prop item, PacketBuffer buffer) {
+            Serializers.getPacketWriter(AbstractPropType.class, false).write(item.type, buffer);
+            if (item != EMPTY) {
+                CompoundNBT cap = item.serializeCaps();
+                buffer.writeCompoundTag(cap);
+            }
+            return buffer;
+        }
+
+        @Override
+        public Prop read(CompoundNBT nbt, String key) {
+            CompoundNBT data = nbt.getCompound(key);
+            AbstractPropType type = Serializers.getNBTReader(AbstractPropType.class).read(data, "type");
+            if (type != Props.EMPTY) {
+                Prop prop = new Prop(type);
+                prop.deserializeCaps(nbt.getCompound("data"));
+                return prop;
+            }
+            return Prop.EMPTY;
+        }
+
+        @Override
+        public CompoundNBT write(CompoundNBT nbt, String key, Prop item) {
+            CompoundNBT data = new CompoundNBT();
+            if (item != Prop.EMPTY) {
+                Serializers.getNBTWriter(AbstractPropType.class).write(data, "type", item.type);
+                CompoundNBT caps = item.serializeCaps();
+                if (caps != null) {
+                    data.put("data", caps);
+                }
+                nbt.put(key, data);
+            }
+            return nbt;
+        }
     }
 }

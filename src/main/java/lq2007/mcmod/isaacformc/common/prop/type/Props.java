@@ -22,8 +22,7 @@ public class Props {
         return Optional.ofNullable((T) PROPS.get(key));
     }
 
-    @Nullable
-    public static AbstractPropType get(ResourceLocation key, @Nullable AbstractPropType defaultValue) {
+    public static AbstractPropType get(ResourceLocation key, AbstractPropType defaultValue) {
         return PROPS.getOrDefault(key, defaultValue);
     }
 

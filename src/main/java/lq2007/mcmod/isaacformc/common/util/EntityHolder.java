@@ -1,9 +1,9 @@
 package lq2007.mcmod.isaacformc.common.util;
 
-import lq2007.mcmod.isaacformc.common.util.serializer.nbt.INBTSerializable;
-import lq2007.mcmod.isaacformc.common.util.serializer.nbt.NBTData;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.BufferData;
-import lq2007.mcmod.isaacformc.common.util.serializer.network.IPacketSerializable;
+import lq2007.mcmod.isaacformc.common.util.serializer.packet.INBTSerializable;
+import lq2007.mcmod.isaacformc.common.util.serializer.packet.NBTData;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.BufferData;
+import lq2007.mcmod.isaacformc.common.util.serializer.buffer.IPacketSerializable;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
@@ -108,6 +108,12 @@ public class EntityHolder<T extends Entity> implements INBTSerializable, IPacket
         if (this.uuid != null) return this.uuid.equals(entity.getUniqueID());
         if (this.hasId) return this.id == entity.getEntityId();
         return false;
+    }
+
+    public boolean match(UUID entity) {
+        if (this.uuid != null) return uuid.equals(entity);
+        else if (this.entity != null) return this.entity.getUniqueID().equals(entity);
+        else return false;
     }
 
     public boolean isEmpty() {
