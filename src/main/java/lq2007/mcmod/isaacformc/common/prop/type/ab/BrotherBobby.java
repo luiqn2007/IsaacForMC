@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacformc.common.prop.type.ab;
 
-import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
+import lq2007.mcmod.isaacformc.common.capability.CapabilityRegister;
 import lq2007.mcmod.isaacformc.common.capability.PropEntity;
 import lq2007.mcmod.isaacformc.common.entity.friend.EntityBobby;
 import lq2007.mcmod.isaacformc.common.entity.friend.manager.FriendType;
@@ -19,8 +19,8 @@ import javax.annotation.Nullable;
 @PropTag({EnumPropTags.PASSIVE, EnumPropTags.BABY})
 public class BrotherBobby extends AbstractPropType {
 
-    public BrotherBobby(int id) {
-        super("brother_bobby", id, EnumPropPools.NORMAL_AND_DEVIL);
+    public BrotherBobby() {
+        super("brother_bobby", 8, EnumPropPools.NORMAL_AND_DEVIL);
     }
 
     @Override
@@ -36,8 +36,8 @@ public class BrotherBobby extends AbstractPropType {
     @Override
     public void onRemove(LivingEntity entity, Prop item, boolean removeRecord) {
         super.onRemove(entity, item, removeRecord);
-        EntityHolder<?> friend = IsaacCapabilities.getPropEntity(item).getEntity();
-        IsaacCapabilities.getProps(entity).getFriends(FriendType.FOLLOWING).remove(friend);
+        EntityHolder<?> friend = CapabilityRegister.getPropEntity(item).getEntity();
+        CapabilityRegister.getProps(entity).getFriends(FriendType.FOLLOWING).remove(friend);
     }
 
     @Nullable

@@ -27,7 +27,7 @@ public interface IPropEntity extends ICapabilitySerializable<CompoundNBT> {
 
     @Override
     default <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return IsaacCapabilities.CAPABILITY_PROP_ENTITY.orEmpty(cap, LazyOptional.of(() -> this));
+        return CapabilityRegister.CAPABILITY_PROP_ENTITY.orEmpty(cap, LazyOptional.of(() -> this));
     }
 
     class DummyData implements IPropEntity {

@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacformc.register;
 
+import lq2007.mcmod.isaacformc.common.util.ReflectionUtil;
 import lq2007.mcmod.isaacformc.register.registers.IRegister;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModContainer;
@@ -55,27 +56,24 @@ public class Register {
         System.out.println(fileInfo);
         ModFile modFile = fileInfo.getFile();
         ModFileScanData scanResult = modFile.getScanResult();
-        try {
-            Class<ModFileScanData.ClassData> aClass = ModFileScanData.ClassData.class;
-            Field fClazz = aClass.getDeclaredField("clazz");
-            fClazz.setAccessible(true);
-            for (ModFileScanData.ClassData classData : scanResult.getClasses()) {
-                try {
-                    Type clazz = (Type) fClazz.get(classData);
-                    registers.forEach(r -> r.cache(classLoader, clazz));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-            return;
+        Class<ModFileScanData.ClassData> aClass = ModFileScanData.ClassData.class;
+        Field fClazz = ReflectionUtil.getField(aClass, "clazz");
+        for (ModFileScanData.ClassData classData : scanResult.getClasses()) {
+            try {
+                Type clazz = (Type) fClazz.get(classData);
+                String className = clazz.getClassName();
+                Class<?> rClass = classLoader.loadClass(className);
+                registers.forEach(r -> r.cache(classLoader, clazz, className, , rClass));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException ignored) { }
         }
 
         if (!sorted) {
             autos.sort(Comparator.comparingInt(AutoApply::getPriority));
             sorted = true;
         }
+
         for (AutoApply auto : autos) {
             auto.register.apply();
         }

@@ -8,8 +8,8 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class ClientProxy extends CommonProxy {
 
-    public ClientProxy(IEventBus eventBus, SimpleChannel channel) {
-        super(eventBus, channel);
+    public ClientProxy(IEventBus eventBus) {
+        super(eventBus);
         eventBus.addListener(this::setupClient);
     }
 

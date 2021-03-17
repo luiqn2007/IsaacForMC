@@ -26,18 +26,21 @@ public class ReflectionUtil {
     
     public static <T> T get(Class<?> aClass, @Nullable Object object, String name) {
         try {
-            Field field = CollectionUtils.computeIfAbsent(FIELD_TABLE, aClass, name, () -> {
-                try {
-                    Field f = aClass.getDeclaredField(name);
-                    f.setAccessible(true);
-                    return f;
-                } catch (NoSuchFieldException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            return (T) field.get(object);
+            return (T) getField(aClass, name).get(object);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Field getField(Class<?> aClass, String name) {
+        return CollectionUtils.computeIfAbsent(FIELD_TABLE, aClass, name, () -> {
+            try {
+                Field f = aClass.getDeclaredField(name);
+                f.setAccessible(true);
+                return f;
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }

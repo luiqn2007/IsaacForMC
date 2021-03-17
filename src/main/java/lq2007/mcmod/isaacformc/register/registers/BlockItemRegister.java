@@ -8,7 +8,6 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import org.objectweb.asm.Type;
 
-import java.util.Set;
 import java.util.function.Function;
 
 public class BlockItemRegister implements IRegister {
@@ -24,7 +23,7 @@ public class BlockItemRegister implements IRegister {
     }
 
     @Override
-    public void cache(ClassLoader classLoader, Type clazz) { }
+    public void cache(ClassLoader classLoader, Type clazz, String className, String packageName, Class<?> aClass) { }
 
     @Override
     public void apply() {
@@ -39,9 +38,5 @@ public class BlockItemRegister implements IRegister {
                 }
             });
         }
-    }
-
-    public boolean filterPackage(String packageName) {
-        return false;
     }
 }

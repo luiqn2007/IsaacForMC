@@ -1,27 +1,22 @@
 package lq2007.mcmod.isaacformc.common.prop;
 
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
-import lq2007.mcmod.isaacformc.common.prop.type.Props;
+import lq2007.mcmod.isaacformc.common.prop.type.PropRegister;
 import lq2007.mcmod.isaacformc.common.util.serializer.ISerializer;
 import lq2007.mcmod.isaacformc.common.util.serializer.Serializer;
 import lq2007.mcmod.isaacformc.common.util.serializer.Serializers;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.Objects;
-import java.util.Optional;
 
 @Serializer(Prop.Serializer.class)
 public class Prop extends CapabilityProvider<Prop> {
 
-    public static final Prop EMPTY = new Prop(Props.EMPTY);
+    public static final Prop EMPTY = new Prop(PropRegister.EMPTY);
 
     public AbstractPropType type;
 
@@ -55,7 +50,7 @@ public class Prop extends CapabilityProvider<Prop> {
         @Override
         public Prop read(PacketBuffer buffer) {
             AbstractPropType type = Serializers.getPacketReader(AbstractPropType.class, false).read(buffer);
-            if (type != Props.EMPTY) {
+            if (type != PropRegister.EMPTY) {
                 Prop prop = new Prop(type);
                 CompoundNBT cap = buffer.readCompoundTag();
                 if (cap != null) {
@@ -79,7 +74,7 @@ public class Prop extends CapabilityProvider<Prop> {
         public Prop read(CompoundNBT nbt, String key) {
             CompoundNBT data = nbt.getCompound(key);
             AbstractPropType type = Serializers.getNBTReader(AbstractPropType.class).read(data, "type");
-            if (type != Props.EMPTY) {
+            if (type != PropRegister.EMPTY) {
                 Prop prop = new Prop(type);
                 prop.deserializeCaps(nbt.getCompound("data"));
                 return prop;

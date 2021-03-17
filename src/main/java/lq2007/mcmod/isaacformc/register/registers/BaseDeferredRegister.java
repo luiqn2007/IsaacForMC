@@ -47,10 +47,8 @@ public class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> implement
     }
 
     @Override
-    public void cache(ClassLoader classLoader, Type clazz) {
-        String className = clazz.getClassName();
-        String packageName = className.substring(0, className.lastIndexOf("."));
-        if (packageName.startsWith(classPath)) {
+    public void cache(ClassLoader classLoader, Type clazz, String className, String packageName, Class<?> aClass) {
+        if (inPackage(aClass, classPath)) {
             classNames.add(className);
         }
     }

@@ -8,7 +8,8 @@ import lq2007.mcmod.isaacformc.common.util.serializer.buffer.IPacketWriteable;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.javafmlmod.FMLModContainer;
+import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
+import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
 
@@ -23,12 +24,13 @@ public class ObjectPacketSerializer<T extends IPacketSerializable> implements IP
     public static final ObjectPacketSerializer INSTANCE = new ObjectPacketSerializer();
     public static final ArrayList<Class<?>> CLASS_LIST = new ArrayList<>();
 
-    public static void collectClass() {
+    public static synchronized void collectClass() {
         if (!CLASS_LIST.isEmpty()) return;
         ModContainer container = ModLoadingContext.get().getActiveContainer();
         Set<Class<?>> set = new HashSet<>();
-        if (container instanceof FMLModContainer) {
-            ModFileScanData data = ((FMLModContainer) container).scanResults;
+        IModFileInfo owningFile = container.getModInfo().getOwningFile();
+        if (owningFile instanceof ModFileInfo) {
+            ModFileScanData data = ((ModFileInfo) owningFile).getFile().getScanResult();
             for (ModFileScanData.ClassData classData : data.getClasses()) {
                 Type clazz = ReflectionUtil.get(ModFileScanData.ClassData.class, classData, "clazz");
                 try {

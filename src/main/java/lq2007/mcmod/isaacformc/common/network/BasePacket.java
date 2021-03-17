@@ -113,7 +113,7 @@ public abstract class BasePacket {
     @OnlyIn(Dist.DEDICATED_SERVER)
     public void sendTo(PlayerEntity player) {
         if (player instanceof ServerPlayerEntity) {
-            IsaacNetworks.CHANNEL.sendTo(this, ((ServerPlayerEntity) player).connection.netManager, NetworkDirection.PLAY_TO_SERVER);
+            NetworkRegister.CHANNEL.sendTo(this, ((ServerPlayerEntity) player).connection.netManager, NetworkDirection.PLAY_TO_SERVER);
         }
     }
 
@@ -122,7 +122,7 @@ public abstract class BasePacket {
      */
     @OnlyIn(Dist.CLIENT)
     public void sendToServer() {
-        IsaacNetworks.CHANNEL.sendToServer(this);
+        NetworkRegister.CHANNEL.sendToServer(this);
     }
 
     /**

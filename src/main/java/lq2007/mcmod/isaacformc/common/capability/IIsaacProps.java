@@ -126,7 +126,7 @@ public interface IIsaacProps extends ICapabilitySerializable<CompoundNBT>, IPack
     @Nonnull
     @Override
     default <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return IsaacCapabilities.CAPABILITY_PROPS.orEmpty(cap, LazyOptional.of(() -> this));
+        return CapabilityRegister.CAPABILITY_PROPS.orEmpty(cap, LazyOptional.of(() -> this));
     }
 
     class DummyData implements IIsaacProps {

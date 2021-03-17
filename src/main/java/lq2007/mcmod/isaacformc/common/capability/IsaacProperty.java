@@ -237,6 +237,6 @@ public class IsaacProperty implements IIsaacProperty, ICapabilityProvider, INBTS
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return IsaacCapabilities.CAPABILITY_PROPERTY.orEmpty(cap, LazyOptional.of(() -> this));
+        return CapabilityRegister.CAPABILITY_PROPERTY.orEmpty(cap, LazyOptional.of(() -> this));
     }
 }

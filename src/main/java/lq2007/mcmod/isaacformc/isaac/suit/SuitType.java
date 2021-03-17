@@ -3,7 +3,7 @@ package lq2007.mcmod.isaacformc.isaac.suit;
 import com.google.common.collect.Lists;
 import lq2007.mcmod.isaacformc.common.Isaac;
 import lq2007.mcmod.isaacformc.common.capability.IIsaacProps;
-import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
+import lq2007.mcmod.isaacformc.common.capability.CapabilityRegister;
 import lq2007.mcmod.isaacformc.isaac.IsaacElement;
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import net.minecraft.entity.LivingEntity;
@@ -49,7 +49,7 @@ public abstract class SuitType extends IsaacElement {
     }
 
     public boolean checkEntity(LivingEntity entity) {
-        IIsaacProps data = IsaacCapabilities.getProps(entity);
+        IIsaacProps data = CapabilityRegister.getProps(entity);
         int count = 0;
         for (AbstractPropType type : types) {
             if (data.contains(type)) {

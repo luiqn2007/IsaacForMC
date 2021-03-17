@@ -1,4 +1,4 @@
-package lq2007.mcmod.isaacformc.common.capability;
+package lq2007.mcmod.isaacformc.common.capability.storage;
 
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;

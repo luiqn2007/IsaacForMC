@@ -8,7 +8,7 @@ import lq2007.mcmod.isaacformc.common.entity.friend.manager.IFriendManager;
 import lq2007.mcmod.isaacformc.common.prop.Prop;
 import lq2007.mcmod.isaacformc.common.prop.type.AbstractPropType;
 import lq2007.mcmod.isaacformc.common.prop.type.EmptyProp;
-import lq2007.mcmod.isaacformc.common.prop.type.Props;
+import lq2007.mcmod.isaacformc.common.prop.type.PropRegister;
 import lq2007.mcmod.isaacformc.common.util.serializer.packet.INBTSerializable;
 import lq2007.mcmod.isaacformc.common.util.serializer.packet.NBTData;
 import lq2007.mcmod.isaacformc.common.util.serializer.buffer.BufferData;
@@ -118,7 +118,7 @@ public class IsaacProps implements IIsaacProps, INBTSerializable {
 
     @Override
     public boolean contains(AbstractPropType type) {
-        if (type == Props.EMPTY) return false;
+        if (type == PropRegister.EMPTY) return false;
         return !getRecord(type).isEmpty();
     }
 

@@ -1,4 +1,4 @@
-package lq2007.mcmod.isaacformc.common.capability;
+package lq2007.mcmod.isaacformc.common.capability.storage;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -8,9 +8,9 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 
-public class CompoundNBTStorage implements Capability.IStorage {
+public class NBTStorage implements Capability.IStorage {
 
-    public static final CompoundNBTStorage INSTANCE = new CompoundNBTStorage();
+    public static final NBTStorage INSTANCE = new NBTStorage();
 
     public static <T extends INBTSerializable<CompoundNBT>> Capability.IStorage<T> get() {
         return (Capability.IStorage<T>) INSTANCE;

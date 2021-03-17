@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacformc.common.handler;
 
 import lq2007.mcmod.isaacformc.common.Isaac;
-import lq2007.mcmod.isaacformc.common.capability.IsaacCapabilities;
+import lq2007.mcmod.isaacformc.common.capability.CapabilityRegister;
 import lq2007.mcmod.isaacformc.common.capability.IsaacProps;
 import lq2007.mcmod.isaacformc.common.capability.IsaacProperty;
 import lq2007.mcmod.isaacformc.common.capability.PropEntity;
@@ -37,8 +37,8 @@ public class CapabilityEventHandler {
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
         if (!event.isWasDeath()) {
-            IsaacCapabilities.getProps(event.getPlayer()).copy(IsaacCapabilities.getProps(event.getOriginal()));
-            IsaacCapabilities.getProperty(event.getPlayer()).copy(IsaacCapabilities.getProperty(event.getOriginal()));
+            CapabilityRegister.getProps(event.getPlayer()).copy(CapabilityRegister.getProps(event.getOriginal()));
+            CapabilityRegister.getProperty(event.getPlayer()).copy(CapabilityRegister.getProperty(event.getOriginal()));
         }
     }
 }

@@ -47,7 +47,7 @@ public abstract class AbstractPropType extends IsaacElement {
 
     protected AbstractPropType(ResourceLocation key, int id, int charge, EnumPropPools... rooms) {
         super(key, id);
-        Props.register(this);
+        PropRegister.register(this);
         this.rooms = Lists.newArrayList(rooms);
         this.charge = charge;
         this.nameKey = key.getNamespace() + ".prop." + key.getPath() + ".name";
@@ -172,7 +172,7 @@ public abstract class AbstractPropType extends IsaacElement {
         @Override
         public AbstractPropType read(PacketBuffer buffer) {
             ResourceLocation key = ResourceLocationSerializer.INSTANCE.read(buffer);
-            return Props.get(key, Props.EMPTY);
+            return PropRegister.get(key, PropRegister.EMPTY);
         }
 
         @Override
@@ -183,7 +183,7 @@ public abstract class AbstractPropType extends IsaacElement {
         @Override
         public AbstractPropType read(CompoundNBT nbt, String key) {
             ResourceLocation name = ResourceLocationSerializer.INSTANCE.read(nbt, key);
-            return Props.get(name, Props.EMPTY);
+            return PropRegister.get(name, PropRegister.EMPTY);
         }
 
         @Override
