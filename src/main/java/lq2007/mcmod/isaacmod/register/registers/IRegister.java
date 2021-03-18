@@ -46,23 +46,16 @@ public interface IRegister {
                 && !aClass.isEnum()
                 && !aClass.isAnnotation()
                 && !aClass.isArray()
-                && ModifierTester.instantiable.test(aClass);
+                && ModifierTester.notAbstract.test(aClass);
     }
 
     /**
-     * test to skip interface, anonymousClass, localClass, memberClass, enum, annotation, array and static inner class
+     * test to ensure the class is extends anther class, but skip parent self.
+     * @param parent parent
      * @param aClass class
-     * @return is normal class, it means the class is not inner class and can instantiate.
+     * @return the class is extends parent
      */
-    default boolean isInstantiable(Class<?> parent, Class<?> aClass) {
-        return aClass != parent && parent.isAssignableFrom(aClass)
-                && !aClass.isInterface()
-                && !aClass.isAnonymousClass()
-                && !aClass.isLocalClass()
-                && !aClass.isMemberClass()
-                && !aClass.isEnum()
-                && !aClass.isAnnotation()
-                && !aClass.isArray()
-                && ModifierTester.instantiable.test(aClass);
+    default boolean isExtends(Class<?> aClass, Class<?> parent) {
+        return aClass != parent && parent.isAssignableFrom(aClass);
     }
 }

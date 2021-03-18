@@ -7,7 +7,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class BlockRegister extends BaseDeferredRegister<Block, Block> {
 
     public BlockRegister(Register context, String packageName) {
-        super(ForgeRegistries.BLOCKS, context, Block.class, packageName);
+        super(ForgeRegistries.BLOCKS, context, packageName);
     }
 
     @Override

@@ -1,22 +1,24 @@
-package lq2007.mcmod.isaacmod.register;
+package lq2007.mcmod.isaacmod.common.network;
+
+import net.minecraft.network.PacketBuffer;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
-public class BiObjectConstructor<P, T> implements Function<P, T> {
+public class NetRegConstructor implements Function {
 
-    private Constructor<? extends T> constructor = null;
+    private Constructor constructor = null;
 
-    public BiObjectConstructor(Class<? extends T> aClass, Class<P> parameter) {
+    public NetRegConstructor(Class<?> aClass) {
         try {
-            constructor = aClass.getDeclaredConstructor(parameter);
+            constructor = aClass.getDeclaredConstructor(PacketBuffer.class);
         } catch (NoSuchMethodException e) {
             for (Constructor<?> declaredConstructor : aClass.getDeclaredConstructors()) {
                 if (declaredConstructor.getParameterCount() == 1
-                        && declaredConstructor.getParameterTypes()[0].isAssignableFrom(parameter)) {
+                        && declaredConstructor.getParameterTypes()[0].isAssignableFrom(PacketBuffer.class)) {
                     // compatible parent type
-                    constructor = (Constructor<? extends T>) declaredConstructor;
+                    constructor = declaredConstructor;
                     constructor.setAccessible(true);
                     break;
                 }
@@ -25,10 +27,10 @@ public class BiObjectConstructor<P, T> implements Function<P, T> {
     }
 
     @Override
-    public T apply(P p) {
+    public Object apply(Object o) {
         if (constructor != null) {
             try {
-                return constructor.newInstance(p);
+                return constructor.newInstance(o);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
