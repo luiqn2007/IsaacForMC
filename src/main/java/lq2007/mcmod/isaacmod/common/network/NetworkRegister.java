@@ -1,13 +1,15 @@
 package lq2007.mcmod.isaacmod.common.network;
 
-import lq2007.mcmod.isaacmod.register.BiObjectConstructor;
-import lq2007.mcmod.isaacmod.register.StaticInvoker;
 import lq2007.mcmod.isaacmod.register.registers.IRegister;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.objectweb.asm.Type;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,8 +30,7 @@ public class NetworkRegister implements IRegister {
     @Override
     public void cache(ClassLoader classLoader, Type clazz, String className, String packageName, Class<?> aClass) {
         if (inPackage(packageName, "lq2007.mcmod.isaacmod.common.network")
-                && BasePacket.class.isAssignableFrom(aClass)
-                && isInstantiable(aClass)) {
+                && isExtends(aClass, BasePacket.class) && isInstantiable(aClass)) {
             packetList.add(aClass);
         }
     }
@@ -37,12 +38,18 @@ public class NetworkRegister implements IRegister {
     @Override
     public void apply() {
         for (Class<?> packet : packetList) {
-            BiConsumer encoder = new StaticInvoker(packet, "encode", Object.class, PacketBuffer.class);
-            Function decoder = new BiObjectConstructor(packet, PacketBuffer.class);
-            BiConsumer consumer = new StaticInvoker(packet, "apply", Object.class, Supplier.class);
+            BiConsumer encoder = new NetRegConsumer(packet, "encode", PacketBuffer.class);
+            Function decoder = new NetRegConstructor(packet);
+            BiConsumer consumer = new NetRegConsumer(packet, "apply", Supplier.class);
             NetSide annotation = packet.getAnnotation(NetSide.class);
             Optional<NetworkDirection> direction = annotation == null ? Optional.empty() : Optional.of(annotation.value());
             CHANNEL.registerMessage(nextId++, packet, encoder, decoder, consumer, direction);
         }
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    public @interface NetSide {
+        NetworkDirection value();
     }
 }

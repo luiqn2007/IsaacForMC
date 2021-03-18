@@ -8,6 +8,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 import java.util.function.Function;
@@ -22,23 +23,10 @@ public class TileEntityRegister extends BaseDeferredRegister<TileEntityType<?>, 
         this.blockSupplier = blockSupplier;
     }
 
+    @Nullable
     @Override
-    protected Optional<ImmutablePair<Class<? extends TileEntity>, Supplier<TileEntityType<?>>>> build(String className) {
-        try {
-            Class<?> aClass = context.classLoader.loadClass(className);
-            if (!aClass.isInterface() && resultType.isAssignableFrom(aClass)) {
-                Class<? extends TileEntity> teType = (Class<? extends TileEntity>) aClass;
-                if (!Modifier.isAbstract(teType.getModifiers())) {
-                    Supplier<? extends TileEntity> supplier = new ObjectConstructor<>(teType);
-                    return Optional.of(ImmutablePair.of(teType, () -> TileEntityType.Builder
-                            .create(supplier, blockSupplier.apply(teType))
-                            .build(null)));
-                }
-            }
-            return Optional.empty();
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
-            System.out.println("Skip " + className + " because of " + e.getMessage());
-            return Optional.empty();
-        }
+    protected Supplier<? extends TileEntityType<?>> build(String name, Class<? extends TileEntity> aClass) throws Exception {
+        Supplier<? extends TileEntity> supplier = new ObjectConstructor<>(aClass);
+        return () -> TileEntityType.Builder.create(supplier, blockSupplier.apply(aClass)).build(null);
     }
 }

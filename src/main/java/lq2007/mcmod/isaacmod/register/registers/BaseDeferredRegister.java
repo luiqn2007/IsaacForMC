@@ -9,83 +9,70 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.Modifier;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> implements IRegister, Iterable<RegistryObject<T>>, IAutoApply {
+public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> implements IRegister, Iterable<RegistryObject<T>>, IAutoApply {
 
     public final DeferredRegister<T> register;
 
     public final List<Class<? extends V>> type = new ArrayList<>();
-    public final Class<V> resultType;
+    public final Class<T> objectType; // the type saved in register, like EntityType
+    public final Class<V> resultType; // the type created, like Entity
     public final Register context;
     public final String classPath;
 
     public final Map<Class<? extends V>, RegistryObject<T>> objMap = new HashMap<>();
     public final BiMap<Class<? extends V>, String> nameMap = HashBiMap.create();
 
-    private final List<String> classNames = new ArrayList<>();
+    protected final Logger logger;
+    protected final List<Class<? extends V>> classes = new ArrayList<>();
 
-    public BaseDeferredRegister(IForgeRegistry<T> registry, Register context, Class<V> resultType, String classPath) {
-        this.resultType = resultType;
+    public BaseDeferredRegister(IForgeRegistry<T> registry, Register context, Class<?> resultType, String classPath) {
+        this.objectType = registry.getRegistrySuperType();
+        this.resultType = (Class<V>) resultType;
         this.context = context;
         this.classPath = classPath;
         this.register = DeferredRegister.create(registry, context.modId);
         this.register.register(context.bus);
+        this.logger = LogManager.getLogger(objectType);
     }
 
-    public BaseDeferredRegister(DeferredRegister<T> register, Class<V> resultType, Register context, String classPath) {
-        this.register = register;
-        this.resultType = resultType;
-        this.context = context;
-        this.classPath = classPath;
+    public BaseDeferredRegister(IForgeRegistry<T> registry, Register context, String classPath) {
+        this(registry, context, registry.getRegistrySuperType(), classPath);
     }
 
     @Override
     public void cache(ClassLoader classLoader, Type clazz, String className, String packageName, Class<?> aClass) {
-        if (inPackage(packageName, classPath)) {
-            classNames.add(className);
+        if (inPackage(packageName, classPath) && isInstantiable(aClass) && isExtends(aClass, resultType)) {
+            classes.add((Class<? extends V>) aClass);
         }
     }
 
     @Override
     public void apply() {
-        if (classNames.isEmpty()) return;
-        classNames.stream()
-                .map(this::build)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(pair -> {
-                    Class<? extends V> aClass = pair.left;
-                    Supplier<? extends T> supplier = pair.right;
-                    String name = aClass.getSimpleName().toLowerCase(Locale.ROOT);
-                    RegistryObject<T> registryObject = register.register(name, supplier);
-                    objMap.put(aClass, registryObject);
-                    nameMap.put(aClass, name);
-                    System.out.println("Registry " + aClass + " as " + registryObject.getId());
-                });
-    }
-
-    protected Optional<ImmutablePair<Class<? extends V>, Supplier<T>>> build(String className) {
-        try {
-            Class<?> aClass = context.classLoader.loadClass(className);
-            if (!aClass.isInterface() && resultType.isAssignableFrom(aClass)) {
-                if (!Modifier.isAbstract(aClass.getModifiers())) {
-                    Class<? extends V> vType = (Class<? extends V>) aClass;
-                    Class<? extends T> tType = (Class<? extends T>) aClass;
-                    Supplier<T> supplier = new ObjectConstructor<>(tType);
-                    return Optional.of(ImmutablePair.of(vType, supplier));
+        if (classes.isEmpty()) return;
+        for (Class<? extends V> aClass : classes) {
+            try {
+                String name = aClass.getSimpleName().toLowerCase(Locale.ROOT);
+                Supplier<? extends T> build = build(name, aClass);
+                if (build == null) {
+                    logger.warn("Skip " + aClass.getName());
+                    continue;
                 }
+                RegistryObject<T> registryObject = register.register(name, build);
+                objMap.put(aClass, registryObject);
+                nameMap.put(aClass, name);
+                logger.warn("Registry " + registryObject.getId() + ": " + aClass.getName());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            return Optional.empty();
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
-            System.out.println("Skip " + className + " because of " + e.getMessage());
-            return Optional.empty();
         }
     }
 
@@ -93,6 +80,14 @@ public class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> implement
     @Nonnull
     public Iterator<RegistryObject<T>> iterator() {
         return objMap.values().iterator();
+    }
+
+    @Nullable
+    protected Supplier<? extends T> build(String name, Class<? extends V> aClass) throws Exception {
+        if (objectType.isAssignableFrom(aClass)) {
+            return new ObjectConstructor<>((Class<? extends T>) aClass);
+        }
+        return null;
     }
 
     public RegistryObject<T> getObj(Class<? extends V> aClass) {

@@ -5,7 +5,6 @@ import java.lang.reflect.Modifier;
 public class ModifierTester {
 
     public static ModifierTester notAbstract = new ModifierTester().ABSTRACT().not();
-    public static ModifierTester instantiable = new ModifierTester().PUBLIC().and(notAbstract);
 
     private int mask = 0;
     private boolean not = false;
