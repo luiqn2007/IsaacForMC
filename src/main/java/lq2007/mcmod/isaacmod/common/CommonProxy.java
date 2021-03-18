@@ -3,12 +3,10 @@ package lq2007.mcmod.isaacmod.common;
 import lq2007.mcmod.isaacmod.common.util.serializer.ObjectPacketSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.*;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class CommonProxy {
 
     protected IEventBus eventBus;
-    protected SimpleChannel channel;
 
     public CommonProxy(IEventBus eventBus) {
         this.eventBus = eventBus;
@@ -31,13 +29,13 @@ public class CommonProxy {
         ObjectPacketSerializer.collectClass();
     }
 
-    private void setupServer(FMLDedicatedServerSetupEvent event) {}
+    private void setupServer(FMLDedicatedServerSetupEvent event) { }
 
     private void loadComplete(FMLLoadCompleteEvent event) { }
 
-    private void gatherData(GatherDataEvent event) {}
+    private void gatherData(GatherDataEvent event) { }
 
-    private void imcEnqueue(InterModEnqueueEvent event) {}
+    private void imcEnqueue(InterModEnqueueEvent event) { }
 
-    private void imcProcess(InterModProcessEvent event) {}
+    private void imcProcess(InterModProcessEvent event) { }
 }

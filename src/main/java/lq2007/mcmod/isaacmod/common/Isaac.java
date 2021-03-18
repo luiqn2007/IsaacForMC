@@ -1,6 +1,7 @@
 package lq2007.mcmod.isaacmod.common;
 
 import lq2007.mcmod.isaacmod.common.capability.CapabilityRegister;
+import lq2007.mcmod.isaacmod.common.command.CommandRegister;
 import lq2007.mcmod.isaacmod.common.network.NetworkRegister;
 import lq2007.mcmod.isaacmod.common.prop.type.PropRegister;
 import lq2007.mcmod.isaacmod.register.Register;
@@ -36,6 +37,7 @@ public class Isaac {
     public static CapabilityRegister CAPABILITIES;
     public static NetworkRegister NETWORKS;
     public static PropRegister PROPS;
+    public static CommandRegister COMMANDS = new CommandRegister();
 
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
@@ -64,6 +66,7 @@ public class Isaac {
         CAPABILITIES = REGISTER.add(new CapabilityRegister());
         NETWORKS = REGISTER.add(new NetworkRegister(network));
         PROPS = REGISTER.add(new PropRegister());
+        COMMANDS = REGISTER.add(new CommandRegister());
 
         REGISTER.execute();
     }
