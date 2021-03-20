@@ -33,6 +33,15 @@ public interface IRegister {
         return classPackage.startsWith(packageName);
     }
 
+    default boolean inSubPackages(String classPackage, String... packageNames) {
+        for (String packageName : packageNames) {
+            if (inSubPackage(classPackage, packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * test to skip interface, anonymousClass, localClass, memberClass, enum, annotation, array and static inner class
      * @param aClass class

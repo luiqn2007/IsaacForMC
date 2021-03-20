@@ -15,15 +15,15 @@ public class PropRegister implements IRegister, IAutoApply {
 
     public static final AbstractPropType EMPTY = EmptyProp.EMPTY;
 
-    public static <T extends AbstractPropType> Optional<T> get(ResourceLocation key) {
+    public <T extends AbstractPropType> Optional<T> get(ResourceLocation key) {
         return Optional.ofNullable((T) PROPS.get(key));
     }
 
-    public static AbstractPropType get(ResourceLocation key, AbstractPropType defaultValue) {
+    public AbstractPropType get(ResourceLocation key, AbstractPropType defaultValue) {
         return PROPS.getOrDefault(key, defaultValue);
     }
 
-    public static AbstractPropType register(AbstractPropType prop) {
+    public AbstractPropType register(AbstractPropType prop) {
         ResourceLocation key = prop.key;
         if (PROPS.containsKey(key)) {
             throw new RuntimeException("Reduplicated Key " + key + "!");
@@ -43,7 +43,8 @@ public class PropRegister implements IRegister, IAutoApply {
     public void cache(ClassLoader classLoader, Type clazz, String className, String packageName, Class<?> aClass) {
         if (aClass == EmptyProp.class) return;
         if (inSubPackage(packageName, "lq2007.mcmod.isaacmod.common.prop.type")
-                && isInstantiable(AbstractPropType.class, aClass)) {
+                && isExtends(aClass, AbstractPropType.class)
+                && isInstantiable(aClass)) {
             types.add(aClass);
         }
     }

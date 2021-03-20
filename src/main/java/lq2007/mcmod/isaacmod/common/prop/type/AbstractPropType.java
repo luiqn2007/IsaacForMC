@@ -47,7 +47,7 @@ public abstract class AbstractPropType extends IsaacElement {
 
     protected AbstractPropType(ResourceLocation key, int id, int charge, EnumPropPools... rooms) {
         super(key, id);
-        PropRegister.register(this);
+        Isaac.PROPS.register(this);
         this.rooms = Lists.newArrayList(rooms);
         this.charge = charge;
         this.nameKey = key.getNamespace() + ".prop." + key.getPath() + ".name";
@@ -121,8 +121,10 @@ public abstract class AbstractPropType extends IsaacElement {
      * @param entity entity
      * @param item prop
      * @param removeRecord true if remove record
+     * @return True if removed
      */
-    public void onRemove(LivingEntity entity, Prop item, boolean removeRecord) {
+    public boolean onRemove(LivingEntity entity, Prop item, boolean removeRecord) {
+        return true;
     }
 
     /**
@@ -172,7 +174,7 @@ public abstract class AbstractPropType extends IsaacElement {
         @Override
         public AbstractPropType read(PacketBuffer buffer) {
             ResourceLocation key = ResourceLocationSerializer.INSTANCE.read(buffer);
-            return PropRegister.get(key, PropRegister.EMPTY);
+            return Isaac.PROPS.get(key, PropRegister.EMPTY);
         }
 
         @Override
@@ -183,7 +185,7 @@ public abstract class AbstractPropType extends IsaacElement {
         @Override
         public AbstractPropType read(CompoundNBT nbt, String key) {
             ResourceLocation name = ResourceLocationSerializer.INSTANCE.read(nbt, key);
-            return PropRegister.get(name, PropRegister.EMPTY);
+            return Isaac.PROPS.get(name, PropRegister.EMPTY);
         }
 
         @Override

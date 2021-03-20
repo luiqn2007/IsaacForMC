@@ -18,7 +18,7 @@ public class CommandRegister implements IRegister, IAutoApply {
 
     @Override
     public void cache(ClassLoader classLoader, Type clazz, String className, String packageName, Class<?> aClass) {
-        if (inSubPackage(packageName, "lq2007.mcmod.isaacmod.common.command") && isExtends(aClass, ICommandProvider.class) && isInstantiable(aClass)) {
+        if (inSubPackages(packageName, "lq2007.mcmod.isaacmod.common.command", "lq2007.mcmod.isaacmod.debug") && isExtends(aClass, ICommandProvider.class) && isInstantiable(aClass)) {
             commands.add((Class<? extends ICommandProvider>) aClass);
         }
     }

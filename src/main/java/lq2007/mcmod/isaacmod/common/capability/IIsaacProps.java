@@ -78,6 +78,13 @@ public interface IIsaacProps extends ICapabilitySerializable<CompoundNBT>, IPack
     Optional<Prop> getActive();
 
     /**
+     * Return a prop by type.
+     * @param type type
+     * @return prop
+     */
+    Prop getProp(AbstractPropType type);
+
+    /**
      * Check if entity has specified type of item.
      * @param type the prop type
      * @return True if entity has the prop.
@@ -187,6 +194,11 @@ public interface IIsaacProps extends ICapabilitySerializable<CompoundNBT>, IPack
         @Override
         public Optional<Prop> getActive() {
             return Optional.empty();
+        }
+
+        @Override
+        public Prop getProp(AbstractPropType type) {
+            return Prop.EMPTY;
         }
 
         @Override

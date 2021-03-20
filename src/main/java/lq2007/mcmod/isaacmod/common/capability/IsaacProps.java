@@ -117,6 +117,12 @@ public class IsaacProps implements IIsaacProps, INBTSerializable {
     }
 
     @Override
+    public Prop getProp(AbstractPropType type) {
+        PropRecord record = type.isActive() ? activeMap.get(type) : propMap.get(type);
+        return record == null ? Prop.EMPTY : record.getFirst();
+    }
+
+    @Override
     public boolean contains(AbstractPropType type) {
         if (type == PropRegister.EMPTY) return false;
         return !getRecord(type).isEmpty();
