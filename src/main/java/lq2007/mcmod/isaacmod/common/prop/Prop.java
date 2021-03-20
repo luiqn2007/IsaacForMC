@@ -1,6 +1,7 @@
 package lq2007.mcmod.isaacmod.common.prop;
 
 import lq2007.mcmod.isaacmod.common.prop.type.AbstractPropType;
+import lq2007.mcmod.isaacmod.common.prop.type.EmptyProp;
 import lq2007.mcmod.isaacmod.common.prop.type.PropRegister;
 import lq2007.mcmod.isaacmod.common.util.serializer.ISerializer;
 import lq2007.mcmod.isaacmod.common.util.serializer.Serializer;
@@ -16,7 +17,7 @@ import java.util.Objects;
 @Serializer(Prop.Serializer.class)
 public class Prop extends CapabilityProvider<Prop> {
 
-    public static final Prop EMPTY = new Prop(PropRegister.EMPTY);
+    public static final Prop EMPTY = new Prop(EmptyProp.EMPTY);
 
     public AbstractPropType type;
 
@@ -50,7 +51,7 @@ public class Prop extends CapabilityProvider<Prop> {
         @Override
         public Prop read(PacketBuffer buffer) {
             AbstractPropType type = Serializers.getPacketReader(AbstractPropType.class, false).read(buffer);
-            if (type != PropRegister.EMPTY) {
+            if (type != EmptyProp.EMPTY) {
                 Prop prop = new Prop(type);
                 CompoundNBT cap = buffer.readCompoundTag();
                 if (cap != null) {
@@ -74,7 +75,7 @@ public class Prop extends CapabilityProvider<Prop> {
         public Prop read(CompoundNBT nbt, String key) {
             CompoundNBT data = nbt.getCompound(key);
             AbstractPropType type = Serializers.getNBTReader(AbstractPropType.class).read(data, "type");
-            if (type != PropRegister.EMPTY) {
+            if (type != EmptyProp.EMPTY) {
                 Prop prop = new Prop(type);
                 prop.deserializeCaps(nbt.getCompound("data"));
                 return prop;

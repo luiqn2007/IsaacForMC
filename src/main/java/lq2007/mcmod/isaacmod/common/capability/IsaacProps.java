@@ -124,7 +124,7 @@ public class IsaacProps implements IIsaacProps, INBTSerializable {
 
     @Override
     public boolean contains(AbstractPropType type) {
-        if (type == PropRegister.EMPTY) return false;
+        if (type == EmptyProp.EMPTY) return false;
         return !getRecord(type).isEmpty();
     }
 

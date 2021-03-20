@@ -7,10 +7,11 @@ import net.minecraft.util.text.StringTextComponent;
 
 public final class EmptyProp extends AbstractPropType {
 
-    public static final EmptyProp EMPTY = new EmptyProp();
+    public static EmptyProp EMPTY;
 
     private EmptyProp() {
         super(new ResourceLocation(Isaac.ID, "empty"));
+        EMPTY = this;
     }
 
     @Override

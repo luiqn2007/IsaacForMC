@@ -10,6 +10,10 @@ public class BlockRegister extends BaseDeferredRegister<Block, Block> {
         super(ForgeRegistries.BLOCKS, context, packageName);
     }
 
+    public BlockRegister(Register context) {
+        super(ForgeRegistries.BLOCKS, context);
+    }
+
     @Override
     public int getPriority() {
         return Integer.MIN_VALUE;

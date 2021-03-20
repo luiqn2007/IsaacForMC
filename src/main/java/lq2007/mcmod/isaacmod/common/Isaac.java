@@ -9,6 +9,7 @@ import lq2007.mcmod.isaacmod.register.registers.*;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -48,27 +49,32 @@ public class Isaac {
 
     public Isaac() {
         MOD = this;
-        eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        SimpleChannel network = NetworkRegistry.newSimpleChannel(new ResourceLocation(ID, "network"), () -> "0", v -> true, v -> true);
-        if (FMLEnvironment.dist.isClient()) {
-            proxy = new lq2007.mcmod.isaacmod.client.ClientProxy(eventBus);
-        } else {
-            proxy = new CommonProxy(eventBus);
-        }
 
         REGISTER = new Register();
+        SimpleChannel network = NetworkRegistry.newSimpleChannel(new ResourceLocation(ID, "network"), () -> "0", v -> true, v -> true);
 
-        BLOCKS = REGISTER.add(new BlockRegister(REGISTER, "lq2007.mcmod.isaacmod"));
-        ITEMS = REGISTER.add(new ItemRegister(REGISTER, "lq2007.mcmod.isaacmod"));
-        TILES = REGISTER.add(new TileEntityRegister(REGISTER, "lq2007.mcmod.isaacmod", this::getBlocks));
-        ENTITIES = REGISTER.add(new EntityRegister(REGISTER, "lq2007.mcmod.isaacmod"));
+        BLOCKS = REGISTER.add(new BlockRegister(REGISTER));
+        ITEMS = REGISTER.add(new ItemRegister(REGISTER));
+        TILES = REGISTER.add(new TileEntityRegister(REGISTER, this::getBlocks, this::asTerClass));
+        ENTITIES = REGISTER.add(new EntityRegister(REGISTER));
         BLOCK_ITEMS = REGISTER.add(new BlockItemRegister(ITEMS.register, BLOCKS, block -> new Item.Properties()));
         CAPABILITIES = REGISTER.add(new CapabilityRegister());
         NETWORKS = REGISTER.add(new NetworkRegister(network));
         PROPS = REGISTER.add(new PropRegister());
         COMMANDS = REGISTER.add(new CommandRegister());
 
+        eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        if (FMLEnvironment.dist.isClient()) {
+            proxy = new lq2007.mcmod.isaacmod.client.ClientProxy(eventBus);
+        } else {
+            proxy = new CommonProxy(eventBus);
+        }
+
         REGISTER.execute();
+    }
+
+    private String asTerClass(Class<? extends TileEntity> aClass, TileEntityType<?> tileEntityType) {
+        return "lq2007.mcmod.isaacmod.client.ter.Ter" + aClass.getSimpleName().substring(4);
     }
 
     private Block[] getBlocks(Class<? extends TileEntity> aClass) {

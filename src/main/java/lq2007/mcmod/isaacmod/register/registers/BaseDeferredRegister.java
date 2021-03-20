@@ -22,7 +22,6 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
 
     public final DeferredRegister<T> register;
 
-    public final List<Class<? extends V>> type = new ArrayList<>();
     public final Class<T> objectType; // the type saved in register, like EntityType
     public final Class<V> resultType; // the type created, like Entity
     public final Register context;
@@ -34,7 +33,7 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
     protected final Logger logger;
     protected final List<Class<? extends V>> classes = new ArrayList<>();
 
-    public BaseDeferredRegister(IForgeRegistry<T> registry, Register context, Class<?> resultType, String classPath) {
+    public BaseDeferredRegister(IForgeRegistry<T> registry, Register context, Class<?> resultType, @Nullable String classPath) {
         this.objectType = registry.getRegistrySuperType();
         this.resultType = (Class<V>) resultType;
         this.context = context;
@@ -44,36 +43,49 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
         this.logger = LogManager.getLogger(objectType);
     }
 
-    public BaseDeferredRegister(IForgeRegistry<T> registry, Register context, String classPath) {
+    public BaseDeferredRegister(IForgeRegistry<T> registry, Register context, Class<?> resultType) {
+        this(registry, context, resultType, null);
+    }
+
+    public BaseDeferredRegister(IForgeRegistry<T> registry, Register context, @Nullable String classPath) {
         this(registry, context, registry.getRegistrySuperType(), classPath);
+    }
+
+    public BaseDeferredRegister(IForgeRegistry<T> registry, Register context) {
+        this(registry, context, registry.getRegistrySuperType(), null);
     }
 
     @Override
     public void cache(ClassLoader classLoader, Type clazz, String className, String packageName, Class<?> aClass) {
-        if (inPackage(packageName, classPath) && isInstantiable(aClass) && isExtends(aClass, resultType)) {
+        if (isPackage(packageName, classPath) && isInstantiable(aClass) && isExtends(aClass, resultType)) {
             classes.add((Class<? extends V>) aClass);
+            logger.warn("\tCached as {}", objectType.getSimpleName());
         }
     }
 
     @Override
     public void apply() {
         if (classes.isEmpty()) return;
+        int count = 0;
+        logger.warn("{} apply begin", objectType.getSimpleName());
         for (Class<? extends V> aClass : classes) {
             try {
                 String name = aClass.getSimpleName().toLowerCase(Locale.ROOT);
                 Supplier<? extends T> build = build(name, aClass);
                 if (build == null) {
-                    logger.warn("Skip " + aClass.getName());
+                    logger.warn("\tSkip " + aClass.getName());
                     continue;
                 }
                 RegistryObject<T> registryObject = register.register(name, build);
                 objMap.put(aClass, registryObject);
                 nameMap.put(aClass, name);
-                logger.warn("Registry " + registryObject.getId() + ": " + aClass.getName());
+                logger.warn("\tRegistry " + registryObject.getId() + ": " + aClass.getName());
+                count++;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        logger.warn("{} apply end, total {}", objectType.getSimpleName(), count);
     }
 
     @Override

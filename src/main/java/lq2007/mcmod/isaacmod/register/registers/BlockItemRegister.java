@@ -14,6 +14,8 @@ import java.util.function.Function;
 
 public class BlockItemRegister implements IRegister {
 
+    public static final Logger LOGGER = LogManager.getLogger();
+
     private final DeferredRegister<Item> register;
     private final Iterable<RegistryObject<Block>> blocks;
     private final Function<Block, Item.Properties> properties;
@@ -30,17 +32,21 @@ public class BlockItemRegister implements IRegister {
 
     @Override
     public void apply() {
+        int count = 0;
+        LOGGER.warn("BlockItem apply begin");
         for (RegistryObject<Block> blockObj : blocks) {
             Block block = blockObj.get();
             String name = blockObj.getId().getPath();
+            logger.warn("\tRegister " + block + " named " + name);
             register.register(name, () -> {
-                logger.warn("Register Block Item: " + block + " named " + name);
                 if (block instanceof ICustomItem) {
                     return ((ICustomItem) block).newBlockItem();
                 } else {
                     return new BlockItem(block, properties.apply(block));
                 }
             });
+            count++;
         }
+        LOGGER.warn("BlockItem apply end, total {}", count);
     }
 }

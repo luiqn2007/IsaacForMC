@@ -7,6 +7,8 @@ import net.minecraft.command.CommandSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
 
 import java.util.HashSet;
@@ -14,11 +16,14 @@ import java.util.Set;
 
 public class CommandRegister implements IRegister, IAutoApply {
 
+    public static final Logger LOGGER = LogManager.getLogger();
+
     private final Set<Class<? extends ICommandProvider>> commands = new HashSet<>();
 
     @Override
     public void cache(ClassLoader classLoader, Type clazz, String className, String packageName, Class<?> aClass) {
-        if (inSubPackages(packageName, "lq2007.mcmod.isaacmod.common.command", "lq2007.mcmod.isaacmod.debug") && isExtends(aClass, ICommandProvider.class) && isInstantiable(aClass)) {
+        if (isExtends(aClass, ICommandProvider.class) && isInstantiable(aClass)) {
+            LOGGER.warn("\tCached as Command");
             commands.add((Class<? extends ICommandProvider>) aClass);
         }
     }
@@ -30,13 +35,18 @@ public class CommandRegister implements IRegister, IAutoApply {
 
     @SubscribeEvent
     public void apply(RegisterCommandsEvent event) {
+        int count = 0;
+        LOGGER.warn("Command apply begin");
         CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
         for (Class<? extends ICommandProvider> command : commands) {
             try {
+                LOGGER.warn("\tRegister {}", command);
                 dispatcher.register(command.newInstance().getCommand());
+                count++;
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
+        LOGGER.warn("Command apply end, total {}", count);
     }
 }

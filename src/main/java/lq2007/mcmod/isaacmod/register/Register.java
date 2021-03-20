@@ -10,6 +10,8 @@ import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
 import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.minecraftforge.forgespi.language.ModFileScanData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
 
 import java.lang.reflect.Field;
@@ -18,6 +20,8 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Register {
+
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public final List<IRegister> registers;
     public final List<AutoApply> autos;
@@ -47,13 +51,18 @@ public class Register {
     }
 
     public void execute() {
+        if (!sorted) {
+            autos.sort(Comparator.comparingInt(AutoApply::getPriority));
+            registers.sort(Comparator.comparingInt(IRegister::getPriority));
+            sorted = true;
+        }
+
         IModFileInfo iFileInfo = container.getModInfo().getOwningFile();
         if (!(iFileInfo instanceof ModFileInfo)) {
-            System.out.println("Skip " + container.getModId() + " because no ModFileInfo");
+            LOGGER.warn("Skip {} because no ModFileInfo", container.getModId());
             return;
         }
         ModFileInfo fileInfo = (ModFileInfo) iFileInfo;
-        System.out.println(fileInfo);
         ModFile modFile = fileInfo.getFile();
         ModFileScanData scanResult = modFile.getScanResult();
         Class<ModFileScanData.ClassData> aClass = ModFileScanData.ClassData.class;
@@ -64,15 +73,11 @@ public class Register {
                 String className = clazz.getClassName();
                 Class<?> rClass = classLoader.loadClass(className);
                 String packageName = rClass.getPackage().getName();
+                LOGGER.warn("Search {}", className);
                 registers.forEach(r -> r.cache(classLoader, clazz, className, packageName, rClass));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException ignored) { }
-        }
-
-        if (!sorted) {
-            autos.sort(Comparator.comparingInt(AutoApply::getPriority));
-            sorted = true;
         }
 
         for (AutoApply auto : autos) {
@@ -87,7 +92,7 @@ public class Register {
 
         public AutoApply(IRegister register) {
             this.register = register;
-            this.priority = ((IAutoApply) register).getPriority();
+            this.priority = register.getPriority();
         }
 
         public int getPriority() {

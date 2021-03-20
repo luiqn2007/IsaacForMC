@@ -10,12 +10,16 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.INBTSerializable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CapabilityRegister implements IRegister {
+
+    public static final Logger LOGGER = LogManager.getLogger();
 
     @CapabilityInject(IIsaacProps.class)
     public static Capability<IIsaacProps> CAPABILITY_PROPS;
@@ -35,12 +39,13 @@ public class CapabilityRegister implements IRegister {
     @Override
     public void cache(ClassLoader classLoader, Type clazz, String className, String packageName, Class<?> aClass) {
         // check package and skip inner class
-        if (inPackage(packageName, "lq2007.mcmod.isaacmod.common.capability") && !className.contains("$")) {
+        if (isPackage(packageName, "lq2007.mcmod.isaacmod.common.capability") && !className.contains("$")) {
             if (!aClass.isInterface()) {
                 String interfaceName = "I" + aClass.getSimpleName();
                 for (Class<?> anInterface : aClass.getInterfaces()) {
                     if (interfaceName.equals(anInterface.getSimpleName())) {
                         CAP_MAP.put(anInterface, aClass);
+                        LOGGER.warn("\tCached as Capability");
                         break;
                     }
                 }
@@ -50,16 +55,23 @@ public class CapabilityRegister implements IRegister {
 
     @Override
     public void apply() {
+        int count = 0;
+        LOGGER.warn("Capability apply begin");
         CapabilityManager manager = CapabilityManager.INSTANCE;
-        CAP_MAP.forEach((type, instance) -> {
+        for (Map.Entry<Class, Class> entry : CAP_MAP.entrySet()) {
+            Class type = entry.getKey();
+            Class instance = entry.getValue();
             Capability.IStorage storage = INBTSerializable.class.isAssignableFrom(type) ? NBTStorage.get() : NoStorage.get();
             try {
+                LOGGER.warn("\tRegister {}", type);
                 ObjectConstructor factory = new ObjectConstructor(instance);
                 manager.register(type, storage, factory);
+                count++;
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
-        });
+        }
+        LOGGER.warn("Capability apply end, total {}", count);
     }
 
     public IIsaacProps getProps(LivingEntity entity) {

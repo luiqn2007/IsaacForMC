@@ -5,7 +5,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.objectweb.asm.Type;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,12 +17,19 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class EntityRegister extends BaseDeferredRegister<EntityType<?>, Entity> {
 
+    protected IRegister register;
+
     public EntityRegister(Register context, String packageName) {
         super(ForgeRegistries.ENTITIES, context, Entity.class, packageName);
+    }
+
+    public EntityRegister(Register context) {
+        super(ForgeRegistries.ENTITIES, context, Entity.class);
     }
 
     @Override
@@ -55,6 +65,14 @@ public class EntityRegister extends BaseDeferredRegister<EntityType<?>, Entity> 
             };
         }
         return null;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public IRegister asRender(Function<Class<? extends Entity>, String> asRenderClass) {
+        if (register == null) {
+            register = new EntityRenderRegister(asRenderClass);
+        }
+        return register;
     }
 
     @Target(ElementType.TYPE)
@@ -112,6 +130,62 @@ public class EntityRegister extends BaseDeferredRegister<EntityType<?>, Entity> 
                 e.printStackTrace();
             }
             return null;
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    class EntityRenderRegister implements IRegister {
+
+        Function<Class<? extends Entity>, String> asRenderClass;
+
+        public EntityRenderRegister(Function<Class<? extends Entity>, String> asRenderClass) {
+            this.asRenderClass = asRenderClass;
+        }
+
+        @Override
+        public void cache(ClassLoader classLoader, Type clazz, String className, String packageName, Class<?> aClass) { }
+
+        @Override
+        public void apply() {
+            for (Class<? extends Entity> aClass : classes) {
+                String render = asRenderClass.apply(aClass);
+                try {
+                    Class<?> renderClass = aClass.getClassLoader().loadClass(render);
+                    EntityType type = get(aClass);
+                    net.minecraftforge.fml.client.registry.IRenderFactory factory;
+                    if (net.minecraftforge.fml.client.registry.IRenderFactory.class.isAssignableFrom(renderClass)) {
+                        factory = (net.minecraftforge.fml.client.registry.IRenderFactory) renderClass.newInstance();
+                    } else if (net.minecraft.client.renderer.entity.EntityRenderer.class.isAssignableFrom(renderClass)) {
+                        factory = new EntityRenderFactory(renderClass);
+                    } else return;
+                    net.minecraftforge.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(type, factory);
+                } catch (NullPointerException | ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    static class EntityRenderFactory implements net.minecraftforge.fml.client.registry.IRenderFactory {
+
+        Class aClass;
+        Constructor c;
+
+        EntityRenderFactory(Class aClass) throws NoSuchMethodException {
+            this.aClass = aClass;
+            this.c = aClass.getConstructor(net.minecraft.client.renderer.entity.EntityRendererManager.class);
+
+            c.setAccessible(true);
+        }
+
+        @Override
+        public net.minecraft.client.renderer.entity.EntityRenderer createRenderFor(net.minecraft.client.renderer.entity.EntityRendererManager manager) {
+            try {
+                return (net.minecraft.client.renderer.entity.EntityRenderer) c.newInstance(manager);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                return null;
+            }
         }
     }
 }

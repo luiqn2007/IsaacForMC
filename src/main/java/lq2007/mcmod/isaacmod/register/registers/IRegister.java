@@ -4,6 +4,8 @@ import lq2007.mcmod.isaacmod.register.ModifierTester;
 import org.apache.commons.lang3.ArrayUtils;
 import org.objectweb.asm.Type;
 
+import javax.annotation.Nullable;
+
 public interface IRegister {
 
     /**
@@ -21,21 +23,13 @@ public interface IRegister {
      */
     void apply();
 
-    default boolean inPackage(String classPackage, String packageName) {
-        return classPackage.equals(packageName);
+    default boolean isPackage(String classPackage, @Nullable String packageName) {
+        return packageName == null || classPackage.startsWith(packageName);
     }
 
-    default boolean inPackages(String classPackage, String... packages) {
-        return ArrayUtils.contains(packages, classPackage);
-    }
-
-    default boolean inSubPackage(String classPackage, String packageName) {
-        return classPackage.startsWith(packageName);
-    }
-
-    default boolean inSubPackages(String classPackage, String... packageNames) {
+    default boolean isPackages(String classPackage, String... packageNames) {
         for (String packageName : packageNames) {
-            if (inSubPackage(classPackage, packageName)) {
+            if (isPackage(classPackage, packageName)) {
                 return true;
             }
         }
@@ -66,5 +60,9 @@ public interface IRegister {
      */
     default boolean isExtends(Class<?> aClass, Class<?> parent) {
         return aClass != parent && parent.isAssignableFrom(aClass);
+    }
+
+    default int getPriority() {
+        return 0;
     }
 }
