@@ -1,9 +1,7 @@
 package lq2007.mcmod.isaacmod.client.util.obj;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import joptsimple.internal.Strings;
-import lq2007.mcmod.isaacmod.common.Isaac;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -21,12 +19,12 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 
+import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
 import static net.minecraftforge.client.model.obj.OBJModel.*;
 
 public class OBJModel {
 
     private static final Map<ResourceLocation, OBJModel> RESOURCE_CACHES = new HashMap<>();
-    public static final ResourceLocation FROM_LINES = new ResourceLocation(Isaac.ID, "__from_lines");
 
     public static OBJModel read(ResourceLocation resource) {
         return RESOURCE_CACHES.computeIfAbsent(resource, OBJModel::new);
@@ -55,16 +53,6 @@ public class OBJModel {
         this.lines = new ArrayList<>();
         try {
             read();
-            parse();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public OBJModel(List<String[]> lines) {
-        this.resource = FROM_LINES;
-        this.lines = ImmutableList.copyOf(lines);
-        try {
             parse();
         } catch (Exception e) {
             e.printStackTrace();
@@ -176,7 +164,7 @@ public class OBJModel {
                     break;
                 }
                 default: {
-                    Isaac.LOGGER.warn("Unknown tag: " + line[0] + " at line " + Arrays.toString(line) + " from " + resource);
+                    LOGGER.warn("Unknown tag: {} at line {} from {}", line[0], Arrays.toString(line), resource);
                 }
             }
         }

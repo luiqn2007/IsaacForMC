@@ -76,10 +76,7 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
                     logger.warn("\tSkip " + aClass.getName());
                     continue;
                 }
-                RegistryObject<T> registryObject = register.register(name, build);
-                objMap.put(aClass, registryObject);
-                nameMap.put(aClass, name);
-                logger.warn("\tRegistry " + registryObject.getId() + ": " + aClass.getName());
+                register(aClass, name, build);
                 count++;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -100,6 +97,14 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
             return new ObjectConstructor<>((Class<? extends T>) aClass);
         }
         return null;
+    }
+
+    protected RegistryObject<T> register(Class<? extends V> aClass, String name, Supplier<? extends T> build) {
+        RegistryObject<T> registryObject = register.register(name, build);
+        objMap.put(aClass, registryObject);
+        nameMap.put(aClass, name);
+        logger.warn("\tRegistry " + registryObject.getId() + ": " + aClass.getName());
+        return registryObject;
     }
 
     public RegistryObject<T> getObj(Class<? extends V> aClass) {

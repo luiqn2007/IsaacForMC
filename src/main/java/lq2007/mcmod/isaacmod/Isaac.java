@@ -1,12 +1,15 @@
-package lq2007.mcmod.isaacmod.common;
+package lq2007.mcmod.isaacmod;
 
+import lq2007.mcmod.isaacmod.common.CommonProxy;
 import lq2007.mcmod.isaacmod.common.capability.CapabilityRegister;
 import lq2007.mcmod.isaacmod.common.command.CommandRegister;
 import lq2007.mcmod.isaacmod.common.network.NetworkRegister;
 import lq2007.mcmod.isaacmod.common.prop.type.PropRegister;
+import lq2007.mcmod.isaacmod.item.ItemIcon;
 import lq2007.mcmod.isaacmod.register.Register;
 import lq2007.mcmod.isaacmod.register.registers.*;
 import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -20,7 +23,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static lq2007.mcmod.isaacmod.common.Isaac.ID;
+import static lq2007.mcmod.isaacmod.Isaac.ID;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(ID)
@@ -55,9 +58,9 @@ public class Isaac {
 
         BLOCKS = REGISTER.add(new BlockRegister(REGISTER));
         ITEMS = REGISTER.add(new ItemRegister(REGISTER));
+        BLOCK_ITEMS = BLOCKS.withItem(ITEMS.register, this::asItem);
         TILES = REGISTER.add(new TileEntityRegister(REGISTER, this::getBlocks, this::asTerClass));
         ENTITIES = REGISTER.add(new EntityRegister(REGISTER));
-        BLOCK_ITEMS = REGISTER.add(new BlockItemRegister(ITEMS.register, BLOCKS, block -> new Item.Properties()));
         CAPABILITIES = REGISTER.add(new CapabilityRegister());
         NETWORKS = REGISTER.add(new NetworkRegister(network));
         PROPS = REGISTER.add(new PropRegister());
@@ -87,5 +90,9 @@ public class Isaac {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private BlockItem asItem(Block block, String name) {
+        return new BlockItem(block, new Item.Properties().group(ItemIcon.group()));
     }
 }

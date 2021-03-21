@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacmod.client;
 
 import lq2007.mcmod.isaacmod.common.CommonProxy;
-import lq2007.mcmod.isaacmod.common.Isaac;
+import lq2007.mcmod.isaacmod.Isaac;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;

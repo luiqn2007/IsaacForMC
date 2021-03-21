@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacmod.common.handler;
 
-import lq2007.mcmod.isaacmod.common.Isaac;
+import lq2007.mcmod.isaacmod.Isaac;
 import lq2007.mcmod.isaacmod.common.capability.CapabilityRegister;
 import lq2007.mcmod.isaacmod.common.capability.IsaacProps;
 import lq2007.mcmod.isaacmod.common.capability.IsaacProperty;

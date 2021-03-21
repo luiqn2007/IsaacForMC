@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacmod.isaac.suit;
 
 import com.google.common.collect.Lists;
-import lq2007.mcmod.isaacmod.common.Isaac;
+import lq2007.mcmod.isaacmod.Isaac;
 import lq2007.mcmod.isaacmod.common.capability.IIsaacProps;
 import lq2007.mcmod.isaacmod.isaac.IsaacElement;
 import lq2007.mcmod.isaacmod.common.prop.type.AbstractPropType;

@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacmod.common.entity.friend;
 
-import lq2007.mcmod.isaacmod.common.Isaac;
+import lq2007.mcmod.isaacmod.Isaac;
 import lq2007.mcmod.isaacmod.common.entity.EnumEntityType;
 import lq2007.mcmod.isaacmod.register.registers.EntityRegister;
 import net.minecraft.entity.*;

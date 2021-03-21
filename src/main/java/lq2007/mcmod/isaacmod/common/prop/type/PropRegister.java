@@ -3,15 +3,13 @@ package lq2007.mcmod.isaacmod.common.prop.type;
 import lq2007.mcmod.isaacmod.register.IAutoApply;
 import lq2007.mcmod.isaacmod.register.registers.IRegister;
 import net.minecraft.util.ResourceLocation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
 
 import java.util.*;
 
-public class PropRegister implements IRegister, IAutoApply {
+import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
 
-    public static final Logger LOGGER = LogManager.getLogger();
+public class PropRegister implements IRegister, IAutoApply {
 
     private static final Map<ResourceLocation, AbstractPropType> PROPS = new HashMap<>();
     private static final Map<ResourceLocation, AbstractPropType> PASSIVE_PROPS = new HashMap<>();

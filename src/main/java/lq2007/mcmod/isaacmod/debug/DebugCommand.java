@@ -9,7 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import lq2007.mcmod.isaacmod.common.Isaac;
+import lq2007.mcmod.isaacmod.Isaac;
 import lq2007.mcmod.isaacmod.common.command.ICommandProvider;
 import lq2007.mcmod.isaacmod.common.prop.Prop;
 import lq2007.mcmod.isaacmod.common.prop.type.IsaacProps;

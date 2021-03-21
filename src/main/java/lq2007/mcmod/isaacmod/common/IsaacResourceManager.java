@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacmod.common;
 
+import lq2007.mcmod.isaacmod.Isaac;
 import lq2007.mcmod.isaacmod.common.entity.EnumEntityType;
 import net.minecraft.util.ResourceLocation;
 

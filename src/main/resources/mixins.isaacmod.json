@@ -3,7 +3,9 @@
   "mixins": [
     "MixinUpdateTileEntityPacket"
   ],
-  "client": [],
+  "client": [
+    "MixinDebug"
+  ],
   "server": [],
   "setSourceFile": true
 }

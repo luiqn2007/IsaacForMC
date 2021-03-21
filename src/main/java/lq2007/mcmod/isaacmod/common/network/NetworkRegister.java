@@ -4,8 +4,6 @@ import lq2007.mcmod.isaacmod.register.registers.IRegister;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
 
 import java.lang.annotation.ElementType;
@@ -19,9 +17,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class NetworkRegister implements IRegister {
+import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
 
-    public static final Logger LOGGER = LogManager.getLogger();
+public class NetworkRegister implements IRegister {
 
     public final SimpleChannel CHANNEL;
     private final List<Class<?>> packetList = new ArrayList<>();

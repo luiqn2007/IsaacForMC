@@ -1,7 +1,7 @@
 package lq2007.mcmod.isaacmod.common.prop.type;
 
 import com.google.common.collect.Lists;
-import lq2007.mcmod.isaacmod.common.Isaac;
+import lq2007.mcmod.isaacmod.Isaac;
 import lq2007.mcmod.isaacmod.common.prop.Prop;
 import lq2007.mcmod.isaacmod.common.util.serializer.ISerializer;
 import lq2007.mcmod.isaacmod.common.util.serializer.ResourceLocationSerializer;

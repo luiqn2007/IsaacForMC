@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacmod.common.block;
 
-import lq2007.mcmod.isaacmod.common.Isaac;
+import lq2007.mcmod.isaacmod.Isaac;
 import lq2007.mcmod.isaacmod.common.prop.Prop;
 import lq2007.mcmod.isaacmod.common.util.BlockUtil;
 import lq2007.mcmod.isaacmod.common.util.serializer.Serializers;

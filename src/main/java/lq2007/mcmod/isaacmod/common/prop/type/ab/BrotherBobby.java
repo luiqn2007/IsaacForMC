@@ -1,6 +1,6 @@
 package lq2007.mcmod.isaacmod.common.prop.type.ab;
 
-import lq2007.mcmod.isaacmod.common.Isaac;
+import lq2007.mcmod.isaacmod.Isaac;
 import lq2007.mcmod.isaacmod.common.capability.PropEntity;
 import lq2007.mcmod.isaacmod.common.entity.friend.EntityBobby;
 import lq2007.mcmod.isaacmod.common.entity.friend.manager.FriendType;
