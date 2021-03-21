@@ -41,7 +41,7 @@ public class IsaacProps implements IIsaacProps, INBTSerializable {
 
     @Override
     public Optional<Prop> pickup(Prop prop) {
-        if (prop == Prop.EMPTY) {
+        if (prop.isEmpty) {
             return Optional.empty();
         }
         AbstractPropType type = prop.type;
@@ -119,7 +119,7 @@ public class IsaacProps implements IIsaacProps, INBTSerializable {
     @Override
     public Prop getProp(AbstractPropType type) {
         PropRecord record = type.isActive() ? activeMap.get(type) : propMap.get(type);
-        return record == null ? Prop.EMPTY : record.getFirst();
+        return record == null ? new Prop() : record.getFirst();
     }
 
     @Override

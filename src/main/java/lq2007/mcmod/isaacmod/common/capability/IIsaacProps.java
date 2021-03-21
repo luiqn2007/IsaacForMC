@@ -198,7 +198,7 @@ public interface IIsaacProps extends ICapabilitySerializable<CompoundNBT>, IPack
 
         @Override
         public Prop getProp(AbstractPropType type) {
-            return Prop.EMPTY;
+            return new Prop();
         }
 
         @Override

@@ -16,7 +16,7 @@ public class IsaacResourceManager {
         if (MAP_RESOURCE_ENTITY.containsKey(name)) {
             return MAP_RESOURCE_ENTITY.get(name);
         } else {
-            return newPath(name, "textures", type.name, MAP_RESOURCE_ENTITY);
+            return newPath(name, "textures", type.name, MAP_RESOURCE_ENTITY, "png");
         }
     }
 
@@ -24,12 +24,12 @@ public class IsaacResourceManager {
         if (MAP_MODEL_ENTITY.containsKey(name)) {
             return MAP_MODEL_ENTITY.get(name);
         } else {
-            return newPath(name, "models", type.name, MAP_MODEL_ENTITY);
+            return newPath(name, "models", type.name, MAP_MODEL_ENTITY, "obj");
         }
     }
 
-    private static ResourceLocation newPath(String name, String type, String path, Map<String, ResourceLocation> cache) {
-        ResourceLocation resource = new ResourceLocation(Isaac.ID, type + "/" + path + "/" + name + ".png");
+    private static ResourceLocation newPath(String name, String type, String path, Map<String, ResourceLocation> cache, String ext) {
+        ResourceLocation resource = new ResourceLocation(Isaac.ID, type + "/" + path + "/" + name + "." + ext);
         cache.put(name, resource);
         return resource;
     }

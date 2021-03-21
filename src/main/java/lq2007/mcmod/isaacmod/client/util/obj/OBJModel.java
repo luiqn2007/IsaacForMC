@@ -83,9 +83,14 @@ public class OBJModel {
                 case "mtllib": {
                     // Loads material library
                     String lib = line[1];
-                    ResourceLocation location = lib.contains(":")
-                            ? new ResourceLocation(lib)
-                            : new ResourceLocation(resource.getNamespace(), resource.getPath() + lib);
+                    ResourceLocation location;
+                    if (lib.contains(":")) {
+                        location = new ResourceLocation(lib);
+                    } else {
+                        String p = resource.getPath();
+                        String prefix = p.substring(0, p.lastIndexOf("/") + 1);
+                        location = new ResourceLocation(resource.getNamespace(), prefix + lib);
+                    }
                     mtllib = OBJLoader.INSTANCE.loadMaterialLibrary(location);
                     break;
                 }
@@ -207,6 +212,7 @@ public class OBJModel {
     }
 
     public Vector4f getColor(int index) {
+        if (colors.isEmpty()) return new Vector4f();
         return colors.get(index);
     }
 

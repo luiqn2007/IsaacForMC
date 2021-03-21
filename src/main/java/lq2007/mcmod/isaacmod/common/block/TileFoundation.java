@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 
 public class TileFoundation extends TileEntity {
 
-    private Prop prop = Prop.EMPTY;
+    private Prop prop = new Prop();
 
     public TileFoundation() {
         super(Isaac.TILES.get(TileFoundation.class));
@@ -65,7 +65,7 @@ public class TileFoundation extends TileEntity {
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         CompoundNBT nbt = super.write(compound);
-        if (prop != Prop.EMPTY) {
+        if (!prop.isEmpty) {
             Serializers.getNBTWriter(Prop.class).write(compound, "prop", prop);
         }
         return nbt;
@@ -76,7 +76,7 @@ public class TileFoundation extends TileEntity {
                                        com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
                                        net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
                                        int combinedLightIn, int combinedOverlayIn) {
-        if (prop != Prop.EMPTY) {
+        if (!prop.isEmpty) {
             prop.renderOnFoundation(partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
         }
     }

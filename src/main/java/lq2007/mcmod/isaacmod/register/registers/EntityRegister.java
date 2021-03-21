@@ -7,6 +7,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.objectweb.asm.Type;
 
@@ -17,8 +19,11 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
 
 public class EntityRegister extends BaseDeferredRegister<EntityType<?>, Entity> {
 
@@ -65,6 +70,14 @@ public class EntityRegister extends BaseDeferredRegister<EntityType<?>, Entity> 
             };
         }
         return null;
+    }
+
+    public EntityRegister withRender(Function<Class<? extends Entity>, String> asRenderClass) {
+        if (FMLEnvironment.dist.isClient()) {
+            IRegister register = asRender(asRenderClass);
+            context.bus.addListener((Consumer<FMLClientSetupEvent>) event -> register.apply());
+        }
+        return this;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -160,7 +173,7 @@ public class EntityRegister extends BaseDeferredRegister<EntityType<?>, Entity> 
                     } else return;
                     net.minecraftforge.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(type, factory);
                 } catch (NullPointerException | ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException e) {
-                    e.printStackTrace();
+                    LOGGER.warn("\tSkip {} because {}: {}", aClass.getName(), e.getClass().getSimpleName(), e.getMessage());
                 }
             }
         }
@@ -174,7 +187,7 @@ public class EntityRegister extends BaseDeferredRegister<EntityType<?>, Entity> 
 
         EntityRenderFactory(Class aClass) throws NoSuchMethodException {
             this.aClass = aClass;
-            this.c = aClass.getConstructor(net.minecraft.client.renderer.entity.EntityRendererManager.class);
+            this.c = aClass.getDeclaredConstructor(net.minecraft.client.renderer.entity.EntityRendererManager.class);
 
             c.setAccessible(true);
         }

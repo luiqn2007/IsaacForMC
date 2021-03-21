@@ -1,0 +1,5 @@
+{
+  "loader": "forge:obj",
+  "model": "isaacmod:models/block/foundation.obj",
+  "flip-v": true
+}

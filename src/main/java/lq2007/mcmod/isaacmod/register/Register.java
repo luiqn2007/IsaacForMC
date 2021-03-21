@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Register {
+import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
 
-    public static final Logger LOGGER = LogManager.getLogger();
+public class Register {
 
     public final List<IRegister> registers;
     public final List<AutoApply> autos;

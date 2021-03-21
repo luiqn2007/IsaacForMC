@@ -11,9 +11,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
+import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
+
 public class BlockRegister extends BaseDeferredRegister<Block, Block> {
 
     private BlockItemRegister itemRegister = null;
+    private IRegister register = null;
 
     public BlockRegister(Register context, String packageName) {
         super(ForgeRegistries.BLOCKS, context, packageName);
@@ -33,7 +36,7 @@ public class BlockRegister extends BaseDeferredRegister<Block, Block> {
         RegistryObject<Block> object = super.register(aClass, name, build);
         if (itemRegister != null) {
             RegistryObject<Item> item = itemRegister.apply(object);
-            logger.warn("\tRegistryItem {} for {}", item.getId(), object.getId());
+            LOGGER.warn("\tRegistryItem {} for {}", item.getId(), object.getId());
         }
         return object;
     }

@@ -64,7 +64,7 @@ public class DebugCommand implements ICommandProvider, SuggestionProvider<Comman
             case "-bobby": {
                 BrotherBobby bobby = IsaacProps.BROTHER_BOBBY;
                 Prop prop = Isaac.CAPABILITIES.getProps(player).getProp(bobby);
-                if (prop != Prop.EMPTY && bobby.onRemove(player, prop, true)) {
+                if (!prop.isEmpty && bobby.onRemove(player, prop, true)) {
                     Isaac.CAPABILITIES.getProps(player).remove(prop, true);
                 }
                 break;

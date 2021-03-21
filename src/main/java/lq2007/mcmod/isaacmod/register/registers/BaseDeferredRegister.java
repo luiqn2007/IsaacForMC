@@ -18,6 +18,8 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 
+import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
+
 public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> implements IRegister, Iterable<RegistryObject<T>>, IAutoApply {
 
     public final DeferredRegister<T> register;
@@ -30,7 +32,6 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
     public final Map<Class<? extends V>, RegistryObject<T>> objMap = new HashMap<>();
     public final BiMap<Class<? extends V>, String> nameMap = HashBiMap.create();
 
-    protected final Logger logger;
     protected final List<Class<? extends V>> classes = new ArrayList<>();
 
     public BaseDeferredRegister(IForgeRegistry<T> registry, Register context, Class<?> resultType, @Nullable String classPath) {
@@ -40,7 +41,6 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
         this.classPath = classPath;
         this.register = DeferredRegister.create(registry, context.modId);
         this.register.register(context.bus);
-        this.logger = LogManager.getLogger(objectType);
     }
 
     public BaseDeferredRegister(IForgeRegistry<T> registry, Register context, Class<?> resultType) {
@@ -59,7 +59,7 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
     public void cache(ClassLoader classLoader, Type clazz, String className, String packageName, Class<?> aClass) {
         if (isPackage(packageName, classPath) && isInstantiable(aClass) && isExtends(aClass, resultType)) {
             classes.add((Class<? extends V>) aClass);
-            logger.warn("\tCached as {}", objectType.getSimpleName());
+            LOGGER.warn("\tCached as {}", objectType.getSimpleName());
         }
     }
 
@@ -67,13 +67,13 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
     public void apply() {
         if (classes.isEmpty()) return;
         int count = 0;
-        logger.warn("{} apply begin", objectType.getSimpleName());
+        LOGGER.warn("{} apply begin", objectType.getSimpleName());
         for (Class<? extends V> aClass : classes) {
             try {
                 String name = aClass.getSimpleName().toLowerCase(Locale.ROOT);
                 Supplier<? extends T> build = build(name, aClass);
                 if (build == null) {
-                    logger.warn("\tSkip " + aClass.getName());
+                    LOGGER.warn("\tSkip " + aClass.getName());
                     continue;
                 }
                 register(aClass, name, build);
@@ -82,7 +82,7 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
                 e.printStackTrace();
             }
         }
-        logger.warn("{} apply end, total {}", objectType.getSimpleName(), count);
+        LOGGER.warn("{} apply end, total {}", objectType.getSimpleName(), count);
     }
 
     @Override
@@ -103,7 +103,7 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
         RegistryObject<T> registryObject = register.register(name, build);
         objMap.put(aClass, registryObject);
         nameMap.put(aClass, name);
-        logger.warn("\tRegistry " + registryObject.getId() + ": " + aClass.getName());
+        LOGGER.warn("\tRegistry " + registryObject.getId() + ": " + aClass.getName());
         return registryObject;
     }
 

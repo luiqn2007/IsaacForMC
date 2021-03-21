@@ -2,6 +2,7 @@ package lq2007.mcmod.isaacmod.client.util.obj;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Object {
@@ -18,7 +19,7 @@ public class Object {
     public static class Builder {
         protected String name;
         protected Group parent;
-        protected List<Mesh.Builder> meshes;
+        protected List<Mesh.Builder> meshes = new ArrayList<>();
 
         public Builder(String name, Group parent) {
             this.name = parent == null ? name : parent.name + "/" + name;

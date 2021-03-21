@@ -28,7 +28,7 @@ public class PropRecord implements INBTSerializable, IPacketSerializable {
 
     @Nullable
     public Prop add(Prop prop) {
-        if (prop == Prop.EMPTY) {
+        if (prop.isEmpty) {
             return null;
         }
         Prop removed = null;
@@ -61,7 +61,7 @@ public class PropRecord implements INBTSerializable, IPacketSerializable {
     }
 
     public Prop getFirst() {
-        return props.isEmpty() ? Prop.EMPTY : props.getFirst();
+        return props.isEmpty() ? new Prop() : props.getFirst();
     }
 
     public boolean isEmpty() {

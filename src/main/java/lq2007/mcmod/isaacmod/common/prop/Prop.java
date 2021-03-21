@@ -2,7 +2,6 @@ package lq2007.mcmod.isaacmod.common.prop;
 
 import lq2007.mcmod.isaacmod.common.prop.type.AbstractPropType;
 import lq2007.mcmod.isaacmod.common.prop.type.EmptyProp;
-import lq2007.mcmod.isaacmod.common.prop.type.PropRegister;
 import lq2007.mcmod.isaacmod.common.util.serializer.ISerializer;
 import lq2007.mcmod.isaacmod.common.util.serializer.Serializer;
 import lq2007.mcmod.isaacmod.common.util.serializer.Serializers;
@@ -14,16 +13,25 @@ import net.minecraftforge.common.capabilities.CapabilityProvider;
 
 import java.util.Objects;
 
+import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
+
 @Serializer(Prop.Serializer.class)
 public class Prop extends CapabilityProvider<Prop> {
 
-    public static final Prop EMPTY = new Prop(EmptyProp.EMPTY);
-
     public AbstractPropType type;
+    public boolean isEmpty;
 
     public Prop(AbstractPropType type) {
         super(Prop.class);
-        gatherCapabilities(type.initCapabilities());
+        this.type = type;
+        this.isEmpty = type == EmptyProp.EMPTY;
+        if (!isEmpty) {
+            gatherCapabilities(type.initCapabilities());
+        }
+    }
+
+    public Prop() {
+        this(EmptyProp.EMPTY);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -31,6 +39,10 @@ public class Prop extends CapabilityProvider<Prop> {
                                    net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
                                    int combinedLightIn, int combinedOverlayIn) {
         type.renderOnFoundation(this, partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
+    }
+
+    public boolean isEmpty() {
+        return isEmpty;
     }
 
     @Override
@@ -58,13 +70,13 @@ public class Prop extends CapabilityProvider<Prop> {
                     prop.deserializeCaps(cap);
                 }
             }
-            return Prop.EMPTY;
+            return new Prop();
         }
 
         @Override
         public PacketBuffer write(Prop item, PacketBuffer buffer) {
             Serializers.getPacketWriter(AbstractPropType.class, false).write(item.type, buffer);
-            if (item != EMPTY) {
+            if (!item.isEmpty) {
                 CompoundNBT cap = item.serializeCaps();
                 buffer.writeCompoundTag(cap);
             }
@@ -80,13 +92,13 @@ public class Prop extends CapabilityProvider<Prop> {
                 prop.deserializeCaps(nbt.getCompound("data"));
                 return prop;
             }
-            return Prop.EMPTY;
+            return new Prop();
         }
 
         @Override
         public CompoundNBT write(CompoundNBT nbt, String key, Prop item) {
             CompoundNBT data = new CompoundNBT();
-            if (item != Prop.EMPTY) {
+            if (!item.isEmpty) {
                 Serializers.getNBTWriter(AbstractPropType.class).write(data, "type", item.type);
                 CompoundNBT caps = item.serializeCaps();
                 if (caps != null) {
