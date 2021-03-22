@@ -50,17 +50,13 @@ public class PropRegister implements IRegister, IAutoApply {
 
     @Override
     public void apply() {
-        int count = 0;
-        LOGGER.warn("Prop apply begin");
         for (Class<?> type : types) {
             try {
-                LOGGER.warn("\tRegister {}", type);
+                LOGGER.warn("Isaac.prop {}", type);
                 type.newInstance();
-                count++;
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
-        LOGGER.warn("Prop apply end, total {}", count);
     }
 }

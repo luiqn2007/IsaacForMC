@@ -13,8 +13,6 @@ import net.minecraftforge.common.capabilities.CapabilityProvider;
 
 import java.util.Objects;
 
-import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
-
 @Serializer(Prop.Serializer.class)
 public class Prop extends CapabilityProvider<Prop> {
 

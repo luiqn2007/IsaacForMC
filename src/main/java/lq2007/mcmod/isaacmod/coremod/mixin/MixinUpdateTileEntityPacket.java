@@ -1,5 +1,6 @@
-package lq2007.mcmod.isaacmod.coremod;
+package lq2007.mcmod.isaacmod.coremod.mixin;
 
+import lq2007.mcmod.isaacmod.coremod.IUpdateTileEntityPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import org.spongepowered.asm.mixin.Mixin;

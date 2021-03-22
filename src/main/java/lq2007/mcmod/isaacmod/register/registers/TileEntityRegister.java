@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacmod.register.registers;
 
+import lq2007.mcmod.isaacmod.common.util.ReflectionUtil;
 import lq2007.mcmod.isaacmod.register.ObjectConstructor;
 import lq2007.mcmod.isaacmod.register.Register;
 import net.minecraft.block.Block;
@@ -15,7 +16,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -68,38 +68,15 @@ public class TileEntityRegister extends BaseDeferredRegister<TileEntityType<?>, 
                 Class te = entry.getClass();
                 TileEntityType type = entry.getValue().get();
                 String terTypeName = asTerClass.apply(te, type);
-                try {
-                    Class<?> terClass = te.getClassLoader().loadClass(terTypeName);
-                    if (net.minecraft.client.renderer.tileentity.TileEntityRenderer.class.isAssignableFrom(terClass)) {
-                        net.minecraftforge.fml.client.registry.ClientRegistry.bindTileEntityRenderer(type, new TerFactory(terClass));
+                Class<?> terClass = ReflectionUtil.loadClass(terTypeName, te.getClassLoader());
+                if (terClass != null && net.minecraft.client.renderer.tileentity.TileEntityRenderer.class.isAssignableFrom(terClass)) {
+                    Class parameter = net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.class;
+                    Constructor constructor = ReflectionUtil.getConstructor(terClass, parameter);
+                    if (constructor != null) {
+                        net.minecraftforge.fml.client.registry.ClientRegistry.bindTileEntityRenderer(type,
+                                dispatcher -> ReflectionUtil.instantiate(constructor, dispatcher));
                     }
-                } catch (ClassNotFoundException ignored) {
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
                 }
-            }
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    static class TerFactory implements Function {
-
-        Class aClass;
-        Constructor c;
-
-        TerFactory(Class aClass) throws NoSuchMethodException {
-            this.aClass = aClass;
-            this.c = aClass.getConstructor(net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.class);
-            this.c.setAccessible(true);
-        }
-
-        @Override
-        public Object apply(Object o) {
-            try {
-                return c.newInstance(o);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
-                return null;
             }
         }
     }

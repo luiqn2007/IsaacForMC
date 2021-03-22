@@ -53,23 +53,19 @@ public class CapabilityRegister implements IRegister {
 
     @Override
     public void apply() {
-        int count = 0;
-        LOGGER.warn("Capability apply begin");
         CapabilityManager manager = CapabilityManager.INSTANCE;
         for (Map.Entry<Class, Class> entry : CAP_MAP.entrySet()) {
             Class type = entry.getKey();
             Class instance = entry.getValue();
             Capability.IStorage storage = INBTSerializable.class.isAssignableFrom(type) ? NBTStorage.get() : NoStorage.get();
             try {
-                LOGGER.warn("\tRegister {}", type);
+                LOGGER.warn("Isaac.capability {}", type);
                 ObjectConstructor factory = new ObjectConstructor(instance);
                 manager.register(type, storage, factory);
-                count++;
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
         }
-        LOGGER.warn("Capability apply end, total {}", count);
     }
 
     public IIsaacProps getProps(LivingEntity entity) {

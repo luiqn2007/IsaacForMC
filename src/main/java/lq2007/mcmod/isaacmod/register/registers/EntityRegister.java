@@ -1,9 +1,11 @@
 package lq2007.mcmod.isaacmod.register.registers;
 
+import lq2007.mcmod.isaacmod.common.util.ReflectionUtil;
 import lq2007.mcmod.isaacmod.register.Register;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -27,7 +29,7 @@ import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
 
 public class EntityRegister extends BaseDeferredRegister<EntityType<?>, Entity> {
 
-    protected IRegister register;
+    protected IRegister register2;
 
     public EntityRegister(Register context, String packageName) {
         super(ForgeRegistries.ENTITIES, context, Entity.class, packageName);
@@ -60,11 +62,9 @@ public class EntityRegister extends BaseDeferredRegister<EntityType<?>, Entity> 
                 if (info.tracking() != -1) builder.trackingRange(info.tracking());
                 if (info.updateInterval() != -1) builder.setUpdateInterval(info.updateInterval());
                 if (!info.clientFactory().isEmpty()) {
-                    try {
-                        Class<?> c = aClass.getClassLoader().loadClass(info.clientFactory());
-                        Object o = c.newInstance();
-                        builder.setCustomClientFactory((BiFunction) o);
-                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ignored) { }
+                    Object o = ReflectionUtil.instantiate(info.clientFactory());
+                    if (o != null) builder.setCustomClientFactory((BiFunction) o);
+                    else LOGGER.warn("Can't found client factory for entity {}", name);
                 }
                 return builder.build(name);
             };
@@ -82,10 +82,10 @@ public class EntityRegister extends BaseDeferredRegister<EntityType<?>, Entity> 
 
     @OnlyIn(Dist.CLIENT)
     public IRegister asRender(Function<Class<? extends Entity>, String> asRenderClass) {
-        if (register == null) {
-            register = new EntityRenderRegister(asRenderClass);
+        if (register2 == null) {
+            register2 = new EntityRenderRegister(asRenderClass);
         }
-        return register;
+        return register2;
     }
 
     @Target(ElementType.TYPE)
@@ -162,42 +162,32 @@ public class EntityRegister extends BaseDeferredRegister<EntityType<?>, Entity> 
         public void apply() {
             for (Class<? extends Entity> aClass : classes) {
                 String render = asRenderClass.apply(aClass);
-                try {
-                    Class<?> renderClass = aClass.getClassLoader().loadClass(render);
-                    EntityType type = get(aClass);
-                    net.minecraftforge.fml.client.registry.IRenderFactory factory;
-                    if (net.minecraftforge.fml.client.registry.IRenderFactory.class.isAssignableFrom(renderClass)) {
-                        factory = (net.minecraftforge.fml.client.registry.IRenderFactory) renderClass.newInstance();
-                    } else if (net.minecraft.client.renderer.entity.EntityRenderer.class.isAssignableFrom(renderClass)) {
-                        factory = new EntityRenderFactory(renderClass);
-                    } else return;
-                    net.minecraftforge.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(type, factory);
-                } catch (NullPointerException | ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException e) {
-                    LOGGER.warn("\tSkip {} because {}: {}", aClass.getName(), e.getClass().getSimpleName(), e.getMessage());
+                Class<?> renderClass = ReflectionUtil.loadClass(render, aClass.getClassLoader());
+                if (renderClass == null) {
+                    LOGGER.warn("Skip renderer: can't find render class {}", render);
+                    return;
                 }
-            }
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    static class EntityRenderFactory implements net.minecraftforge.fml.client.registry.IRenderFactory {
-
-        Class aClass;
-        Constructor c;
-
-        EntityRenderFactory(Class aClass) throws NoSuchMethodException {
-            this.aClass = aClass;
-            this.c = aClass.getDeclaredConstructor(net.minecraft.client.renderer.entity.EntityRendererManager.class);
-
-            c.setAccessible(true);
-        }
-
-        @Override
-        public net.minecraft.client.renderer.entity.EntityRenderer createRenderFor(net.minecraft.client.renderer.entity.EntityRendererManager manager) {
-            try {
-                return (net.minecraft.client.renderer.entity.EntityRenderer) c.newInstance(manager);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                return null;
+                EntityType type = get(aClass);
+                net.minecraftforge.fml.client.registry.IRenderFactory factory;
+                ResourceLocation registryName = type.getRegistryName();
+                if (net.minecraftforge.fml.client.registry.IRenderFactory.class.isAssignableFrom(renderClass)) {
+                    factory = ReflectionUtil.instantiate(renderClass);
+                    if (factory == null) {
+                        LOGGER.warn("Skip renderer: can't instantiate render class for {}", registryName);
+                        return;
+                    }
+                } else if (net.minecraft.client.renderer.entity.EntityRenderer.class.isAssignableFrom(renderClass)) {
+                    Constructor c = ReflectionUtil.getConstructor(renderClass, net.minecraft.client.renderer.entity.EntityRendererManager.class);
+                    if (c == null) {
+                        LOGGER.warn("Skip renderer: can't find constructor with parameter EntityRendererManager for {}", registryName);
+                        return;
+                    }
+                    factory = manager -> ReflectionUtil.instantiate(c, manager);
+                } else {
+                    LOGGER.warn("Skip renderer: render should be IRenderFactory or EntityRenderer for {}", registryName);
+                    return;
+                }
+                net.minecraftforge.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(type, factory);
             }
         }
     }

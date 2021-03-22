@@ -33,18 +33,14 @@ public class CommandRegister implements IRegister, IAutoApply {
 
     @SubscribeEvent
     public void apply(RegisterCommandsEvent event) {
-        int count = 0;
-        LOGGER.warn("Command apply begin");
         CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
         for (Class<? extends ICommandProvider> command : commands) {
             try {
-                LOGGER.warn("\tRegister {}", command);
+                LOGGER.warn("Isaac.command {}", command);
                 dispatcher.register(command.newInstance().getCommand());
-                count++;
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
-        LOGGER.warn("Command apply end, total {}", count);
     }
 }

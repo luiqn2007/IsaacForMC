@@ -1,7 +1,10 @@
 package lq2007.mcmod.isaacmod.common.util;
 
 import com.google.common.collect.Table;
+import org.apache.commons.lang3.ArrayUtils;
 
+import javax.annotation.Nullable;
+import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -17,7 +20,13 @@ public class CollectionUtils {
         }
     }
 
-    public static <K, V> V computeIfAbsent(Map<K, V> map, K key, Supplier<V> value) {
-        return map.computeIfAbsent(key, k -> value.get());
+    public static <T> T[] asArray(Class<T> type, @Nullable T object) {
+        if (object == null) {
+            return (T[]) Array.newInstance(type, 0);
+        } else {
+            T[] array = (T[]) Array.newInstance(type, 1);
+            array[0] = object;
+            return array;
+        }
     }
 }

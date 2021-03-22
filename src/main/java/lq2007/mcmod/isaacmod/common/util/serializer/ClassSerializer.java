@@ -1,5 +1,6 @@
 package lq2007.mcmod.isaacmod.common.util.serializer;
 
+import lq2007.mcmod.isaacmod.common.util.ReflectionUtil;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
@@ -30,10 +31,6 @@ public class ClassSerializer implements ISerializer<Class<?>> {
     }
 
     private Class<?> read0(String name) {
-        try {
-            return ClassSerializer.class.getClassLoader().loadClass(name);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        return ReflectionUtil.loadClass(name);
     }
 }

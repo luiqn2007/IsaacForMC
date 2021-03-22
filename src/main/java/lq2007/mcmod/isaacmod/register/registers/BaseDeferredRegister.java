@@ -9,8 +9,6 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
 
 import javax.annotation.Nonnull;
@@ -23,6 +21,7 @@ import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
 public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> implements IRegister, Iterable<RegistryObject<T>>, IAutoApply {
 
     public final DeferredRegister<T> register;
+    public final IForgeRegistry<T> registry;
 
     public final Class<T> objectType; // the type saved in register, like EntityType
     public final Class<V> resultType; // the type created, like Entity
@@ -35,6 +34,7 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
     protected final List<Class<? extends V>> classes = new ArrayList<>();
 
     public BaseDeferredRegister(IForgeRegistry<T> registry, Register context, Class<?> resultType, @Nullable String classPath) {
+        this.registry = registry;
         this.objectType = registry.getRegistrySuperType();
         this.resultType = (Class<V>) resultType;
         this.context = context;
@@ -66,23 +66,19 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
     @Override
     public void apply() {
         if (classes.isEmpty()) return;
-        int count = 0;
-        LOGGER.warn("{} apply begin", objectType.getSimpleName());
         for (Class<? extends V> aClass : classes) {
             try {
                 String name = aClass.getSimpleName().toLowerCase(Locale.ROOT);
                 Supplier<? extends T> build = build(name, aClass);
                 if (build == null) {
-                    LOGGER.warn("\tSkip " + aClass.getName());
+                    LOGGER.warn("Skip register " + aClass.getName());
                     continue;
                 }
                 register(aClass, name, build);
-                count++;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        LOGGER.warn("{} apply end, total {}", objectType.getSimpleName(), count);
     }
 
     @Override
@@ -103,7 +99,7 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
         RegistryObject<T> registryObject = register.register(name, build);
         objMap.put(aClass, registryObject);
         nameMap.put(aClass, name);
-        LOGGER.warn("\tRegistry " + registryObject.getId() + ": " + aClass.getName());
+        LOGGER.warn("Isaac.{}: id={}, {}", objectType.getSimpleName(), registryObject.getId(), aClass.getName());
         return registryObject;
     }
 
@@ -117,5 +113,13 @@ public abstract class BaseDeferredRegister<T extends IForgeRegistryEntry<T>, V> 
 
     public <T2 extends T> T2 get(Class<? extends V> aClass) {
         return (T2) objMap.get(aClass).get();
+    }
+
+    @Nullable
+    public <T2 extends T> T2 getOrNull(@Nullable Class<? extends V> aClass) {
+        if (aClass == null) return null;
+        RegistryObject<T> object = objMap.get(aClass);
+        if (object == null) return null;
+        return (T2) object.get();
     }
 }

@@ -27,7 +27,7 @@ public class CommonProxy {
     }
 
     private void constructMod(FMLConstructModEvent event) {
-        ObjectPacketSerializer.collectClass();
+        Isaac.C.apply();
     }
 
     private void setupServer(FMLDedicatedServerSetupEvent event) { }

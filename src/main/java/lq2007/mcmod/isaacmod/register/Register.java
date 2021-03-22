@@ -10,8 +10,6 @@ import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
 import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.minecraftforge.forgespi.language.ModFileScanData;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
 
 import java.lang.reflect.Field;
@@ -59,7 +57,7 @@ public class Register {
 
         IModFileInfo iFileInfo = container.getModInfo().getOwningFile();
         if (!(iFileInfo instanceof ModFileInfo)) {
-            LOGGER.warn("Skip {} because no ModFileInfo", container.getModId());
+            LOGGER.warn("Skip register {} because no ModFileInfo", container.getModId());
             return;
         }
         ModFileInfo fileInfo = (ModFileInfo) iFileInfo;
@@ -71,13 +69,17 @@ public class Register {
             try {
                 Type clazz = (Type) fClazz.get(classData);
                 String className = clazz.getClassName();
-                Class<?> rClass = classLoader.loadClass(className);
+                Class<?> rClass = ReflectionUtil.loadClass(className, classLoader);
+                if (rClass == null) {
+                    LOGGER.warn("Skip register {} because class can't found", className);
+                    continue;
+                }
                 String packageName = rClass.getPackage().getName();
                 LOGGER.warn("Search {}", className);
                 registers.forEach(r -> r.cache(classLoader, clazz, className, packageName, rClass));
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException ignored) { }
+                LOGGER.warn("Skip register object {}.clazz because can't access.", classData);
+            }
         }
 
         for (AutoApply auto : autos) {

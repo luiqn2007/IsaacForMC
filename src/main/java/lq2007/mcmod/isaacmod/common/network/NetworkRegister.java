@@ -40,19 +40,15 @@ public class NetworkRegister implements IRegister {
 
     @Override
     public void apply() {
-        int count = 0;
-        LOGGER.warn("Network apply begin");
         for (Class<?> packet : packetList) {
-            LOGGER.warn("\tRegister {}", packet);
+            LOGGER.warn("Isaac.network {}", packet);
             BiConsumer encoder = new NetRegConsumer(packet, "encode", PacketBuffer.class);
             Function decoder = new NetRegConstructor(packet);
             BiConsumer consumer = new NetRegConsumer(packet, "apply", Supplier.class);
             NetSide annotation = packet.getAnnotation(NetSide.class);
             Optional<NetworkDirection> direction = annotation == null ? Optional.empty() : Optional.of(annotation.value());
             CHANNEL.registerMessage(nextId++, packet, encoder, decoder, consumer, direction);
-            count++;
         }
-        LOGGER.warn("Network apply end, total {}", count);
     }
 
     @Retention(RetentionPolicy.RUNTIME)

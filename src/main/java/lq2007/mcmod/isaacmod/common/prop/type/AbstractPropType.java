@@ -176,13 +176,9 @@ public abstract class AbstractPropType extends IsaacElement {
         @Override
         public AbstractPropType read(PacketBuffer buffer) {
             ResourceLocation key = ResourceLocationSerializer.INSTANCE.read(buffer);
-            if (key == null) {
-                LOGGER.warn("No key!!!");
-                return EmptyProp.EMPTY;
-            }
             AbstractPropType type = Isaac.PROPS.get(key, EmptyProp.EMPTY);
-            if (type == null || type == EmptyProp.EMPTY) {
-                LOGGER.warn("Prop type {} not found.", key);
+            if (type == EmptyProp.EMPTY) {
+                LOGGER.warn("Load prop: Prop type {} not found, use EMPTY instead.", key);
             }
             return type;
         }

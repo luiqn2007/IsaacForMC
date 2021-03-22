@@ -7,6 +7,8 @@ import lq2007.mcmod.isaacmod.common.util.serializer.packet.INBTSerializable;
 import lq2007.mcmod.isaacmod.common.util.serializer.packet.NBTData;
 import lq2007.mcmod.isaacmod.isaac.tear.EnumTearAppearances;
 import lq2007.mcmod.isaacmod.isaac.tear.EnumTearEffects;
+import lq2007.mcmod.isaacmod.register.registers.EntityRegister;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@EntityRegister.EntityInfo(classification = EntityClassification.MISC)
 public class EntityTear extends ThrowableEntity implements IEntityAdditionalSpawnData, INBTSerializable {
 
     @NBTData(V = EnumTearEffects.class)

@@ -5,6 +5,9 @@ import lq2007.mcmod.isaacmod.common.capability.CapabilityRegister;
 import lq2007.mcmod.isaacmod.common.command.CommandRegister;
 import lq2007.mcmod.isaacmod.common.network.NetworkRegister;
 import lq2007.mcmod.isaacmod.common.prop.type.PropRegister;
+import lq2007.mcmod.isaacmod.common.util.CollectionUtils;
+import lq2007.mcmod.isaacmod.common.util.ReflectionUtil;
+import lq2007.mcmod.isaacmod.common.util.serializer.ObjectPacketSerializer;
 import lq2007.mcmod.isaacmod.item.ItemIcon;
 import lq2007.mcmod.isaacmod.register.Register;
 import lq2007.mcmod.isaacmod.register.registers.*;
@@ -41,7 +44,9 @@ public class Isaac {
     public static CapabilityRegister CAPABILITIES;
     public static NetworkRegister NETWORKS;
     public static PropRegister PROPS;
-    public static CommandRegister COMMANDS = new CommandRegister();
+    public static CommandRegister COMMANDS;
+
+    public static ObjectPacketSerializer.Collector C;
 
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
@@ -52,6 +57,8 @@ public class Isaac {
 
     public Isaac() {
         MOD = this;
+
+        ReflectionUtil.setSkipClass("lq2007.mcmod.isaacmod.coremod.mixin");
 
         REGISTER = new Register();
         SimpleChannel network = NetworkRegistry.newSimpleChannel(new ResourceLocation(ID, "network"), () -> "0", v -> true, v -> true);
@@ -65,6 +72,8 @@ public class Isaac {
         NETWORKS = REGISTER.add(new NetworkRegister(network));
         PROPS = REGISTER.add(new PropRegister());
         COMMANDS = REGISTER.add(new CommandRegister());
+
+        C = REGISTER.add(new ObjectPacketSerializer.Collector());
 
         eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         if (FMLEnvironment.dist.isClient()) {
@@ -83,13 +92,9 @@ public class Isaac {
     private Block[] getBlocks(Class<? extends TileEntity> aClass) {
         String tileName = aClass.getSimpleName();
         String blockName = "Block" + tileName.substring(4 /* Tile */);
-        try {
-            String blockClassName = "lq2007.mcmod.isaacmod.common.block." + blockName;
-            Class<?> blockType = aClass.getClassLoader().loadClass(blockClassName);
-            return new Block[] { BLOCKS.get((Class<? extends Block>) blockType) };
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        String blockClassName = "lq2007.mcmod.isaacmod.common.block." + blockName;
+        Class<? extends Block> blockType = ReflectionUtil.loadClass(blockClassName);
+        return CollectionUtils.asArray(Block.class, BLOCKS.getOrNull(blockType));
     }
 
     private String asTerClass(Class<? extends TileEntity> aClass, TileEntityType<?> tileEntityType) {
