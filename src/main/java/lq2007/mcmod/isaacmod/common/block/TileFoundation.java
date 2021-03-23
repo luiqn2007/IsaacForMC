@@ -28,6 +28,10 @@ public class TileFoundation extends TileEntity {
         return prop;
     }
 
+    public boolean hasProp() {
+        return !prop.isEmpty;
+    }
+
     public void setProp(Prop prop) {
         if (world != null && !world.isRemote && this.prop != prop) {
             this.prop = prop;
