@@ -4,11 +4,9 @@ import lq2007.mcmod.isaacmod.Isaac;
 import lq2007.mcmod.isaacmod.common.prop.Prop;
 import lq2007.mcmod.isaacmod.common.util.BlockUtil;
 import lq2007.mcmod.isaacmod.common.util.serializer.Serializers;
-import lq2007.mcmod.isaacmod.coremod.IUpdateTileEntityPacket;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -42,16 +40,14 @@ public class TileFoundation extends TileEntity {
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        SUpdateTileEntityPacket packet = new SUpdateTileEntityPacket(pos, 0, null);
-        PacketBuffer buffer = ((IUpdateTileEntityPacket) packet).getBuffer();
-        Serializers.getPacketWriter(Prop.class, false).write(prop, buffer);
-        return packet;
+        CompoundNBT nbt = new CompoundNBT();
+        Serializers.getNBTWriter(Prop.class).write(nbt, "prop", prop);
+        return new SUpdateTileEntityPacket(pos, 0, nbt);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        PacketBuffer buffer = ((IUpdateTileEntityPacket) pkt).getBuffer();
-        prop = Serializers.getPacketReader(Prop.class, false).read(buffer);
+        prop = Serializers.getNBTReader(Prop.class).read(pkt.getNbtCompound(), "prop");
     }
 
     @Override

@@ -1,5 +1,7 @@
 package lq2007.mcmod.isaacmod.common.prop.type;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lq2007.mcmod.isaacmod.register.IAutoApply;
 import lq2007.mcmod.isaacmod.register.registers.IRegister;
 import net.minecraft.util.ResourceLocation;
@@ -14,6 +16,7 @@ public class PropRegister implements IRegister, IAutoApply {
     private static final Map<ResourceLocation, AbstractPropType> PROPS = new HashMap<>();
     private static final Map<ResourceLocation, AbstractPropType> PASSIVE_PROPS = new HashMap<>();
     private static final Map<ResourceLocation, AbstractPropType> ACTIVE_PROPS = new HashMap<>();
+    private static final Int2ObjectMap<AbstractPropType> PROP_BY_ID = new Int2ObjectArrayMap<>();
 
     public <T extends AbstractPropType> Optional<T> get(ResourceLocation key) {
         return Optional.ofNullable((T) PROPS.get(key));
@@ -29,12 +32,19 @@ public class PropRegister implements IRegister, IAutoApply {
             throw new RuntimeException("Reduplicated Key " + key + "!");
         }
         PROPS.put(key, prop);
+        if (prop.id >= 0) {
+            PROP_BY_ID.put(prop.id, prop);
+        }
         if (prop.isActive()) {
             ACTIVE_PROPS.put(key, prop);
         } else {
             PASSIVE_PROPS.put(key, prop);
         }
         return prop;
+    }
+
+    public AbstractPropType get(int id, AbstractPropType defaultValue) {
+        return PROP_BY_ID.getOrDefault(id, defaultValue);
     }
 
     private List<Class<?>> types = new LinkedList<>();
