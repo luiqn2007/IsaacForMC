@@ -1,11 +1,8 @@
 package lq2007.mcmod.isaacmod.common.prop.type;
 
 import lq2007.mcmod.isaacmod.common.item.PropItem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 
@@ -14,8 +11,8 @@ import java.util.Map;
 
 public class PropItemRegister {
 
-    private final static Map<ResourceLocation, PropItem> ITEMS_BY_TYPE = new HashMap<>();
-    private final static Map<ResourceLocation, RegistryObject<PropItem>> ITEMS_BY_NAME = new HashMap<>();
+    private final Map<ResourceLocation, PropItem> itemsByType = new HashMap<>();
+    private final Map<ResourceLocation, RegistryObject<PropItem>> itemsByName = new HashMap<>();
 
     private PropRegister props;
     private DeferredRegister<Item> register;
@@ -29,12 +26,20 @@ public class PropItemRegister {
         PropRegister.PROPS.forEach((id, type) -> {
             PropItem item = new PropItem(type);
             RegistryObject<PropItem> object = this.register.register(id.getPath(), () -> item);
-            ITEMS_BY_TYPE.put(id, item);
-            ITEMS_BY_NAME.put(object.getId(), object);
+            itemsByType.put(id, item);
+            itemsByName.put(object.getId(), object);
         });
     }
 
-    public void onModel(ModelRegistryEvent event) {
-        Minecraft.getInstance().getItemRenderer().renderItem();
+    public RegistryObject<PropItem> getItem(ResourceLocation name) {
+        return itemsByName.get(name);
+    }
+
+    public PropItem getItem(AbstractPropType type) {
+        return itemsByType.get(type.key);
+    }
+
+    public PropItem getItem(AbstractPropType type, PropItem def) {
+        return itemsByType.getOrDefault(type.key, def);
     }
 }
