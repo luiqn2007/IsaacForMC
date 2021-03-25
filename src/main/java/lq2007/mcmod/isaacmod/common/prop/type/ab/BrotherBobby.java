@@ -5,13 +5,15 @@ import lq2007.mcmod.isaacmod.common.capability.PropEntity;
 import lq2007.mcmod.isaacmod.common.entity.friend.EntityBobby;
 import lq2007.mcmod.isaacmod.common.entity.friend.manager.FriendType;
 import lq2007.mcmod.isaacmod.common.prop.Prop;
-import lq2007.mcmod.isaacmod.common.prop.type.IsaacProps;
 import lq2007.mcmod.isaacmod.common.prop.type.AbstractPropType;
 import lq2007.mcmod.isaacmod.common.prop.type.EnumPropTags;
+import lq2007.mcmod.isaacmod.common.prop.type.IsaacProps;
 import lq2007.mcmod.isaacmod.common.prop.type.PropTags;
 import lq2007.mcmod.isaacmod.common.util.EntityHolder;
 import lq2007.mcmod.isaacmod.isaac.room.EnumPropPools;
 import net.minecraft.entity.LivingEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
@@ -47,5 +49,13 @@ public class BrotherBobby extends AbstractPropType {
     @Override
     public ICapabilityProvider initCapabilities() {
         return new PropEntity();
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void render(Prop item, float partialTicks,
+                       com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
+                       net.minecraft.client.renderer.IRenderTypeBuffer bufferIn) {
+        super.render(item, partialTicks, matrixStackIn, bufferIn);
     }
 }

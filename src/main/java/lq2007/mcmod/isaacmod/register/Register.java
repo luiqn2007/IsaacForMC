@@ -13,22 +13,21 @@ import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
 
 public class Register {
 
     public final List<IRegister> registers;
+    public Map<Class<? extends IRegister>, List<IRegister>> registersByClass;
     public final List<AutoApply> autos;
     public final ModContainer container;
     public final String modId;
     public final IEventBus bus;
     public final ClassLoader classLoader;
 
-    private boolean sorted = false;
+    private boolean init = false;
 
     public Register() {
         this.registers = new ArrayList<>();
@@ -43,16 +42,20 @@ public class Register {
         registers.add(register);
         if (register instanceof IAutoApply) {
             autos.add(new AutoApply(register));
-            sorted = false;
+            init = false;
         }
         return register;
     }
 
     public void execute() {
-        if (!sorted) {
+        if (!init) {
             autos.sort(Comparator.comparingInt(AutoApply::getPriority));
             registers.sort(Comparator.comparingInt(IRegister::getPriority));
-            sorted = true;
+            registersByClass = new HashMap<>();
+            for (IRegister register : registers) {
+                registersByClass.computeIfAbsent(register.getClass(), c -> new ArrayList<>()).add(register);
+            }
+            init = true;
         }
 
         IModFileInfo iFileInfo = container.getModInfo().getOwningFile();
@@ -74,8 +77,20 @@ public class Register {
                     LOGGER.warn("Skip register {} because class can't found", className);
                     continue;
                 }
+                Appoint appoint = rClass.getAnnotation(Appoint.class);
                 String packageName = rClass.getPackage().getName();
                 LOGGER.warn("Search {}", className);
+                List<IRegister> registers;
+                if (appoint != null) {
+                    registers = new ArrayList<>();
+                    if (appoint.value().length == 0) continue;
+                    for (Class<? extends IRegister> registerType : appoint.value()) {
+                        registers.addAll(registersByClass.getOrDefault(registerType, Collections.emptyList()));
+                    }
+                    registers.sort(Comparator.comparingInt(IRegister::getPriority));
+                } else {
+                    registers = this.registers;
+                }
                 registers.forEach(r -> r.cache(classLoader, clazz, className, packageName, rClass));
             } catch (IllegalAccessException e) {
                 LOGGER.warn("Skip register object {}.clazz because can't access.", classData);

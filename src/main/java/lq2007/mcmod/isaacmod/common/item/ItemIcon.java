@@ -1,4 +1,4 @@
-package lq2007.mcmod.isaacmod.item;
+package lq2007.mcmod.isaacmod.common.item;
 
 import lq2007.mcmod.isaacmod.Isaac;
 import net.minecraft.item.Item;

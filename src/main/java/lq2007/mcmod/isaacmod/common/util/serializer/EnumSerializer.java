@@ -7,7 +7,7 @@ public class EnumSerializer<T extends Enum<T>> implements ISerializer<T> {
 
     private final Class<T> aClass;
 
-    public EnumSerializer(Class<T> aClass) {
+    public EnumSerializer(Class aClass) {
         this.aClass = aClass;
     }
 

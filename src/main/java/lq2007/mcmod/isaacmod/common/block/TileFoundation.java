@@ -74,10 +74,9 @@ public class TileFoundation extends TileEntity {
     @OnlyIn(Dist.CLIENT)
     public void renderPropOnFoundation(float partialTicks,
                                        com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
-                                       net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
-                                       int combinedLightIn, int combinedOverlayIn) {
+                                       net.minecraft.client.renderer.IRenderTypeBuffer bufferIn) {
         if (!prop.isEmpty) {
-            prop.renderOnFoundation(partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
+            prop.renderOnFoundation(partialTicks, matrixStackIn, bufferIn);
         }
     }
 }

@@ -34,9 +34,8 @@ public class Prop extends CapabilityProvider<Prop> {
 
     @OnlyIn(Dist.CLIENT)
     public void renderOnFoundation(float partialTicks, com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
-                                   net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
-                                   int combinedLightIn, int combinedOverlayIn) {
-        type.renderOnFoundation(this, partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
+                                   net.minecraft.client.renderer.IRenderTypeBuffer bufferIn) {
+        type.render(this, partialTicks, matrixStackIn, bufferIn);
     }
 
     public boolean isEmpty() {

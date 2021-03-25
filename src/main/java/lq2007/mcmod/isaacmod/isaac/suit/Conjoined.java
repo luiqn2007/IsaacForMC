@@ -12,8 +12,5 @@ public class Conjoined extends SuitType {
     @Override
     public void onRealized(LivingEntity entity) {
         super.onRealized(entity);
-        if (!entity.world.isRemote) {
-
-        }
     }
 }

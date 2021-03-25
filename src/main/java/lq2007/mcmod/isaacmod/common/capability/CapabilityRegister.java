@@ -32,7 +32,7 @@ public class CapabilityRegister implements IRegister {
     public static Capability<IPropEntity> CAPABILITY_PROP_ENTITY;
 
     // interface, defaultInstance
-    private Map<Class, Class> CAP_MAP = new HashMap<>();
+    private final Map<Class, Class> CAP_MAP = new HashMap<>();
 
     @Override
     public void cache(ClassLoader classLoader, Type clazz, String className, String packageName, Class<?> aClass) {

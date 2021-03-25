@@ -25,7 +25,8 @@ public class CharSerializer implements ISerializer<Character> {
 
     @Override
     public CompoundNBT write(CompoundNBT nbt, String key, Character item) {
-        return null;
+        write0(nbt, key, item == null ? '\0' : item);
+        return nbt;
     }
 
     public char read0(PacketBuffer buffer) {

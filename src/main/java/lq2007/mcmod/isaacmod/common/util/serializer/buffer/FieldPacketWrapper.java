@@ -1,14 +1,17 @@
 package lq2007.mcmod.isaacmod.common.util.serializer.buffer;
 
-import lq2007.mcmod.isaacmod.common.util.FieldWrapper;
 import lq2007.mcmod.isaacmod.common.util.serializer.*;
 import net.minecraft.network.PacketBuffer;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
 
-public class FieldPacketWrapper extends FieldWrapper {
+public class FieldPacketWrapper implements Comparable<FieldPacketWrapper> {
+
+    final Field field;
+    final String name;
 
     IPacketReader reader = null, readerK = null, readerV = null;
     IPacketWriter writer = null, writerK = null, writerV = null;
@@ -16,7 +19,26 @@ public class FieldPacketWrapper extends FieldWrapper {
     boolean isCollection = false, isMap = false;
 
     public FieldPacketWrapper(Field field) {
-        super(field);
+        this.field = field;
+        this.name = field.getName();
+    }
+
+    @Nullable
+    public Object get(Object obj) {
+        try {
+            return field.get(obj);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void setNull(Object obj) {
+        try {
+            field.set(obj, null);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     void read(Object obj, PacketBuffer buffer) {
@@ -137,5 +159,10 @@ public class FieldPacketWrapper extends FieldWrapper {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public int compareTo(FieldPacketWrapper o) {
+        return name.compareTo(o.name);
     }
 }

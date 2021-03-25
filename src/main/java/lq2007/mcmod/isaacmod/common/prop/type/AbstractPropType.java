@@ -21,8 +21,6 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static lq2007.mcmod.isaacmod.Isaac.LOGGER;
-
 @Serializer(AbstractPropType.Serializer.class)
 public abstract class AbstractPropType extends IsaacElement {
 
@@ -96,7 +94,7 @@ public abstract class AbstractPropType extends IsaacElement {
      * @see <a herf="http://isaac.huijiwiki.com/wiki/%E7%94%9F%E5%91%BD%E7%9A%84%E6%B0%94%E6%81%AF">Breath of Life</a>
      * @return true if the prop can keep active state
      */
-    public boolean canActiveKeeping(LivingEntity entity, Prop prop) {
+    public boolean isActiveKeeping(LivingEntity entity, Prop prop) {
         return false;
     }
 
@@ -153,11 +151,9 @@ public abstract class AbstractPropType extends IsaacElement {
 
     // todo implement render
     @OnlyIn(Dist.CLIENT)
-    public void renderOnFoundation(Prop item, float partialTicks,
-                                   com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
-                                   net.minecraft.client.renderer.IRenderTypeBuffer bufferIn,
-                                   int combinedLightIn, int combinedOverlayIn) {
-    }
+    public void render(Prop item, float partialTicks,
+                       com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
+                       net.minecraft.client.renderer.IRenderTypeBuffer bufferIn) { }
 
     /**
      * Return the prop's some tags from its annotation. It may be empty if the prop has no tag or no annotation

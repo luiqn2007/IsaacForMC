@@ -46,7 +46,7 @@ public interface IIsaacProps extends ICapabilitySerializable<CompoundNBT>, IPack
      *
      * @param prop prop
      * @param removeRecord True if should remove the record if no hold.
-     * @return The item removed. If no one is removed, return {@link Prop#EMPTY}
+     * @return The item removed. If no one is removed, return {@link lq2007.mcmod.isaacmod.common.prop.type.EmptyProp#EMPTY}
      */
     Optional<Prop> remove(Prop prop, boolean removeRecord);
 
@@ -71,7 +71,7 @@ public interface IIsaacProps extends ICapabilitySerializable<CompoundNBT>, IPack
 
     /**
      * <p>Returns the first active prop.
-     * <p>If not exist, return {@link Prop#EMPTY}
+     * <p>If not exist, return {@link lq2007.mcmod.isaacmod.common.prop.type.EmptyProp#EMPTY}
      *
      * @return An active prop
      */

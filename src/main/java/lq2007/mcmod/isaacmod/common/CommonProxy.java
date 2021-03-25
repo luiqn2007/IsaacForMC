@@ -1,7 +1,6 @@
 package lq2007.mcmod.isaacmod.common;
 
 import lq2007.mcmod.isaacmod.Isaac;
-import lq2007.mcmod.isaacmod.common.util.serializer.ObjectPacketSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.*;
 

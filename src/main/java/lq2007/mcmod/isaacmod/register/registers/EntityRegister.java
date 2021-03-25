@@ -142,7 +142,7 @@ public class EntityRegister extends BaseDeferredRegister<EntityType<?>, Entity> 
             } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
                 e.printStackTrace();
             }
-            return null;
+            throw new NullPointerException();
         }
     }
 

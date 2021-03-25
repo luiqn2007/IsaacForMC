@@ -1,16 +1,19 @@
 package lq2007.mcmod.isaacmod.common.util.serializer.packet;
 
-import lq2007.mcmod.isaacmod.common.util.FieldWrapper;
 import lq2007.mcmod.isaacmod.common.util.serializer.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
 
-public class FieldNBTWrapper extends FieldWrapper {
+public class FieldNBTWrapper {
+
+    final Field field;
+    final String name;
 
     INBTReader reader = null, readerK = null, readerV = null;
     INBTWriter writer = null, writerK = null, writerV = null;
@@ -18,7 +21,18 @@ public class FieldNBTWrapper extends FieldWrapper {
     boolean isCollection = false, isMap = false;
 
     public FieldNBTWrapper(Field field) {
-        super(field);
+        this.field = field;
+        this.name = field.getName();
+    }
+
+    @Nullable
+    public Object get(Object obj) {
+        try {
+            return field.get(obj);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     void read(Object obj, CompoundNBT nbt) {
