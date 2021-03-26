@@ -14,11 +14,9 @@ public class PropItemRegister {
     private final Map<ResourceLocation, PropItem> itemsByType = new HashMap<>();
     private final Map<ResourceLocation, RegistryObject<PropItem>> itemsByName = new HashMap<>();
 
-    private PropRegister props;
     private DeferredRegister<Item> register;
 
-    public PropItemRegister(PropRegister props, DeferredRegister<Item> register) {
-        this.props = props;
+    public PropItemRegister(DeferredRegister<Item> register) {
         this.register = register;
     }
 

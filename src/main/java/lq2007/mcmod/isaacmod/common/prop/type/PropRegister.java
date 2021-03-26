@@ -79,7 +79,7 @@ public class PropRegister implements IRegister, IAutoApply {
 
     public PropItemRegister withItem(DeferredRegister<Item> itemRegister) {
         if (reg == null) {
-            reg = new PropItemRegister(this, itemRegister);
+            reg = new PropItemRegister(itemRegister);
         }
         return reg;
     }
