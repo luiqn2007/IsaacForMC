@@ -9,8 +9,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
-import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -40,11 +38,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-@AllArgsConstructor
-@Log4j2
 public class MaterialModel implements IModelGeometry<MaterialModel> {
-  /** Shared loader instance */
-  public static final Loader LOADER = new Loader();
 
   /** If null, uses dynamic material */
   @Nullable
@@ -55,7 +49,9 @@ public class MaterialModel implements IModelGeometry<MaterialModel> {
   private final Vector2f offset;
 
   @Override
-  public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+  public Collection<RenderMaterial> getTextures(IModelConfiguration owner,
+                                                Function<ResourceLocation,IUnbakedModel> modelGetter,
+                                                Set<Pair<String,String>> missingTextureErrors) {
     Set<RenderMaterial> allTextures = Sets.newHashSet();
     RenderMaterial texture = owner.resolveTexture("texture");
     allTextures.add(texture);
