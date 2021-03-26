@@ -21,7 +21,7 @@ public class Register {
 
     public final List<IRegister> registers;
     public Map<Class<? extends IRegister>, List<IRegister>> registersByClass;
-    public final List<AutoApply> autos;
+    public final List<IRegister> autos;
     public final ModContainer container;
     public final String modId;
     public final IEventBus bus;
@@ -41,7 +41,7 @@ public class Register {
     public <T extends IRegister> T add(T register) {
         registers.add(register);
         if (register instanceof IAutoApply) {
-            autos.add(new AutoApply(register));
+            autos.add(register);
             init = false;
         }
         return register;
@@ -49,7 +49,7 @@ public class Register {
 
     public void execute() {
         if (!init) {
-            autos.sort(Comparator.comparingInt(AutoApply::getPriority));
+            autos.sort(Comparator.comparingInt(IRegister::getPriority));
             registers.sort(Comparator.comparingInt(IRegister::getPriority));
             registersByClass = new HashMap<>();
             for (IRegister register : registers) {
@@ -97,23 +97,8 @@ public class Register {
             }
         }
 
-        for (AutoApply auto : autos) {
-            auto.register.apply();
-        }
-    }
-
-    private static class AutoApply {
-
-        final IRegister register;
-        final int priority;
-
-        public AutoApply(IRegister register) {
-            this.register = register;
-            this.priority = register.getPriority();
-        }
-
-        public int getPriority() {
-            return priority;
+        for (IRegister auto : autos) {
+            auto.apply();
         }
     }
 }

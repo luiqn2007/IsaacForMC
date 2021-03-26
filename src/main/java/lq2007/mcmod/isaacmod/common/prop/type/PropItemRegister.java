@@ -22,7 +22,7 @@ public class PropItemRegister {
 
     public void apply() {
         PropRegister.PROPS.forEach((id, type) -> {
-            PropItem item = new PropItem(type);
+            PropItem item = new PropItem();
             RegistryObject<PropItem> object = this.register.register(id.getPath(), () -> item);
             itemsByType.put(id, item);
             itemsByName.put(object.getId(), object);
