@@ -19,11 +19,11 @@ public class Vertex {
     }
 
     public void add(BufferBuilder buffer) {
-        buffer.pos(color.getX(), color.getY(), color.getZ())
-                .normal(color.getX(), color.getY(), color.getZ())
-                .color(color.getX(), color.getY(), color.getZ(), color.getW())
-                .tex(color.getX(), color.getY())
-                .endVertex();
+        buffer.pos(position.getX(), position.getY(), position.getZ())
+              .tex(texCoord.x, texCoord.y)
+              .color(color.getX(), color.getY(), color.getZ(), color.getW())
+              .normal(normal.getX(), normal.getY(), normal.getZ())
+              .endVertex();
     }
 
     public static class Builder {

@@ -2,6 +2,8 @@ package lq2007.mcmod.isaacmod.client.ter;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import lq2007.mcmod.isaacmod.common.block.TileFoundation;
+import lq2007.mcmod.isaacmod.common.prop.Prop;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -17,6 +19,11 @@ public class TerFoundation extends TileEntityRenderer<TileFoundation> {
 
     @Override
     public void render(TileFoundation tileFoundation, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        tileFoundation.renderPropOnFoundation(partialTicks, matrixStackIn, bufferIn);
+        matrixStackIn.push();
+        if (tileFoundation.hasProp()) {
+            Prop prop = tileFoundation.getProp();
+            prop.type.render(prop, 1, matrixStackIn, bufferIn);
+        }
+        matrixStackIn.pop();
     }
 }

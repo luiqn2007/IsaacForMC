@@ -9,8 +9,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
@@ -69,14 +67,5 @@ public class TileFoundation extends TileEntity {
             Serializers.getNBTWriter(Prop.class).write(compound, "prop", prop);
         }
         return nbt;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void renderPropOnFoundation(float partialTicks,
-                                       com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
-                                       net.minecraft.client.renderer.IRenderTypeBuffer bufferIn) {
-        if (!prop.isEmpty) {
-            prop.renderOnFoundation(partialTicks, matrixStackIn, bufferIn);
-        }
     }
 }

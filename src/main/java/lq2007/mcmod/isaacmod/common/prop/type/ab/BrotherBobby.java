@@ -1,6 +1,7 @@
 package lq2007.mcmod.isaacmod.common.prop.type.ab;
 
 import lq2007.mcmod.isaacmod.Isaac;
+import lq2007.mcmod.isaacmod.common.IsaacResourceManager;
 import lq2007.mcmod.isaacmod.common.capability.PropEntity;
 import lq2007.mcmod.isaacmod.common.entity.friend.EntityBobby;
 import lq2007.mcmod.isaacmod.common.entity.friend.manager.FriendType;
@@ -56,6 +57,8 @@ public class BrotherBobby extends AbstractPropType {
     public void render(Prop item, float partialTicks,
                        com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
                        net.minecraft.client.renderer.IRenderTypeBuffer bufferIn) {
-        super.render(item, partialTicks, matrixStackIn, bufferIn);
+        lq2007.mcmod.isaacmod.client.util.obj.OBJModel model =
+                lq2007.mcmod.isaacmod.client.util.obj.OBJModel.read(IsaacResourceManager.getPropModel(this));
+        model.renderAll(IsaacResourceManager.getPropTexture(this));
     }
 }

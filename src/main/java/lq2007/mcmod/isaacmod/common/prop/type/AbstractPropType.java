@@ -151,9 +151,9 @@ public abstract class AbstractPropType extends IsaacElement {
 
     // todo implement render
     @OnlyIn(Dist.CLIENT)
-    public void render(Prop item, float partialTicks,
+    public abstract void render(Prop item, float partialTicks,
                        com.mojang.blaze3d.matrix.MatrixStack matrixStackIn,
-                       net.minecraft.client.renderer.IRenderTypeBuffer bufferIn) { }
+                       net.minecraft.client.renderer.IRenderTypeBuffer bufferIn);
 
     /**
      * Return the prop's some tags from its annotation. It may be empty if the prop has no tag or no annotation

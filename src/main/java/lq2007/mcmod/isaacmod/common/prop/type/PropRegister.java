@@ -4,9 +4,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lq2007.mcmod.isaacmod.register.IAutoApply;
 import lq2007.mcmod.isaacmod.register.registers.IRegister;
-import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.DeferredRegister;
 import org.objectweb.asm.Type;
 
 import java.util.*;
@@ -19,8 +17,6 @@ public class PropRegister implements IRegister, IAutoApply {
     static final Map<ResourceLocation, AbstractPropType> PASSIVE_PROPS = new HashMap<>();
     static final Map<ResourceLocation, AbstractPropType> ACTIVE_PROPS = new HashMap<>();
     static final Int2ObjectMap<AbstractPropType> PROP_BY_ID = new Int2ObjectArrayMap<>();
-
-    private PropItemRegister reg = null;
 
     public <T extends AbstractPropType> Optional<T> get(ResourceLocation key) {
         return Optional.ofNullable((T) PROPS.get(key));
@@ -72,15 +68,5 @@ public class PropRegister implements IRegister, IAutoApply {
                 e.printStackTrace();
             }
         }
-        if (reg != null) {
-            reg.apply();
-        }
-    }
-
-    public PropItemRegister withItem(DeferredRegister<Item> itemRegister) {
-        if (reg == null) {
-            reg = new PropItemRegister(itemRegister);
-        }
-        return reg;
     }
 }

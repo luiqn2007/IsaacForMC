@@ -3,13 +3,12 @@ package lq2007.mcmod.isaacmod;
 import lq2007.mcmod.isaacmod.common.CommonProxy;
 import lq2007.mcmod.isaacmod.common.capability.CapabilityRegister;
 import lq2007.mcmod.isaacmod.common.command.CommandRegister;
+import lq2007.mcmod.isaacmod.common.item.ItemIcon;
 import lq2007.mcmod.isaacmod.common.network.NetworkRegister;
-import lq2007.mcmod.isaacmod.common.prop.type.PropItemRegister;
 import lq2007.mcmod.isaacmod.common.prop.type.PropRegister;
 import lq2007.mcmod.isaacmod.common.util.CollectionUtils;
 import lq2007.mcmod.isaacmod.common.util.ReflectionUtil;
 import lq2007.mcmod.isaacmod.common.util.serializer.ObjectPacketSerializer;
-import lq2007.mcmod.isaacmod.common.item.ItemIcon;
 import lq2007.mcmod.isaacmod.register.Register;
 import lq2007.mcmod.isaacmod.register.registers.*;
 import net.minecraft.block.Block;
@@ -45,7 +44,6 @@ public class Isaac {
     public static CapabilityRegister CAPABILITIES;
     public static NetworkRegister NETWORKS;
     public static PropRegister PROPS;
-    public static PropItemRegister PROP_ITEMS;
     public static CommandRegister COMMANDS;
 
     public static ObjectPacketSerializer.Collector C;
@@ -73,7 +71,6 @@ public class Isaac {
         CAPABILITIES = REGISTER.add(new CapabilityRegister());
         NETWORKS = REGISTER.add(new NetworkRegister(network));
         PROPS = REGISTER.add(new PropRegister());
-        PROP_ITEMS = PROPS.withItem(ITEMS.register);
         COMMANDS = REGISTER.add(new CommandRegister());
 
         C = REGISTER.add(new ObjectPacketSerializer.Collector());
