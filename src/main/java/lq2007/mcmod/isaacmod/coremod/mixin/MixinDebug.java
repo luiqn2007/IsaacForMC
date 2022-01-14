@@ -9,6 +9,6 @@ public abstract class MixinDebug {
 
     @ModifyConstant(method = "getWindowTitle", constant = @Constant(stringValue = "Minecraft"))
     private String modifyGetWindowTitle(String title) {
-        return "[Isaac: Mixin=Enable] " + title;
+        return "[Isaac: Debug Mode] " + title;
     }
 }

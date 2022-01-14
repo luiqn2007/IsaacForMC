@@ -1,9 +1,8 @@
 buildscript {
     repositories {
         maven { url = "https://maven.aliyun.com/repository/public/" }
-        maven { url = "https://lss233.littleservice.cn/repositories/minecraft" }
         maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
+        maven { url = "https://repo.spongepowered.org/maven" }
         mavenCentral()
     }
     dependencies {
@@ -170,3 +169,7 @@ mixin {
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
 }
+
+tasks.register('genIsaacSrc', SourceGenerateTask)
+
+tasks.compileJava.dependsOn('genIsaacSrc')
